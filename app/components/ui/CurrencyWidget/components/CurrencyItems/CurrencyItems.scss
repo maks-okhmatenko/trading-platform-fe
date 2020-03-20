@@ -1,0 +1,86 @@
+.currencyItemsWrap {
+  display: block;
+}
+
+.currencyList {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.currencyItem {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-size: 0.84em;
+  color: #c5c8cc;
+  cursor: pointer;
+  min-height: 34px;
+  padding: 9px 7px 9px 10px;
+  position: relative;
+
+  &:nth-child(even) {
+    background-color: #181f2c;
+  }
+
+  &:hover {
+    background-color: #262b3e;
+
+    .closeIcon {
+      display: block;
+    }
+  }
+
+  div {
+    flex: 1;
+
+    &:not(:first-child) {
+      text-align: right;
+    }
+  }
+}
+
+.currencySymbol {
+  display: block;
+}
+
+.lastMarket {
+  display: block;
+}
+
+.percentChange {
+  display: block;
+}
+
+.closeIcon {
+  display: none;
+  width: 20px;
+  height: 20px;
+  background-color: #ca1e1ed9;
+  position: absolute;
+  right: 5px;
+  overflow: hidden;
+
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    height: 1px;
+    width: 80%;
+    top: 50%;
+    left: 10%;
+    margin-top: -1px;
+    background: #fff;
+  }
+
+  &:before {
+    transform: rotate(45deg);
+  }
+  &:after {
+    transform: rotate(-45deg);
+  }
+
+  &:hover {
+    background-color: #ca1e1e;
+  }
+}

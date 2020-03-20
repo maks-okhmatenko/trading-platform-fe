@@ -1,0 +1,26 @@
+.header {
+  display: block;
+  height: 70px;
+  background-color: #181f2c;
+  color: white;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 15px;
+  height: 100%;
+  align-items: center;
+}
+
+.logo {
+  height: 60px;
+  width: 60px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("../../../images/bitcoin.svg");
+}
+
+.userAction {
+  display: block;
+}

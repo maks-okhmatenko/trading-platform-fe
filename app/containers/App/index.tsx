@@ -10,24 +10,31 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { Switch, Route } from 'react-router-dom';
 
+import HeaderContainer from 'containers/Header';
 import HomePage from 'containers/HomePage/Loadable';
+import SidebarContainer from '../Sidebar';
 
 import styles from './app.scss';
 
-export default function App() {
+const App = () => {
   return (
     <div className={styles.app}>
       <Helmet
         titleTemplate="%s - React.js Boilerplate"
         defaultTitle="React.js Boilerplate"
       >
-        <meta name="description" content="A React.js Boilerplate application" />
+        <meta name="description" content="A React.js Boilerplate application"/>
       </Helmet>
-      {/*<Header />*/}
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-      </Switch>
-      {/*<Footer />*/}
+      <HeaderContainer/>
+      <main className={styles.main}>
+        <SidebarContainer/>
+        <Switch>
+          <Route exact path="/" component={HomePage}/>
+        </Switch>
+        {/*<Footer />*/}
+      </main>
     </div>
   );
-}
+};
+
+export default App;

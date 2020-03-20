@@ -16,6 +16,9 @@ import { makeSelectError, makeSelectLoading } from 'containers/App/selectors';
 import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import HomePage from '../../components/page/HomePage';
+
+import styles from './HomePage.scss';
 
 const key = 'home';
 
@@ -25,7 +28,16 @@ const stateSelector = createStructuredSelector({
   error: makeSelectError(),
 });
 
-export default function HomePage() {
+const mockData = {
+  item: [
+    {symbol: 'ETH', currency: 'BTC', market: 'BINANCE'},
+    {symbol: 'BTC', currency: 'USDT', market: 'BINANCE'},
+    {symbol: 'EOS', currency: 'USDT', market: 'BINANCE'},
+    {symbol: 'DASH', currency: 'ETH', market: 'BINANCE'},
+  ],
+};
+
+const HomePageContainer = (props) => {
   const { username, loading, error } = useSelector(stateSelector);
 
   const dispatch = useDispatch();
@@ -39,7 +51,7 @@ export default function HomePage() {
   };
 
   return (
-    <article>
+    <article className={styles.homeContainer}>
       <Helmet>
         <title>Home Page</title>
         <meta
@@ -47,9 +59,9 @@ export default function HomePage() {
           content="A React.js Boilerplate application homepage"
         />
       </Helmet>
-      <div>
-        home page
-      </div>
+      <HomePage {...props} currecnyData={mockData} />
     </article>
   );
-}
+};
+
+export default HomePageContainer;

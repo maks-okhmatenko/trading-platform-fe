@@ -46,7 +46,7 @@ module.exports = options => ({
             loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: '[name]--[hash:base64:5]',
+                localIdentName: '[local]--[hash:base64:5]',
               },
               sourceMap: true, // TODO: need check for production build
             },

@@ -1,0 +1,44 @@
+.sidebarWrap {
+  width: 70px;
+  height: 100%;
+  background-color: #131722;
+}
+
+.sidebarList {
+  display: block;
+
+}
+
+.sidebarItem {
+  display: flex;
+  max-height: 70px;
+  border-bottom: 1px solid #232631;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: white;
+  text-decoration: none;
+  padding: 10px 0;
+
+  &:hover {
+    background-color: #1c2030;
+  }
+
+  .icon {
+    width: 30px;
+    height: 25px;
+    margin-bottom: 9px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  span {
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 100;
+  }
+}
