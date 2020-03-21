@@ -15,8 +15,22 @@ import HomePage from 'containers/HomePage/Loadable';
 import SidebarContainer from '../Sidebar';
 
 import styles from './app.scss';
+import { useInjectSaga } from '../../utils/injectSaga';
+import saga from './saga';
+import { useDispatch } from 'react-redux';
+import { subscribeSocket } from './actions';
+
+const key = 'app';
 
 const App = () => {
+  const dispatch = useDispatch();
+  useInjectSaga({ key: key, saga: saga });
+
+  // Аналогично componentDidMount и componentDidUpdate:
+  React.useEffect(() => {
+    dispatch(subscribeSocket());
+  });
+
   return (
     <div className={styles.app}>
       <Helmet

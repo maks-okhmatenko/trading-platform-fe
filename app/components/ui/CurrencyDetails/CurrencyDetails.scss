@@ -1,0 +1,26 @@
+.currencyDetailsWrap {
+  display: block;
+  background-color: #171b29;
+}
+
+.widgetHeader {
+  display: flex;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  background: #262b3e;
+  align-items: center;
+  margin: 6px 4px;
+  padding: 0 10px;
+}
+
+.headerText {
+  color: #98aaba;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.widgetData {
+  display: block;
+}

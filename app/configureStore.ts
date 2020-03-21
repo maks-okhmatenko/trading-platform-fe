@@ -5,6 +5,7 @@
 import { applyMiddleware, createStore } from 'redux';
 import { routerMiddleware } from 'connected-react-router';
 import createSagaMiddleware from 'redux-saga';
+import logger from 'redux-logger';
 import createReducer from './reducers';
 import { InjectedStore, ApplicationRootState } from 'types';
 import { History } from 'history';
@@ -14,7 +15,7 @@ export default function configureStore(initialState: ApplicationRootState | {} =
   const reduxSagaMonitorOptions = {};
   const sagaMiddleware = createSagaMiddleware(reduxSagaMonitorOptions);
 
-  const middlewares = [sagaMiddleware, routerMiddleware(history)];
+  const middlewares = [sagaMiddleware, routerMiddleware(history), logger]; // TODO: need remove logger for prod env
 
   let enhancer = applyMiddleware(...middlewares);
 

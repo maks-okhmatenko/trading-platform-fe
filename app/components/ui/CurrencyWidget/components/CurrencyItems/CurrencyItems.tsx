@@ -20,7 +20,7 @@ const CurrencyItems = (props) => {
               <li className={styles.currencyItem} key={item.symbol}>
                 <div className={styles.currencySymbol}>{`${item.symbol} / ${item.currency}`}</div>
                 <div className={styles.lastMarket}>{getRandomIntInclusive(0, 10, 5)}</div>
-                <div className={styles.percentChange}>{getRandomIntInclusive(-5, 5, 2)}</div>
+                <div className={styles.percentChange}>{getRandomIntInclusive(-5, 5, 2)}%</div>
                 <span className={styles.closeIcon} />
               </li>
             );

@@ -1,12 +1,28 @@
 import * as React from 'react';
-import CurrencyWidget from '../../ui/CurrencyWidget';
+import CurrencyDetailsWidgetContainer from '../../../containers/CurrencyDetailsWidget';
+import CurrencyWidgetContainer from '../../../containers/CurrencyWidget';
+
+import styles from './HomePage.scss';
 
 const HomePage = (props) => {
 
   return (
-    <div>
-     <CurrencyWidget {...props} />
-    </div>
+    <article className={styles.homeContainer}>
+
+      <div className={styles.widgetContainer}>
+        <CurrencyWidgetContainer {...props} />
+        <CurrencyDetailsWidgetContainer/>
+      </div>
+
+      <section>
+
+        <div>
+          tabs
+        </div>
+
+      </section>
+
+    </article>
   );
 };
 

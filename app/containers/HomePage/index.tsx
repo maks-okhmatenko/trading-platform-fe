@@ -51,7 +51,7 @@ const HomePageContainer = (props) => {
   };
 
   return (
-    <article className={styles.homeContainer}>
+    <>
       <Helmet>
         <title>Home Page</title>
         <meta
@@ -59,8 +59,8 @@ const HomePageContainer = (props) => {
           content="A React.js Boilerplate application homepage"
         />
       </Helmet>
-      <HomePage {...props} currecnyData={mockData} />
-    </article>
+      <HomePage {...props} currecnyData={mockData}/>
+    </>
   );
 };
 

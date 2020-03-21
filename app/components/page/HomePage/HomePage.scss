@@ -1,0 +1,12 @@
+.homeContainer {
+  display: flex;
+}
+
+.widgetContainer {
+  display: flex;
+  flex-direction: column;
+
+  & > div {
+    flex: 1;
+  }
+}
