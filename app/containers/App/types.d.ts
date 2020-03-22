@@ -5,10 +5,9 @@ import { ApplicationRootState } from '../../types';
 /* --- STATE --- */
 
 interface AppState {
-  readonly loading: boolean;
-  readonly error?: object | boolean;
-  readonly currentUser: string;
-  readonly userData: UserData;
+  loading: boolean;
+  error: any;
+  tickers: any[];
 }
 
 interface UserData {

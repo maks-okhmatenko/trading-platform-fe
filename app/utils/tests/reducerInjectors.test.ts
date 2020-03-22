@@ -4,7 +4,7 @@
 
 import identity from 'lodash/identity';
 
-import configureStore from '../../configureStore';
+import configureStore from '../../store/configureStore';
 
 import { getInjectors, injectReducerFactory } from '../reducerInjectors';
 import history from '../history';

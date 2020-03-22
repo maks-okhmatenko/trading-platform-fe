@@ -7,10 +7,14 @@
  *
  */
 
-enum ActionTypes {
-  LOAD_REPOS = 'boilerplate/App/LOAD_REPOS',
-  LOAD_REPOS_SUCCESS = 'boilerplate/App/LOAD_REPOS_SUCCESS',
-  LOAD_REPOS_ERROR = 'boilerplate/App/LOAD_REPOS_ERROR',
+export enum ActionTypes {
+  LOAD_REPOS = 'App/LOAD_REPOS',
+  LOAD_REPOS_SUCCESS = 'App/LOAD_REPOS_SUCCESS',
+  LOAD_REPOS_ERROR = 'App/LOAD_REPOS_ERROR',
+
+  SOCKET_CONNECT = 'App/SOCKET_CONNECT_DONE',
+  SOCKET_ERROR = 'App/SOCKET_ERROR',
+  SOCKET_MESSAGE = 'App/SOCKET_MESSAGE',
 }
 
-export default ActionTypes;
+export const WS_URL = 'ws://85.17.172.72:1189';

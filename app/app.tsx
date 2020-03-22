@@ -27,7 +27,7 @@ import LanguageProvider from 'containers/LanguageProvider';
 import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import 'file-loader?name=.htaccess!./.htaccess';
 
-import configureStore from './configureStore';
+import configureStore from './store/configureStore';
 
 // Import i18n messages
 import { translationMessages } from 'i18n';

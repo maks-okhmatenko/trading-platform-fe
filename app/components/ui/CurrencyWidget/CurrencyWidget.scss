@@ -1,5 +1,8 @@
 .currencyWidget {
-  background-color: #1d2435;
+  background-color: #1D2435;
   color: white;
   width: 274px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
 }

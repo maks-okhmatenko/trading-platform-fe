@@ -1,7 +1,3 @@
-/**
- * The global state selectors
- */
-
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 
@@ -13,11 +9,11 @@ const selectRoute = (state: ApplicationRootState) => {
   return state.router;
 };
 
-const makeSelectCurrentUser = () =>
-  createSelector(selectGlobal, globalState => globalState.currentUser);
-
 const makeSelectLoading = () =>
   createSelector(selectGlobal, globalState => globalState.loading);
+
+const makeSelectTickers = () =>
+  createSelector(selectGlobal, globalState => globalState.tickers);
 
 const makeSelectError = () =>
   createSelector(selectGlobal, globalState => globalState.error);
@@ -27,8 +23,8 @@ const makeSelectLocation = () =>
 
 export {
   selectGlobal,
-  makeSelectCurrentUser,
   makeSelectLoading,
+  makeSelectTickers,
   makeSelectError,
   makeSelectLocation,
 };

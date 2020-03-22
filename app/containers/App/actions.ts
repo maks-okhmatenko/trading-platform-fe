@@ -1,13 +1,15 @@
-import { action } from 'typesafe-actions';
+import { ActionTypes } from './constants';
 
-import ActionTypes from './constants';
+export const socketConnect = () => ({
+    type: ActionTypes.SOCKET_CONNECT,
+});
 
-export enum actionsType {
-  subscribeSocket = 'SOCKET_INIT_SUBSCRIPTION',
-}
+export const socketError = (error) => ({
+  type: ActionTypes.SOCKET_ERROR,
+  payload: { error },
+});
 
-export const loadRepos = () => action(ActionTypes.LOAD_REPOS);
-export const repoLoadingError = (error: object) =>
-  action(ActionTypes.LOAD_REPOS_ERROR, error);
-
-export const subscribeSocket = () => action(actionsType.subscribeSocket);
+export const socketMessage = (data) => ({
+  type: ActionTypes.SOCKET_MESSAGE,
+  payload: { data },
+});

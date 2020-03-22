@@ -9,23 +9,25 @@ function getRandomIntInclusive(min, max, fixed?: number) {
 
 }
 
-const CurrencyItems = (props) => {
+// Symbol: "USOile"
+// Bid: "0"
+// Ask: "0"
+// Direction: "2"
+// Spread: "0"
+// Digits: "2"
 
+const CurrencyItems = ({ list }) => {
   return (
     <div className={styles.currencyItemsWrap}>
       <ul className={styles.currencyList}>
-        {
-          props.currecnyData.item.map((item, index) => {
-            return (
-              <li className={styles.currencyItem} key={item.symbol}>
-                <div className={styles.currencySymbol}>{`${item.symbol} / ${item.currency}`}</div>
-                <div className={styles.lastMarket}>{getRandomIntInclusive(0, 10, 5)}</div>
-                <div className={styles.percentChange}>{getRandomIntInclusive(-5, 5, 2)}%</div>
-                <span className={styles.closeIcon} />
-              </li>
-            );
-          })
-        }
+        {list.map((item, index) => (
+          <li className={styles.currencyItem} key={index}>
+            <div className={styles.currencySymbol}>{item.Symbol.toUpperCase()}</div>
+            <div className={styles.lastMarket}>{item.Bid}</div>
+            <div className={styles.percentChange}>{NaN}%</div>
+            <span className={styles.closeIcon} />
+          </li>
+        ))}
       </ul>
     </div>
   );

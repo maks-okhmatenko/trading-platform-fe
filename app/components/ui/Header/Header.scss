@@ -24,3 +24,24 @@
 .userAction {
   display: block;
 }
+
+.avatar {
+  cursor: pointer;
+  display: flex;
+  width: 35px;
+  min-width: 35px;
+  height: 35px;
+  min-height: 35px;
+  margin-right: 0px;
+  color: #fff;
+  border-radius: 100%;
+  background: #ef6c00;
+  background-position: center center;
+  background-size: cover;
+  box-shadow: 0px 1px 2px 0px #000;
+  text-transform: uppercase;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 100;
+  justify-content: center;
+}

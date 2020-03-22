@@ -1,21 +1,26 @@
-/**
- * Create the store with dynamic reducers
- */
+import createSagaMiddleware from 'redux-saga';
+import logger from 'redux-logger';
 
 import { applyMiddleware, createStore } from 'redux';
 import { routerMiddleware } from 'connected-react-router';
-import createSagaMiddleware from 'redux-saga';
-import logger from 'redux-logger';
-import createReducer from './reducers';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { InjectedStore, ApplicationRootState } from 'types';
 import { History } from 'history';
-import { composeWithDevTools } from 'redux-devtools-extension';
+
+import createReducer from './rootReducer';
+import { wsSagas } from './rootSaga';
 
 export default function configureStore(initialState: ApplicationRootState | {} = {}, history: History) {
   const reduxSagaMonitorOptions = {};
   const sagaMiddleware = createSagaMiddleware(reduxSagaMonitorOptions);
+  const websocketMiddleware = createSagaMiddleware();
 
-  const middlewares = [sagaMiddleware, routerMiddleware(history), logger]; // TODO: need remove logger for prod env
+  const middlewares = [
+    routerMiddleware(history),
+    logger, // TODO: need remove logger for prod env
+    websocketMiddleware,
+    sagaMiddleware,
+  ];
 
   let enhancer = applyMiddleware(...middlewares);
 
@@ -43,6 +48,8 @@ export default function configureStore(initialState: ApplicationRootState | {} =
     enhancer,
   ) as InjectedStore;
 
+  websocketMiddleware.run(wsSagas);
+
   // Extensions
   store.runSaga = sagaMiddleware.run;
   store.injectedReducers = {}; // Reducer registry
@@ -51,7 +58,7 @@ export default function configureStore(initialState: ApplicationRootState | {} =
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */
   if (module.hot) {
-    module.hot.accept('./reducers', () => {
+    module.hot.accept('./rootReducer', () => {
       store.replaceReducer(createReducer(store.injectedReducers));
     });
   }

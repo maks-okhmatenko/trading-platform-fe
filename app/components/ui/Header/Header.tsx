@@ -9,7 +9,7 @@ const Header = (props) => {
 
       <div className={styles.headerContainer}>
         <div className={styles.logo} />
-        <div className={styles.userAction}>user action</div>
+        <div className={styles.avatar}>M</div>
       </div>
 
     </header>

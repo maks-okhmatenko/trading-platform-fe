@@ -7,7 +7,7 @@ import { createMemoryHistory } from 'history';
 
 const memoryHistory = createMemoryHistory();
 
-import configureStore from '../../configureStore';
+import configureStore from '../../store/configureStore';
 import {
   getInjectors,
   injectSagaFactory,

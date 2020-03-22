@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
 import { render } from '@testing-library/react';
 
-import configureStore from '../../configureStore';
+import configureStore from '../../store/configureStore';
 import { getInjectors } from '../reducerInjectors';
 
 import { createMemoryHistory } from 'history';

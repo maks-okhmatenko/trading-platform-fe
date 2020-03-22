@@ -1,41 +1,34 @@
-import { ContainerState, ContainerActions } from './types';
-import ActionTypes from './constants';
+import produce from 'immer';
+import { ContainerState } from './types';
+import { ActionTypes } from './constants';
 
 // The initial state of the App
 export const initialState: ContainerState = {
   loading: false,
-  error: false,
-  currentUser: '',
-  userData: {
-    repos: [],
-  },
+  tickers: [],
+  error: null,
 };
 
-// Take this container's state (as a slice of root state), this container's actions and return new state
-function appReducer(
-  state: ContainerState = initialState,
-  action: ContainerActions,
-): ContainerState {
+// @ts-ignore
+const appReducer = produce((draft = initialState, action) => {
   switch (action.type) {
-    case ActionTypes.LOAD_REPOS:
-      return {
-        currentUser: state.currentUser,
-        loading: true,
-        error: false,
-        userData: {
-          repos: [],
-        },
-      };
-    case ActionTypes.LOAD_REPOS_ERROR:
-      const { error, loading, ...rest } = state;
-      return {
-        error: action.payload,
-        loading: false,
-        ...rest,
-      };
+    case ActionTypes.SOCKET_CONNECT:
+      draft.loading = true;
+      break;
+
+    case ActionTypes.SOCKET_ERROR:
+      draft.loading = false;
+      draft.error = action.payload.error;
+      break;
+
+    case ActionTypes.SOCKET_MESSAGE:
+      draft.loading = false;
+      draft.tickers = action.payload.data;
+      break;
+
     default:
-      return state;
+      return initialState;
   }
-}
+});
 
 export default appReducer;

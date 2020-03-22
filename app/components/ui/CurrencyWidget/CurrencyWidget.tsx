@@ -4,14 +4,19 @@ import CurrencyItems from './components/CurrencyItems';
 
 import styles from './CurrencyWidget.scss';
 
-const CurrencyWidget = (props) => {
-
+const CurrencyWidget = ({ tickers, loading }) => {
   return (
     <div className={styles.currencyWidget}>
 
-      <CurrencyWidgetHeader/>
+      <CurrencyWidgetHeader />
 
-      <CurrencyItems {...props} />
+      {loading ? (
+        <span>Loading...</span>
+      ) : null}
+
+      {tickers && !loading ? (
+        <CurrencyItems list={tickers} />
+      ) : null}
 
     </div>
   );
