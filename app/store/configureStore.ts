@@ -1,5 +1,5 @@
 import createSagaMiddleware from 'redux-saga';
-import logger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 
 import { applyMiddleware, createStore } from 'redux';
 import { routerMiddleware } from 'connected-react-router';
@@ -14,6 +14,10 @@ export default function configureStore(initialState: ApplicationRootState | {} =
   const reduxSagaMonitorOptions = {};
   const sagaMiddleware = createSagaMiddleware(reduxSagaMonitorOptions);
   const websocketMiddleware = createSagaMiddleware();
+  const logger = createLogger({
+    // @ts-ignore
+    collapsed: (getState, action, logEntry) => !logEntry.error,
+  });
 
   const middlewares = [
     routerMiddleware(history),
