@@ -46,6 +46,14 @@
   }
 }
 
+.currencyItem.up .lastMarket {
+  color: green;
+}
+
+.currencyItem.down .lastMarket {
+  color: red;
+}
+
 .currencySymbol {
   display: block;
 }

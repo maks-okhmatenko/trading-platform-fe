@@ -5,7 +5,7 @@ import { ActionTypes } from './constants';
 // The initial state of the App
 export const initialState: ContainerState = {
   loading: false,
-  tickers: [],
+  tickers: {},
   error: null,
 };
 
@@ -23,7 +23,7 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.SOCKET_MESSAGE:
       draft.loading = false;
-      draft.tickers = action.payload.data;
+      draft.tickers = { ...draft.tickers, ...action.payload.data };
       break;
 
     default:

@@ -1,13 +1,6 @@
 import * as React from 'react';
-
+import classnames from 'classnames';
 import styles from './CurrencyItems.scss';
-
-function getRandomIntInclusive(min, max, fixed?: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Number(Math.random() * (max - min + 1)).toFixed(fixed);
-
-}
 
 // Symbol: "USOile"
 // Bid: "0"
@@ -20,14 +13,24 @@ const CurrencyItems = ({ list }) => {
   return (
     <div className={styles.currencyItemsWrap}>
       <ul className={styles.currencyList}>
-        {list.map((item, index) => (
-          <li className={styles.currencyItem} key={index}>
-            <div className={styles.currencySymbol}>{item.Symbol.toUpperCase()}</div>
-            <div className={styles.lastMarket}>{item.Bid}</div>
-            <div className={styles.percentChange}>{NaN}%</div>
-            <span className={styles.closeIcon} />
-          </li>
-        ))}
+        {Object.keys(list).map((item, index) => {
+          const ticker = list[item];
+          const direction = ticker.Direction;
+
+          const classNames = classnames(styles.currencyItem, {
+            [styles.up]: direction === '1',
+            [styles.down]: direction === '0',
+          });
+
+          return (
+            <li className={classNames} key={index}>
+              <div className={styles.currencySymbol}>{item.toUpperCase()}</div>
+              <div className={styles.lastMarket}>{ticker.Bid}</div>
+              <div className={styles.percentChange}>--</div>
+              <span className={styles.closeIcon} />
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

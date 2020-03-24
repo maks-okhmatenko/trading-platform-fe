@@ -7,7 +7,7 @@ import { ApplicationRootState } from '../../types';
 interface AppState {
   loading: boolean;
   error: any;
-  tickers: any[];
+  tickers: {};
 }
 
 interface UserData {
