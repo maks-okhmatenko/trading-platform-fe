@@ -1,18 +1,33 @@
-/*
- * AppConstants
- * Each action has a corresponding type, which the reducer knows and picks up on.
- * To avoid weird typos between the reducer and the actions, we save them as
- * constants here. We prefix them with 'yourproject/YourComponent' so we avoid
- * reducers accidentally picking up actions they shouldn't.
- *
- */
-
 export enum ActionTypes {
   LOAD_REPOS = 'App/LOAD_REPOS',
 
   SOCKET_CONNECT = 'App/SOCKET_CONNECT_DONE',
   SOCKET_ERROR = 'App/SOCKET_ERROR',
   SOCKET_MESSAGE = 'App/SOCKET_MESSAGE',
+
+  SOCKET_IO_CONNECT = 'App/SOCKET_IO_CONNECT',
+  SOCKET_IO_ERROR = 'App/SOCKET_IO_ERROR',
+  SOCKET_IO_INITIAL_TIME_FRAME = 'App/SOCKET_IO_INITIAL_TIME_FRAME',
+  SOCKET_IO_APPEND_TIME_FRAME = 'App/SOCKET_IO_APPEND_TIME_FRAME',
+  SOCKET_IO_TICKERS = 'App/SOCKET_IO_TICKERS',
+  SOCKET_IO_SUBSCRIBE_TIME_FRAME = 'App/SOCKET_IO_SUBSCRIBE_TIME_FRAME',
+  SOCKET_IO_GLOBAL_CONFIG = 'App/SOCKET_IO_GLOBAL_CONFIG',
+  CHANGE_ACTIVE_SYMBOL_CHART = 'App/CHANGE_ACTIVE_SYMBOL_CHART',
 }
 
 export const WS_URL = 'ws://85.17.172.72:1189';
+export const WS_IO_URL = 'ws://localhost:8080';
+
+export enum EVENT_NAME {
+  SUBSCRIBE_TIME_FRAME = 'subscribeTimeframe',
+}
+
+export enum FRAME_TYPES {
+  M1 = 'M1',
+  M5 = 'M5',
+  M15 = 'M15',
+  M30 = 'M30',
+  H1 = 'H1',
+  H4 = 'H4',
+  D1 = 'D1',
+}

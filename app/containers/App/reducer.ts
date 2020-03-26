@@ -7,6 +7,11 @@ export const initialState: ContainerState = {
   loading: false,
   tickers: {},
   error: null,
+  tickersIo: {},
+  chartLoading: false,
+  chartTimeFrame: [],
+  globalConfig: {},
+  activeSymbolChart: '',
 };
 
 // @ts-ignore
@@ -26,8 +31,34 @@ const appReducer = produce((draft = initialState, action) => {
       draft.tickers = { ...draft.tickers, ...action.payload.data };
       break;
 
+
+    // case ActionTypes.SOCKET_IO_CONNECT:
+    //   draft.chartLoading = true;
+    //   break;
+
+    case ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME:
+      draft.chartLoading = true;
+      draft.chartTimeFrame = action.payload.data;
+      break;
+
+    case ActionTypes.SOCKET_IO_APPEND_TIME_FRAME:
+      draft.chartTimeFrame = [...draft.chartTimeFrame, ...action.payload.data];
+      break;
+
+    case ActionTypes.SOCKET_IO_TICKERS:
+      draft.tickersIo = {...draft.tickersIo, ...action.payload.data};
+      break;
+
+    case ActionTypes.SOCKET_IO_GLOBAL_CONFIG:
+      draft.globalConfig = action.payload.data;
+      break;
+
+    case ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART:
+      draft.activeSymbolChart = action.payload.data;
+      break;
+
     default:
-      return initialState;
+      return draft;
   }
 });
 

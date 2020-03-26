@@ -8,6 +8,11 @@ interface AppState {
   loading: boolean;
   error: any;
   tickers: {};
+  tickersIo: {};
+  chartLoading: boolean;
+  chartTimeFrame: {};
+  globalConfig: {};
+  activeSymbolChart: string;
 }
 
 interface UserData {
