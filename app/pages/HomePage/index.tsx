@@ -18,6 +18,7 @@ import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
 import Chart from '../../components/ui/Chart';
+import { socketIoSubscribeTimeframe } from '../../containers/App/actions';
 
 const HomePageContainer = (props) => {
   const { loading, tickers } = props;
@@ -32,6 +33,7 @@ const HomePageContainer = (props) => {
     chartTimeFrame: props.chartTimeFrame,
     chartLoading: props.chartLoading,
     activeSymbolChart: props.activeSymbolChart,
+    chooseTimeframeChartData: props.chooseTimeframeChartData,
   };
 
   return (
@@ -65,5 +67,9 @@ const mapStateToProps = createStructuredSelector({
   activeSymbolChart: makeSelectActiveSymbolChart(),
 });
 
+const mapDispatchToProps = {
+  chooseTimeframeChartData: socketIoSubscribeTimeframe,
+};
 
-export default connect(mapStateToProps)(HomePageContainer);
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);
