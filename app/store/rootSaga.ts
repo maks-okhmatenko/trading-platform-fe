@@ -80,7 +80,7 @@ function createSocketChannel(socket) {
       emit(AppActions.changeActiveSymbolChart(config.TICKER_LIST[0]));
     });
 
-    socket.once('initialTimeframes', (initialData) => {
+    socket.on('initialTimeframes', (initialData) => {
       emit(AppActions.socketIoInitialTimeframe(initialData));
     });
 
