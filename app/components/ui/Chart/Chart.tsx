@@ -8,6 +8,16 @@ class Chart extends React.Component<any> {
     ],
   };
 
+  public componentDidMount(): void {
+    const result = this.prepareData(this.props.chartTimeFrame);
+    const resultObj = [
+      {data: result},
+    ];
+    this.setState({
+      series: resultObj,
+    });
+  }
+
   public componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<{}>): void {
     if (prevProps.chartTimeFrame.length !== this.props.chartTimeFrame.length) {
       const result = this.prepareData(this.props.chartTimeFrame);
@@ -30,6 +40,7 @@ class Chart extends React.Component<any> {
   };
 
   public render() {
+    const chartsArray = this.props.chartTimeFrame;
 
     const getOptions = () => (
       {
@@ -45,7 +56,7 @@ class Chart extends React.Component<any> {
           },
         },
         title: {
-          text: `${this.props.chartTimeFrame[0].symbol} - ${this.props.chartTimeFrame[0].frameType}`,
+          text: `${chartsArray.length && chartsArray[0].symbol} - ${chartsArray.length && chartsArray[0].frameType}`,
           align: 'left',
         },
         noData: {
@@ -56,13 +67,11 @@ class Chart extends React.Component<any> {
 
     return (
       <div>
-        {!this.props.chartLoading ? 'loading'
-          : (<ApexChart
-            options={getOptions()}
-            series={this.state.series}
-            type="candlestick"
-          />)
-        }
+        <ApexChart
+          options={getOptions()}
+          series={this.state.series}
+          type="candlestick"
+        />
       </div>
     );
   }

@@ -49,13 +49,7 @@ function* watchSocket() {
 // ================================================
 
 export const socketConnect = (url: string, params?: {}) => {
-  const socket = socketIOClient(url, params);
-  return new Promise(resolve => {
-    socket.on('connect', () => {
-      resolve(socket);
-      console.log('Socket connected');
-    });
-  });
+  return socketIOClient(url, params);
 };
 
 function createSocketChannel(socket) {
@@ -63,6 +57,11 @@ function createSocketChannel(socket) {
     const errorHandler = (error) => {
       emit(AppActions.socketError(error));
     };
+
+    socket.on('connect', () => {
+      console.log('Socket IO connected');
+      emit(AppActions.socketIoConnect());
+    });
 
     socket.on('online', (data) => {
     });
@@ -73,7 +72,8 @@ function createSocketChannel(socket) {
       emit(AppActions.socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
         symbol: config.TICKER_LIST[0],
         frameType: config.CONSTANTS.FRAME_TYPES.M1,
-        from: moment().subtract(20, 'minute').unix(),
+        // from: moment().subtract(20, 'minute').unix(),
+        from: moment().subtract(8, 'h').unix(),
         to: moment().unix(),
       }));
 
@@ -89,7 +89,9 @@ function createSocketChannel(socket) {
     });
 
     socket.on('tickers', (tickers) => {
-      emit(AppActions.socketIoTickers(tickers));
+      const sorted = _sortBy(tickers, 'Bid').reverse();
+      const tickersSorted = transformTickers(sorted);
+      emit(AppActions.socketIoTickers(tickersSorted));
     });
 
     const unsubscribe = () => {
@@ -123,7 +125,7 @@ function* watchSocketIoChannel() {
 
 export function* wsSagas() {
   yield all([
-    fork(watchSocket),
+    // fork(watchSocket),
     fork(watchSocketIoChannel),
   ]);
 }

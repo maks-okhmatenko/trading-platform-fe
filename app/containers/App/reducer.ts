@@ -32,12 +32,15 @@ const appReducer = produce((draft = initialState, action) => {
       break;
 
 
-    // case ActionTypes.SOCKET_IO_CONNECT:
-    //   draft.chartLoading = true;
-    //   break;
+    case ActionTypes.SOCKET_IO_CONNECT:
+      break;
+
+    case ActionTypes.SOCKET_IO_SUBSCRIBE_TIME_FRAME:
+      draft.chartLoading = true;
+      break;
 
     case ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME:
-      draft.chartLoading = true;
+      draft.chartLoading = false;
       draft.chartTimeFrame = action.payload.data;
       break;
 
@@ -46,7 +49,8 @@ const appReducer = produce((draft = initialState, action) => {
       break;
 
     case ActionTypes.SOCKET_IO_TICKERS:
-      draft.tickersIo = {...draft.tickersIo, ...action.payload.data};
+      draft.loading = false;
+      draft.tickers = {...draft.tickersIo, ...action.payload.data};
       break;
 
     case ActionTypes.SOCKET_IO_GLOBAL_CONFIG:
