@@ -1,8 +1,12 @@
 import * as React from 'react';
 import classnames from 'classnames';
+import moment from 'moment';
 import styles from './CurrencyItems.scss';
 
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
+import { useDispatch } from 'react-redux';
+import { EVENT_NAME, FRAME_TYPES } from '../../../../../containers/App/constants';
+import { socketIoSubscribeTimeframe } from '../../../../../containers/App/actions';
 
 export type CurrencyItemsProps = {
   list: Array<{
@@ -11,18 +15,26 @@ export type CurrencyItemsProps = {
     Direction: string;
     Spread: string;
     Digits: string;
+    Time?: number;
   }>;
 };
 
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) => {
+  const dispatch = useDispatch();
   const handleNewOrderClick = (e) => {
     console.log(e);
   };
 
   const handleOpenChartClick = (e, objData) => {
     console.log(objData.symbol);
+    dispatch(socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+      symbol: objData.symbol,
+      frameType: FRAME_TYPES.M1,
+      from: moment().subtract(1, 'hour').unix(),
+      to: moment().unix(),
+    }));
   };
 
   return (
@@ -37,11 +49,9 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
             [styles.down]: direction === '0',
           });
 
-          const nowTime = new Date();
-          const time = `${ nowTime.getHours()}:${nowTime.getMinutes()}:${nowTime.getSeconds()}`;
-
+          const time = moment.unix(ticker.Time).format('HH:mm:ss');
           return (
-            <ContextMenuTrigger id={TICKER_CTX_MENU} key={index}>
+            <ContextMenuTrigger id={`${TICKER_CTX_MENU}-${item}`} key={item}>
               <li className={classNames}>
                 <div className={styles.currencySymbol}>{item.toUpperCase()}</div>
                 <div className={styles.bidMarket}>{ticker.Bid}</div>
@@ -50,7 +60,7 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
                 <div className={styles.time}>{time}</div>
               </li>
 
-              <ContextMenu id={TICKER_CTX_MENU}>
+              <ContextMenu id={`${TICKER_CTX_MENU}-${item}`}>
                 <MenuItem data={{symbol: item}} onClick={handleNewOrderClick}>
                   New order
                 </MenuItem>

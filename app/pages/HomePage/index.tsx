@@ -1,18 +1,40 @@
-import React, { useEffect } from 'react';
+import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import appReducer from 'containers/App/reducer';
-import { makeSelectLoading, makeSelectTickers } from 'containers/App/selectors';
+import {
+  makeSelectActiveSymbolChart,
+  makeSelectChartLoading,
+  makeSelectChartTimeFrame,
+  makeSelectLoading,
+  makeSelectTickers,
+  makeSelectTickersIo,
+} from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
+import Chart from '../../components/ui/Chart';
+import { socketIoSubscribeTimeframe } from '../../containers/App/actions';
 
-const HomePageContainer = ({ loading, tickers }) => {
+const HomePageContainer = (props) => {
+  const { loading, tickers } = props;
   useInjectReducer({ key: 'app', reducer: appReducer });
+
+  const currencyWidgetProps = {
+    loading,
+    tickers,
+  };
+
+  const chartProps = {
+    chartTimeFrame: props.chartTimeFrame,
+    chartLoading: props.chartLoading,
+    activeSymbolChart: props.activeSymbolChart,
+    chooseTimeframeChartData: props.chooseTimeframeChartData,
+  };
 
   return (
     <>
@@ -25,12 +47,12 @@ const HomePageContainer = ({ loading, tickers }) => {
       </Helmet>
 
       <div className={styles.widgetContainer}>
-        <CurrencyWidgetContainer loading={loading} tickers={tickers} />
+        <CurrencyWidgetContainer {...currencyWidgetProps} />
         <CurrencyDetailsWidgetContainer />
       </div>
 
-      <section>
-        <p>tabs</p>
+      <section className={styles.chartSection}>
+        {!props.chartLoading ? <Chart {...chartProps} /> : 'loading...'}
       </section>
     </>
   );
@@ -39,7 +61,15 @@ const HomePageContainer = ({ loading, tickers }) => {
 const mapStateToProps = createStructuredSelector({
   tickers: makeSelectTickers(),
   loading: makeSelectLoading(),
+  chartLoading: makeSelectChartLoading(),
+  tickersIo: makeSelectTickersIo(),
+  chartTimeFrame: makeSelectChartTimeFrame(),
+  activeSymbolChart: makeSelectActiveSymbolChart(),
 });
 
+const mapDispatchToProps = {
+  chooseTimeframeChartData: socketIoSubscribeTimeframe,
+};
 
-export default connect(mapStateToProps)(HomePageContainer);
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);

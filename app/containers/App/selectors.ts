@@ -21,10 +21,27 @@ const makeSelectError = () =>
 const makeSelectLocation = () =>
   createSelector(selectRoute, routeState => routeState.location);
 
+const makeSelectChartLoading = () =>
+  createSelector(selectGlobal, globalState => globalState.chartLoading);
+
+const makeSelectTickersIo = () =>
+  createSelector(selectGlobal, globalState => globalState.tickersIo);
+
+const makeSelectChartTimeFrame = () =>
+  createSelector(selectGlobal, globalState => globalState.chartTimeFrame);
+
+const makeSelectActiveSymbolChart = () =>
+  createSelector(selectGlobal, globalState => globalState.activeSymbolChart);
+
+
 export {
   selectGlobal,
   makeSelectLoading,
   makeSelectTickers,
   makeSelectError,
   makeSelectLocation,
+  makeSelectChartLoading,
+  makeSelectTickersIo,
+  makeSelectChartTimeFrame,
+  makeSelectActiveSymbolChart,
 };
