@@ -2,14 +2,29 @@ import * as React from 'react';
 import classnames from 'classnames';
 import styles from './CurrencyItems.scss';
 
-// Symbol: "USOile"
-// Bid: "0"
-// Ask: "0"
-// Direction: "2"
-// Spread: "0"
-// Digits: "2"
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 
-const CurrencyItems = ({ list }) => {
+export type CurrencyItemsProps = {
+  list: Array<{
+    Bid: string;
+    Ask: string;
+    Direction: string;
+    Spread: string;
+    Digits: string;
+  }>;
+};
+
+const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
+
+const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) => {
+  const handleNewOrderClick = (e) => {
+    console.log(e);
+  };
+
+  const handleOpenChartClick = (e, objData) => {
+    console.log(objData.symbol);
+  };
+
   return (
     <div className={styles.currencyItemsWrap}>
       <ul className={styles.currencyList}>
@@ -22,13 +37,28 @@ const CurrencyItems = ({ list }) => {
             [styles.down]: direction === '0',
           });
 
+          const nowTime = new Date();
+          const time = `${ nowTime.getHours()}:${nowTime.getMinutes()}:${nowTime.getSeconds()}`;
+
           return (
-            <li className={classNames} key={index}>
-              <div className={styles.currencySymbol}>{item.toUpperCase()}</div>
-              <div className={styles.lastMarket}>{ticker.Bid}</div>
-              <div className={styles.percentChange}>--</div>
-              <span className={styles.closeIcon} />
-            </li>
+            <ContextMenuTrigger id={TICKER_CTX_MENU} key={index}>
+              <li className={classNames}>
+                <div className={styles.currencySymbol}>{item.toUpperCase()}</div>
+                <div className={styles.bidMarket}>{ticker.Bid}</div>
+                <div className={styles.askMarket}>{ticker.Ask}</div>
+                <div className={styles.spread}>{ticker.Spread}</div>
+                <div className={styles.time}>{time}</div>
+              </li>
+
+              <ContextMenu id={TICKER_CTX_MENU}>
+                <MenuItem data={{symbol: item}} onClick={handleNewOrderClick}>
+                  New order
+                </MenuItem>
+                <MenuItem data={{symbol: item}} onClick={handleOpenChartClick}>
+                  Open chart
+                </MenuItem>
+              </ContextMenu>
+            </ContextMenuTrigger>
           );
         })}
       </ul>

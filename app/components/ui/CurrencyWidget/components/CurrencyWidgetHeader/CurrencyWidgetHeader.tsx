@@ -9,14 +9,16 @@ const CurrencyWidgetHeader = (props) => {
 
       <div className={styles.mainSectionWrap}>
         <span className={styles.widgetHeader}>WATCHLIST</span>
-        <input type="input" placeholder="BTCETH ..." className={styles.searchInput} />
+        {/*<input type="input" placeholder="BTCETH ..." className={styles.searchInput} />*/}
       </div>
 
       <div className={styles.subSectionWrap}>
         <ul className={styles.tableTitle}>
           <li>Symbol</li>
-          <li>Last</li>
-          <li>Chng (%)</li>
+          <li>Bid</li>
+          <li>Aks</li>
+          <li>!</li>
+          <li>Time</li>
         </ul>
       </div>
 
