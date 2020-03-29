@@ -50,7 +50,7 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.SOCKET_IO_TICKERS:
       draft.loading = false;
-      draft.tickers = {...draft.tickersIo, ...action.payload.data};
+      draft.tickers = {...draft.tickers, ...action.payload.data};
       break;
 
     case ActionTypes.SOCKET_IO_GLOBAL_CONFIG:
