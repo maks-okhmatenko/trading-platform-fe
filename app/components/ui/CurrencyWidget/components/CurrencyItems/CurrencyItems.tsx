@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import {
   DEFAULT_TIME_FRAME,
   EVENT_NAME,
-  FRAME_TYPES,
+  FRAME_TYPES, getTimestamp,
   TIME_FRAMES_CONFIG,
 } from '../../../../../containers/App/constants';
 import { socketIoSubscribeTimeframe } from '../../../../../containers/App/actions';
@@ -37,8 +37,8 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
     dispatch(socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
       symbol: objData.symbol,
       frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
-      from: TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from(),
-      to: TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to,
+      from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
+      to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
     }));
   };
 
