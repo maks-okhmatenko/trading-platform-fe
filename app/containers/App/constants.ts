@@ -44,33 +44,82 @@ export enum FRAME_TYPES {
 
 export const DEFAULT_TIME_FRAME = 'H1';
 
+const getTimestamp = (params, timestamp?: string | number) => {
+  if (timestamp) {
+    return moment.unix(Number(timestamp)).subtract(params.amount, params.unit).unix();
+  }
+  return moment().subtract(params.amount, params.unit).unix();
+};
+
 export const TIME_FRAMES_CONFIG = { // object key should be the same with FRAME_TYPES values
   M1: {
-    from: moment().subtract(1, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 1,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
   M5: {
-    from: moment().subtract(1, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 1,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
   M15: {
-    from: moment().subtract(1, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 1,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
   M30: {
-    from: moment().subtract(1, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 1,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
   H1: {
-    from: moment().subtract(4, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 4,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
   H4: {
-    from: moment().subtract(15, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 15,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
   D1: {
-    from: moment().subtract(90, 'day').unix(),
+    from: (timestamp?: number | string) => {
+      const param = {
+        amount: 90,
+        unit: 'day',
+      };
+      return getTimestamp(param, timestamp);
+    },
     to: moment().add(2, 'h').unix(),
   },
 };

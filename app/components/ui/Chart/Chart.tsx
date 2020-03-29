@@ -66,7 +66,7 @@ class Chart extends React.Component<any> {
             this.props.chooseTimeframeChartData(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
               symbol: this.props.activeSymbolChart,
               frameType: frameType,
-              from: TIME_FRAMES_CONFIG[frameType].from,
+              from: TIME_FRAMES_CONFIG[frameType].from(),
               to: TIME_FRAMES_CONFIG[frameType].to,
             });
           },
@@ -93,6 +93,21 @@ class Chart extends React.Component<any> {
             },
             autoSelected: 'pan',
           },
+
+          events: {
+            scrolled: (chartContext, { xaxis }) => {
+              if (chartContext.data.twoDSeriesX[1] > xaxis.min) {
+                const frametype = this.props.chartTimeFrame[0].frameType;
+                this.props.chooseTimeframeChartData(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+                  symbol: this.props.activeSymbolChart,
+                  frameType: FRAME_TYPES[frametype],
+                  from: TIME_FRAMES_CONFIG[frametype].from(chartContext.data.twoDSeriesX[1] / 1000),
+                  to: TIME_FRAMES_CONFIG[frametype].to,
+                });
+              }
+            },
+          },
+
         },
         xaxis: {
           type: 'datetime',
