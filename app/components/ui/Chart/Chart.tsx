@@ -1,7 +1,22 @@
 import * as React from 'react';
 import ApexChart from 'react-apexcharts';
-import moment from 'moment';
-import { EVENT_NAME, FRAME_TYPES } from '../../../containers/App/constants';
+import {
+  EVENT_NAME,
+  FRAME_TYPES,
+  getTimestamp,
+  TIME_FRAMES_CONFIG,
+} from '../../../containers/App/constants';
+
+import styles from './Chart.scss';
+
+// Load the img icon and the file
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/M1_timeframe_small.png';
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/M5_timeframe_small.png';
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/M15_timeframe_small.png';
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/M30_timeframe_small.png';
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/H1_timeframe_small.png';
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/H4_timeframe_small.png';
+import '!file-loader?name=[name].[ext]!../../../images/timeframes/D1_timeframe_small.png';
 
 class Chart extends React.Component<any> {
   public state = {
@@ -41,66 +56,94 @@ class Chart extends React.Component<any> {
     });
   };
 
-  public renderFilterButton = () => {
+  public getOptions = () => {
+    const chartsArray = this.props.chartTimeFrame;
     const buttonFrameTypes = Object.keys(FRAME_TYPES).map((item) => FRAME_TYPES[item]);
-
-    return buttonFrameTypes.map((frameType) => {
-
-      const onChooseTimeframeChartData = () => {
-        this.props.chooseTimeframeChartData(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
-          symbol: this.props.activeSymbolChart,
-          frameType: frameType,
-          from: moment().subtract(6, 'h').unix(),
-          to: moment().unix(),
-        });
+    const timeframeButtonSetting = buttonFrameTypes.map((frameType, index) => {
+      return {
+        icon: `<img src="./${frameType}_timeframe_small.png" width="25">`,
+        index: index + 2,
+        title: frameType,
+        class: 'custom-icon',
+        click: (chart, options, e) => {
+          this.props.chooseTimeframeChartData(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+            symbol: this.props.activeSymbolChart,
+            frameType: frameType,
+            from: getTimestamp.subtract(TIME_FRAMES_CONFIG[frameType].from),
+            to: getTimestamp.add(TIME_FRAMES_CONFIG[frameType].from),
+          });
+        },
       };
-
-      return (
-        <button onClick={onChooseTimeframeChartData} key={frameType}>
-          {frameType}
-        </button>
-      );
     });
+
+    return {
+      chart: {
+        id: 'apexchart-example',
+        foreColor: '#a6acb3',
+
+        toolbar: {
+          tools: {
+            download: false,
+            selection: false,
+            zoom: false,
+            zoomin: true,
+            zoomout: true,
+            // pan: false,
+            reset: false,
+            customIcons: [
+              ...timeframeButtonSetting,
+            ],
+          },
+          autoSelected: 'pan',
+        },
+
+        // events: {
+        //   scrolled: (chartContext, { xaxis }) => {
+        //     if (chartContext.data.twoDSeriesX[1] > xaxis.min) {
+        //       const frametype = this.props.chartTimeFrame[0].frameType;
+        //       this.props.chooseTimeframeChartData(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+        //         symbol: this.props.activeSymbolChart,
+        //         frameType: FRAME_TYPES[frametype],
+        //         from: TIME_FRAMES_CONFIG[frametype].from(chartContext.data.twoDSeriesX[1] / 1000),
+        //         to: TIME_FRAMES_CONFIG[frametype].to,
+        //       });
+        //     }
+        //   },
+        // },
+
+      },
+      xaxis: {
+        type: 'datetime',
+      },
+      yaxis: {
+        tooltip: {
+          enabled: true,
+        },
+      },
+      tooltip: {
+        x: {
+          format: 'HH:mm:ss dd MMM',
+        },
+      },
+      title: {
+        text: `${chartsArray.length && chartsArray[0].symbol} - ${chartsArray.length && chartsArray[0].frameType}`,
+        align: 'left',
+      },
+      noData: {
+        text: this.props.chartLoading && !chartsArray.length ? 'Loading...' : 'No data',
+      },
+    };
   };
 
   public render() {
-    const chartsArray = this.props.chartTimeFrame;
-
-    const getOptions = () => (
-      {
-        chart: {
-          id: 'apexchart-example',
-        },
-        xaxis: {
-          type: 'datetime',
-        },
-        yaxis: {
-          tooltip: {
-            enabled: true,
-          },
-        },
-        tooltip: {
-          x: {
-            format: 'HH:mm:ss dd MMM',
-          },
-        },
-        title: {
-          text: `${chartsArray.length && chartsArray[0].symbol} - ${chartsArray.length && chartsArray[0].frameType}`,
-          align: 'left',
-        },
-        noData: {
-          text: 'Loading...',
-        },
-      }
-    );
 
     return (
-      <div>
-        <div>{this.renderFilterButton()}</div>
+      <div className={styles.chartContainer}>
         <ApexChart
-          options={getOptions()}
+          options={this.getOptions()}
           series={this.state.series}
           type="candlestick"
+          height="100%"
         />
       </div>
     );

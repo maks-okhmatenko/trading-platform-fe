@@ -5,7 +5,12 @@ import styles from './CurrencyItems.scss';
 
 import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
 import { useDispatch } from 'react-redux';
-import { EVENT_NAME, FRAME_TYPES } from '../../../../../containers/App/constants';
+import {
+  DEFAULT_TIME_FRAME,
+  EVENT_NAME,
+  FRAME_TYPES, getTimestamp,
+  TIME_FRAMES_CONFIG,
+} from '../../../../../containers/App/constants';
 import { socketIoSubscribeTimeframe } from '../../../../../containers/App/actions';
 
 export type CurrencyItemsProps = {
@@ -31,9 +36,9 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
     console.log(objData.symbol);
     dispatch(socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
       symbol: objData.symbol,
-      frameType: FRAME_TYPES.M1,
-      from: moment().subtract(1, 'hour').unix(),
-      to: moment().unix(),
+      frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
+      from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
+      to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
     }));
   };
 

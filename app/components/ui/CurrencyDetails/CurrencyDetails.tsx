@@ -10,9 +10,7 @@ const CurrencyDetails = (props) => {
         <span className={styles.headerText}>details</span>
       </div>
 
-      <div className={styles.widgetData}>
-        widget data
-      </div>
+      <div className={styles.widgetData} />
     </div>
   );
 };

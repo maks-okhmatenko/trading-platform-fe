@@ -52,7 +52,7 @@ const HomePageContainer = (props) => {
       </div>
 
       <section className={styles.chartSection}>
-        {!props.chartLoading ? <Chart {...chartProps} /> : 'loading...'}
+        <Chart {...chartProps} />
       </section>
     </>
   );
