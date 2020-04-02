@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import appReducer from 'containers/App/reducer';
@@ -17,7 +17,8 @@ import { useInjectReducer } from 'utils/injectReducer';
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
-import Chart from '../../components/ui/Chart';
+import Chart from '../../components/ui/StockChart';
+// import OldChart from '../../components/ui/Chart';
 import { socketIoSubscribeTimeframe } from '../../containers/App/actions';
 
 const HomePageContainer = (props) => {
@@ -52,8 +53,11 @@ const HomePageContainer = (props) => {
       </div>
 
       <section className={styles.chartSection}>
-        <Chart {...chartProps} />
+        <Chart type="hybrid" {...chartProps}/>
       </section>
+      {/* <section className={styles.chartSection}>
+        <OldChart {...chartProps}/>
+      </section> */}
     </>
   );
 };

@@ -1,0 +1,26 @@
+.chartContainer {
+  position: relative;
+  height: 97%;
+
+  :global {
+    .apexcharts-canvas {
+      display: block;
+
+      .apexcharts-toolbar {
+        max-width: unset;
+
+        .custom-icon {
+          width: 25px;
+        }
+      }
+    }
+  }
+}
+
+.chart{
+  width: 700px;
+}
+
+.line{
+  color: white;
+}
