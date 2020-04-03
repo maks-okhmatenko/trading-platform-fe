@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { ContainerState } from './types';
-import { ActionTypes } from './constants';
+import { ActionTypes, APPEND_TYPE } from './constants';
 
 // The initial state of the App
 export const initialState: ContainerState = {
@@ -35,7 +35,7 @@ const appReducer = produce((draft = initialState, action) => {
     case ActionTypes.SOCKET_IO_CONNECT:
       break;
 
-    case ActionTypes.SOCKET_IO_SUBSCRIBE_TIME_FRAME:
+    case ActionTypes.SOCKET_IO_REQUEST:
       draft.chartLoading = true;
       break;
 
@@ -45,12 +45,21 @@ const appReducer = produce((draft = initialState, action) => {
       break;
 
     case ActionTypes.SOCKET_IO_APPEND_TIME_FRAME:
-      draft.chartTimeFrame = [...draft.chartTimeFrame, ...action.payload.data];
+      if (action.payload.appendTo === APPEND_TYPE.BACK) {
+        draft.chartTimeFrame = [...action.payload.data, ...draft.chartTimeFrame];
+      } else if (action.payload.appendTo === APPEND_TYPE.FORWARD) {
+          const lastIdx = draft.chartTimeFrame.length - 1;
+          if (draft.chartTimeFrame[lastIdx].x === action.payload.data.x) {
+            draft.chartTimeFrame[lastIdx] = action.payload.data;
+          } else if (draft.chartTimeFrame[lastIdx].x < action.payload.data.x) {
+            draft.chartTimeFrame = [...draft.chartTimeFrame, ...action.payload.data];
+          }
+      }
       break;
 
     case ActionTypes.SOCKET_IO_TICKERS:
       draft.loading = false;
-      draft.tickers = {...draft.tickers, ...action.payload.data};
+      draft.tickers = { ...draft.tickers, ...action.payload.data };
       break;
 
     case ActionTypes.SOCKET_IO_GLOBAL_CONFIG:

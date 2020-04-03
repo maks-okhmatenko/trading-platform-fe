@@ -34,7 +34,7 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
 
   const handleOpenChartClick = (e, objData) => {
     console.log(objData.symbol);
-    dispatch(socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+    dispatch(socketIoSubscribeTimeframe({
       symbol: objData.symbol,
       frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
       from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),

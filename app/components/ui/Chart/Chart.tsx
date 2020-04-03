@@ -66,7 +66,7 @@ class Chart extends React.Component<any> {
         title: frameType,
         class: 'custom-icon',
         click: (chart, options, e) => {
-          this.props.chooseTimeframeChartData(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+          this.props.chooseTimeframeChartData({
             symbol: this.props.activeSymbolChart,
             frameType: frameType,
             from: getTimestamp.subtract(TIME_FRAMES_CONFIG[frameType].from),

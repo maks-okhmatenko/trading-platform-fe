@@ -18,10 +18,9 @@ import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
-// import OldChart from '../../components/ui/Chart';
 import { socketIoSubscribeTimeframe } from '../../containers/App/actions';
 
-const HomePageContainer = (props) => {
+const HomePageContainer = props => {
   const { loading, tickers } = props;
   useInjectReducer({ key: 'app', reducer: appReducer });
 
@@ -52,12 +51,9 @@ const HomePageContainer = (props) => {
         <CurrencyDetailsWidgetContainer />
       </div>
 
-      <section className={styles.chartSection}>
-        <Chart type="hybrid" {...chartProps}/>
-      </section>
-      {/* <section className={styles.chartSection}>
-        <OldChart {...chartProps}/>
-      </section> */}
+      <div className={styles.chartSection}>
+        <Chart type="hybrid" {...chartProps} />
+      </div>
     </>
   );
 };
@@ -75,5 +71,7 @@ const mapDispatchToProps = {
   chooseTimeframeChartData: socketIoSubscribeTimeframe,
 };
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(HomePageContainer);

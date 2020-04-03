@@ -72,7 +72,7 @@ function createSocketChannel(socket) {
     socket.once(EVENT_NAME.ON_GLOBAL_CONFIG, (config) => {
       emit(AppActions.socketIoGlobalConfig(config));
 
-      emit(AppActions.socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
+      emit(AppActions.socketIoSubscribeTimeframe({
         symbol: config.TICKER_LIST[0],
         frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
         from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
@@ -87,18 +87,20 @@ function createSocketChannel(socket) {
     });
 
     socket.on(EVENT_NAME.ON_APPEND_TIME_FRAME, (dataItem) => {
-      emit(AppActions.socketIoAppendTimeframe(dataItem));
+      emit(AppActions.socketIoAppendTimeframeForward(dataItem));
+    });
+
+    socket.on(EVENT_NAME.ON_TIME_FRAME_BY_RANGE, (dataItem) => {
+      emit(AppActions.socketIoAppendTimeframeBack(dataItem));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TICKERS, (tickers) => {
-      const sorted = _sortBy(tickers, 'Bid').reverse();
-      const tickersSorted = transformTickers(sorted);
+      const tickersSorted = transformTickers(tickers);
       emit(AppActions.socketIoTickers(tickersSorted));
     });
 
     socket.on(EVENT_NAME.ON_UPDATE_TICKERS, (tickers) => {
-      const sorted = _sortBy(tickers, 'Bid').reverse();
-      const tickersSorted = transformTickers(sorted);
+      const tickersSorted = transformTickers(tickers);
       emit(AppActions.socketIoTickers(tickersSorted));
     });
 
@@ -118,9 +120,9 @@ function createSocketChannel(socket) {
 function* writeSocket(socket) {
   socket.emit(EVENT_NAME.GET_GLOBAL_CONFIG);
   socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS);
-  while (true) {
 
-    const { payload } = yield take(ActionTypes.SOCKET_IO_SUBSCRIBE_TIME_FRAME);
+  while (true) {
+    const { payload } = yield take(ActionTypes.SOCKET_IO_REQUEST);
     socket.emit(payload && payload.eventName, payload && payload.data);
   }
 }

@@ -1,5 +1,10 @@
 import moment from 'moment';
 
+export enum APPEND_TYPE {
+  BACK = 0,
+  FORWARD = 1,
+}
+
 export enum ActionTypes {
   SOCKET_CONNECT = 'App/SOCKET_CONNECT_DONE',
   SOCKET_ERROR = 'App/SOCKET_ERROR',
@@ -10,18 +15,21 @@ export enum ActionTypes {
   SOCKET_IO_INITIAL_TIME_FRAME = 'App/SOCKET_IO_INITIAL_TIME_FRAME',
   SOCKET_IO_APPEND_TIME_FRAME = 'App/SOCKET_IO_APPEND_TIME_FRAME',
   SOCKET_IO_TICKERS = 'App/SOCKET_IO_TICKERS',
-  SOCKET_IO_SUBSCRIBE_TIME_FRAME = 'App/SOCKET_IO_SUBSCRIBE_TIME_FRAME',
+  SOCKET_IO_REQUEST = 'App/SOCKET_IO_REQUEST',
   SOCKET_IO_GLOBAL_CONFIG = 'App/SOCKET_IO_GLOBAL_CONFIG',
   CHANGE_ACTIVE_SYMBOL_CHART = 'App/CHANGE_ACTIVE_SYMBOL_CHART',
+  SOCKET_IO_LOAD_TIME_FRAME_BY_RANGE = 'App/SOCKET_IO_LOAD_TIME_FRAMES_BY_RANGE',
 }
 
 export const WS_URL = 'ws://85.17.172.72:1189';
-export const WS_IO_URL = 'ws://localhost:8080';
+export const WS_IO_URL = 'http://35.207.78.105:8080/'; // 'ws://localhost:8080';
 
 export enum EVENT_NAME {
   GET_GLOBAL_CONFIG = 'getGlobalConfig',
   SUBSCRIBE_TIME_FRAME = 'subscribeTimeframe',
   SUBSCRIBE_TICKERS = 'subscribeTickers',
+
+  GET_TIME_FRAME_BY_RANGE = 'getTimeframeByRange',
 
   CONNECT = 'connect',
   DISCONNECT = 'disconnect',
@@ -30,6 +38,7 @@ export enum EVENT_NAME {
   ON_APPEND_TIME_FRAME = 'onAppendTimeframe',
   ON_INITIAL_TICKERS = 'onInitialTickers',
   ON_UPDATE_TICKERS = 'onUpdateTickers',
+  ON_TIME_FRAME_BY_RANGE = 'onTimeframeByRange',
 }
 
 export enum FRAME_TYPES {
@@ -84,7 +93,7 @@ export const TIME_FRAMES_CONFIG = { // object key should be the same with FRAME_
     to: TIME_IN_SECONDS.HOUR * 2,
   },
   H1: {
-    from: TIME_IN_SECONDS.DAY * 4,
+    from: TIME_IN_SECONDS.DAY * 50,
     to: TIME_IN_SECONDS.DAY * 2,
   },
   H4: {

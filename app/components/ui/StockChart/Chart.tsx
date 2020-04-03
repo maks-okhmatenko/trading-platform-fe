@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
 import { ChartCanvas, Chart } from 'react-stockcharts';
@@ -7,7 +6,7 @@ import { CandlestickSeries } from 'react-stockcharts/lib/series';
 import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { HoverTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
-import { fitWidth } from 'react-stockcharts/lib/helper';
+import chartWrapper from './Wrapper';
 import { last } from 'react-stockcharts/lib/utils';
 import {
   EdgeIndicator,
@@ -17,12 +16,16 @@ import {
 } from 'react-stockcharts/lib/coordinates';
 import styles from './Chart.scss';
 
+const maxBars = 100;
+
 const colors = {
   red: 'red',
   green: 'greenyellow',
+  text: 'white',
+  chartStroke: 'white',
 };
 const dateFormat = timeFormat('%Y-%m-%d');
-const numberFormat = format('.2f');
+const numberFormat = format('.4f');
 
 function tooltipContent() {
   return ({ currentItem, xAccessor }) => {
@@ -56,14 +59,13 @@ const handleDownloadMore = (start, end) => {
 
 class CandleStickStockScaleChart extends React.Component<any, any> {
   public render() {
-    const { type, width, ratio, chartTimeFrame } = this.props;
+    const { type, width, height, ratio, chartTimeFrame } = this.props;
 
     const initialData = transformData(chartTimeFrame);
 
     if (!initialData.length) {
       return <></>;
     }
-
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
       d => d.date,
     );
@@ -71,19 +73,16 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
       initialData,
     );
 
-    // TODO scale
-    const xExtents = [
-      xAccessor(last(data)),
-      xAccessor(data[Math.max(0, data.length - 150)]),
-    ];
+    const start = xAccessor(last(data)) + 10;
+    const end = start - maxBars;
+    const xExtents = [start, end];
 
     return (
       <ChartCanvas
-        classNames={styles.chart}
-        height={900}
-        ratio={ratio}
         width={width}
-        margin={{ left: 100, right: 50, top: 10, bottom: 30 }}
+        height={height}
+        ratio={1}
+        margin={{ left: 70, right: 70, top: 10, bottom: 50 }}
         type={type}
         seriesName="MSFT"
         data={data}
@@ -104,16 +103,16 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
             axisAt="bottom"
             orient="bottom"
             ticks={5}
-            stroke="white"
-            fill="white"
-            tickStroke="white"
+            stroke={colors.text}
+            tickStroke={colors.text}
           />
           <YAxis
             axisAt="left"
             orient="left"
             ticks={7}
-            fill="white"
-            tickStroke="white"
+            fill={colors.text}
+            tickStroke={colors.text}
+            tickFormat={numberFormat}
           />
 
           <EdgeIndicator
@@ -122,8 +121,9 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
             edgeAt="right"
             yAccessor={d => d.close}
             fill={d => (d.close > d.open ? colors.green : colors.red)}
+            lineStroke={d => (d.close > d.open ? colors.green : colors.red)}
             textFill="black"
-            displayFormat={format('.4f')}
+            displayFormat={numberFormat}
           />
 
           <MouseCoordinateX
@@ -134,9 +134,9 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
           <MouseCoordinateY
             at="left"
             orient="left"
-            displayFormat={format('.4f')}
+            displayFormat={numberFormat}
           />
-          <CrossHairCursor stroke="white" />
+          <CrossHairCursor stroke={colors.chartStroke} />
 
           <HoverTooltip
             classNames={styles.tooltip}
@@ -152,12 +152,12 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
 
 const transformData = initialData => {
   return initialData.map(item => ({
-    date: new Date(item.x),
+    date: new Date(parseInt(item.x, 10) * 1000),
     open: parseFloat(item.y[0]),
     high: parseFloat(item.y[1]),
     low: parseFloat(item.y[2]),
     close: parseFloat(item.y[3]),
-    volume: parseFloat(item.y[2]) - parseFloat(item.y[1]),
+    volume: 0,
     split: '',
     dividend: '',
     absoluteChange: '',
@@ -165,4 +165,4 @@ const transformData = initialData => {
   }));
 };
 
-export default fitWidth(CandleStickStockScaleChart);
+export default chartWrapper(CandleStickStockScaleChart);

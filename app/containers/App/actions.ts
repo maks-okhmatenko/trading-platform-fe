@@ -1,4 +1,4 @@
-import { ActionTypes, EVENT_NAME, FRAME_TYPES } from './constants';
+import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE } from './constants';
 
 type socketIoSubscribeTimeframeProps = {
   symbol: string;
@@ -36,9 +36,19 @@ export const socketIoInitialTimeframe = (data) => ({
   payload: { data },
 });
 
-export const socketIoAppendTimeframe = (data) => ({
+export const socketIoAppendTimeframeBack = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
-  payload: { data },
+  payload: { appendTo: APPEND_TYPE.BACK, data },
+});
+
+export const socketIoAppendTimeframeForward = (data) => ({
+  type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
+  payload: { appendTo: APPEND_TYPE.FORWARD, data },
+});
+
+export const socketIoLoadTimeFrameByRange = (data: socketIoSubscribeTimeframeProps) => ({
+  type: ActionTypes.SOCKET_IO_REQUEST,
+  payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME, data },
 });
 
 export const socketIoTickers = (data) => ({
@@ -46,9 +56,9 @@ export const socketIoTickers = (data) => ({
   payload: { data },
 });
 
-export const socketIoSubscribeTimeframe = (eventName: EVENT_NAME, data: socketIoSubscribeTimeframeProps) => ({
-  type: ActionTypes.SOCKET_IO_SUBSCRIBE_TIME_FRAME,
-  payload: { eventName, data },
+export const socketIoSubscribeTimeframe = (data: socketIoSubscribeTimeframeProps) => ({
+  type: ActionTypes.SOCKET_IO_REQUEST,
+  payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME, data },
 });
 
 export const socketIoGlobalConfig = (data) => ({
