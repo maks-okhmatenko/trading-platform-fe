@@ -7,7 +7,7 @@ import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { HoverTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import chartWrapper from './Wrapper';
-import { last } from 'react-stockcharts/lib/utils';
+import { last, first } from 'react-stockcharts/lib/utils';
 import {
   EdgeIndicator,
   CrossHairCursor,
@@ -15,16 +15,15 @@ import {
   MouseCoordinateY,
 } from 'react-stockcharts/lib/coordinates';
 import styles from './Chart.scss';
-
-const maxBars = 100;
+import { candlesShow } from 'containers/App/constants';
 
 const colors = {
-  red: 'red',
-  green: 'greenyellow',
+  red: '#DF2323',
+  green: '#29C359',
   text: 'white',
   chartStroke: 'white',
 };
-const dateFormat = timeFormat('%Y-%m-%d');
+const dateFormat = timeFormat('%Y/%m/%d %H:%M:%S');
 const numberFormat = format('.4f');
 
 function tooltipContent() {
@@ -59,30 +58,36 @@ const handleDownloadMore = (start, end) => {
 
 class CandleStickStockScaleChart extends React.Component<any, any> {
   public render() {
-    const { type, width, height, ratio, chartTimeFrame } = this.props;
+    const { type, width, height, chartTimeFrame = [] } = this.props;
 
-    const initialData = transformData(chartTimeFrame);
-
-    if (!initialData.length) {
+    if (!chartTimeFrame.length) {
       return <></>;
     }
+    const initialData = transformData(chartTimeFrame);
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
       d => d.date,
     );
     const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(
       initialData,
     );
-
-    const start = xAccessor(last(data)) + 10;
-    const end = start - maxBars;
+    const margin = { left: 10, right: 70, top: 0, bottom: 50 };
+    const start = xAccessor(last(data)) + 5;
+    const end = start - candlesShow + 5;
     const xExtents = [start, end];
+
+    const gridHeight = height - margin.top - margin.bottom;
+    const gridWidth = width - margin.left - margin.right;
+
+    const showGrid = true;
+    const yGrid = showGrid ? { innerTickSize: -1 * gridWidth } : {};
+    const xGrid = showGrid ? { innerTickSize: -1 * gridHeight } : {};
 
     return (
       <ChartCanvas
         width={width}
         height={height}
         ratio={1}
-        margin={{ left: 70, right: 70, top: 10, bottom: 50 }}
+        margin={margin}
         type={type}
         seriesName="MSFT"
         data={data}
@@ -93,26 +98,23 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
         onLoadMore={handleDownloadMore}
       >
         <Chart id={1} yExtents={d => [d.high, d.low]}>
-          <CandlestickSeries
-            displayFormat={format('.4f')}
-            stroke={d => (d.close > d.open ? colors.green : colors.red)}
-            wickStroke={d => (d.close > d.open ? colors.green : colors.red)}
-            fill={d => (d.close > d.open ? colors.green : colors.red)}
-          />
           <XAxis
             axisAt="bottom"
             orient="bottom"
             ticks={5}
-            stroke={colors.text}
-            tickStroke={colors.text}
+            tickStroke="#FFF7"
+            stroke="#FFF7"
+            {...xGrid}
           />
           <YAxis
-            axisAt="left"
-            orient="left"
+            axisAt="right"
+            orient="right"
             ticks={7}
             fill={colors.text}
-            tickStroke={colors.text}
+            tickStroke="#FFF7"
+            stroke="#FFF7"
             tickFormat={numberFormat}
+            {...yGrid}
           />
 
           <EdgeIndicator
@@ -129,7 +131,7 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
           <MouseCoordinateX
             at="bottom"
             orient="bottom"
-            displayFormat={timeFormat('%Y-%m-%d')}
+            displayFormat={dateFormat}
           />
           <MouseCoordinateY
             at="left"
@@ -138,6 +140,14 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
           />
           <CrossHairCursor stroke={colors.chartStroke} />
 
+          <CandlestickSeries
+            displayFormat={format('.4f')}
+            stroke={d => (d.close > d.open ? colors.green : colors.red)}
+            wickStroke={d => (d.close > d.open ? colors.green : colors.red)}
+            fill={d => (d.close > d.open ? colors.green : colors.red)}
+            opacity={1}
+          />
+          
           <HoverTooltip
             classNames={styles.tooltip}
             yAccessor={d => d.date}

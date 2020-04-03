@@ -33,6 +33,9 @@ const makeSelectChartTimeFrame = () =>
 const makeSelectActiveSymbolChart = () =>
   createSelector(selectGlobal, globalState => globalState.activeSymbolChart);
 
+const makeSelectActiveTimeFrame = () =>
+  createSelector(selectGlobal, globalState => globalState.activeTimeFrame);
+
 
 export {
   selectGlobal,
@@ -44,4 +47,5 @@ export {
   makeSelectTickersIo,
   makeSelectChartTimeFrame,
   makeSelectActiveSymbolChart,
+  makeSelectActiveTimeFrame,
 };

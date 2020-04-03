@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { ContainerState } from './types';
-import { ActionTypes, APPEND_TYPE } from './constants';
+import { ActionTypes, APPEND_TYPE, FRAME_TYPES, DEFAULT_TIME_FRAME, EVENT_NAME } from './constants';
 
 // The initial state of the App
 export const initialState: ContainerState = {
@@ -12,6 +12,7 @@ export const initialState: ContainerState = {
   chartTimeFrame: [],
   globalConfig: {},
   activeSymbolChart: '',
+  activeTimeFrame: DEFAULT_TIME_FRAME,
 };
 
 // @ts-ignore
@@ -37,6 +38,10 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.SOCKET_IO_REQUEST:
       draft.chartLoading = true;
+      if (action.payload.eventName === EVENT_NAME.SUBSCRIBE_TIME_FRAME) {
+        draft.activeTimeFrame = action.payload.data.frameType;
+        draft.activeSymbolChart = action.payload.data.symbol;
+      }
       break;
 
     case ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME:

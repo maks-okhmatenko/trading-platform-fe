@@ -74,7 +74,7 @@ function createSocketChannel(socket) {
 
       emit(AppActions.socketIoSubscribeTimeframe({
         symbol: config.TICKER_LIST[0],
-        frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
+        frameType: config.CONSTANTS.FRAME_TYPES[DEFAULT_TIME_FRAME],
         from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
         to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
       }));

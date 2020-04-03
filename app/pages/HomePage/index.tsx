@@ -5,6 +5,7 @@ import { createStructuredSelector } from 'reselect';
 
 import appReducer from 'containers/App/reducer';
 import {
+  makeSelectActiveTimeFrame,
   makeSelectActiveSymbolChart,
   makeSelectChartLoading,
   makeSelectChartTimeFrame,
@@ -18,7 +19,10 @@ import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
-import { socketIoSubscribeTimeframe } from '../../containers/App/actions';
+import {
+  socketIoSubscribeTimeframe,
+  socketIoLoadTimeFrameByRange,
+} from '../../containers/App/actions';
 
 const HomePageContainer = props => {
   const { loading, tickers } = props;
@@ -33,7 +37,9 @@ const HomePageContainer = props => {
     chartTimeFrame: props.chartTimeFrame,
     chartLoading: props.chartLoading,
     activeSymbolChart: props.activeSymbolChart,
+    activeTimeFrame: props.activeTimeFrame,
     chooseTimeframeChartData: props.chooseTimeframeChartData,
+    loadMoreTimeframeChartData: props.loadMoreTimeframeChartData,
   };
 
   return (
@@ -65,10 +71,12 @@ const mapStateToProps = createStructuredSelector({
   tickersIo: makeSelectTickersIo(),
   chartTimeFrame: makeSelectChartTimeFrame(),
   activeSymbolChart: makeSelectActiveSymbolChart(),
+  activeTimeFrame: makeSelectActiveTimeFrame(),
 });
 
 const mapDispatchToProps = {
   chooseTimeframeChartData: socketIoSubscribeTimeframe,
+  loadMoreTimeframeChartData: socketIoLoadTimeFrameByRange,
 };
 
 export default connect(

@@ -51,14 +51,15 @@ export enum FRAME_TYPES {
   D1 = 'D1',
 }
 
+export const DEFAULT_TIME_FRAME = FRAME_TYPES.H1;
+
 export const TIME_IN_SECONDS = {
+  MINUTE: 60, // 1 minute
   HOUR: 3600, // 1 hour
   DAY: 86400, // 1 day
   WEEK: 604800, // 1 week
   MONTH: 2629743, // 1 month (30.44 days)
 };
-
-export const DEFAULT_TIME_FRAME = 'H1';
 
 export const getTimestamp = {
   subtract: (offset, timestamp?: string | number) => {
@@ -75,33 +76,37 @@ export const getTimestamp = {
   },
 };
 
+export const candleWidth = 20;
+export const candlesShow = 1920 / candleWidth;
+export const candlesLoad = candlesShow * 1.5;
+
 export const TIME_FRAMES_CONFIG = { // object key should be the same with FRAME_TYPES values
   M1: {
-    from: TIME_IN_SECONDS.DAY,
-    to: TIME_IN_SECONDS.HOUR * 2,
+    from: TIME_IN_SECONDS.MINUTE * candlesLoad,
+    to: TIME_IN_SECONDS.MINUTE * candlesLoad,
   },
   M5: {
-    from: TIME_IN_SECONDS.DAY,
-    to: TIME_IN_SECONDS.HOUR * 2,
+    from: TIME_IN_SECONDS.MINUTE * 5 * candlesLoad,
+    to: TIME_IN_SECONDS.MINUTE * 5 * candlesLoad,
   },
   M15: {
-    from: TIME_IN_SECONDS.DAY,
-    to: TIME_IN_SECONDS.HOUR * 2,
+    from: TIME_IN_SECONDS.MINUTE * 15 * candlesLoad,
+    to: TIME_IN_SECONDS.MINUTE * 15 * candlesLoad,
   },
   M30: {
-    from: TIME_IN_SECONDS.DAY,
-    to: TIME_IN_SECONDS.HOUR * 2,
+    from: TIME_IN_SECONDS.MINUTE * 30 * candlesLoad,
+    to: TIME_IN_SECONDS.MINUTE * 30 * candlesLoad,
   },
   H1: {
-    from: TIME_IN_SECONDS.DAY * 50,
-    to: TIME_IN_SECONDS.DAY * 2,
+    from: TIME_IN_SECONDS.HOUR * candlesLoad,
+    to: TIME_IN_SECONDS.HOUR * candlesLoad,
   },
   H4: {
-    from: TIME_IN_SECONDS.DAY * 15,
-    to: TIME_IN_SECONDS.DAY * 7,
+    from: TIME_IN_SECONDS.HOUR * 4 * candlesLoad,
+    to: TIME_IN_SECONDS.HOUR * 4 * candlesLoad,
   },
   D1: {
-    from: TIME_IN_SECONDS.DAY * 90,
-    to: TIME_IN_SECONDS.DAY * 15,
+    from: TIME_IN_SECONDS.DAY * candlesLoad,
+    to: TIME_IN_SECONDS.DAY * candlesLoad,
   },
 };

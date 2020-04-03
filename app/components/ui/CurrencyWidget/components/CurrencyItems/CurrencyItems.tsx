@@ -54,7 +54,7 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
             [styles.down]: direction === '0',
           });
 
-          const time = moment.unix(ticker.Time).format('HH:mm:ss');
+          const time = moment.unix(ticker.Time / 1000).format('HH:mm:ss');
           return (
             <ContextMenuTrigger id={`${TICKER_CTX_MENU}-${item}`} key={item}>
               <li className={classNames}>
