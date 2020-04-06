@@ -8,7 +8,7 @@ import { InjectedStore, ApplicationRootState } from 'types';
 import { History } from 'history';
 
 import createReducer from './rootReducer';
-import { wsSagas } from './rootSaga';
+import { rootSagas } from './rootSaga';
 
 export default function configureStore(initialState: ApplicationRootState | {} = {}, history: History) {
   const reduxSagaMonitorOptions = {};
@@ -21,7 +21,7 @@ export default function configureStore(initialState: ApplicationRootState | {} =
 
   const middlewares = [
     routerMiddleware(history),
-    logger, // TODO: need remove logger for prod env
+    // logger, // TODO: need remove logger for prod env
     websocketMiddleware,
     sagaMiddleware,
   ];
@@ -52,7 +52,7 @@ export default function configureStore(initialState: ApplicationRootState | {} =
     enhancer,
   ) as InjectedStore;
 
-  websocketMiddleware.run(wsSagas);
+  websocketMiddleware.run(rootSagas);
 
   // Extensions
   store.runSaga = sagaMiddleware.run;

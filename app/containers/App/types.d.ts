@@ -11,7 +11,8 @@ interface AppState {
   tickers: {};
   tickersIo: {};
   chartLoading: boolean;
-  chartTimeFrame: {};
+  chartTimeFrame: [];
+  additionalChartDataLength: number;
   globalConfig: {};
   activeSymbolChart: string;
   activeTimeFrame: FRAME_TYPES;

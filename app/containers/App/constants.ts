@@ -1,8 +1,8 @@
 import moment from 'moment';
 
 export enum APPEND_TYPE {
-  BACK = 0,
-  FORWARD = 1,
+  ADDITIONAL = 0,
+  MAIN = 1,
 }
 
 export enum ActionTypes {
@@ -18,6 +18,7 @@ export enum ActionTypes {
   SOCKET_IO_REQUEST = 'App/SOCKET_IO_REQUEST',
   SOCKET_IO_GLOBAL_CONFIG = 'App/SOCKET_IO_GLOBAL_CONFIG',
   CHANGE_ACTIVE_SYMBOL_CHART = 'App/CHANGE_ACTIVE_SYMBOL_CHART',
+  CHANGE_ACTIVE_TIME_FRAME = 'App/CHANGE_ACTIVE_TIME_FRAME',
   SOCKET_IO_LOAD_TIME_FRAME_BY_RANGE = 'App/SOCKET_IO_LOAD_TIME_FRAMES_BY_RANGE',
 }
 
@@ -78,35 +79,35 @@ export const getTimestamp = {
 
 export const candleWidth = 20;
 export const candlesShow = 1920 / candleWidth;
-export const candlesLoad = candlesShow * 1.5;
+export const candlesLoad = candlesShow * 1.2;
 
 export const TIME_FRAMES_CONFIG = { // object key should be the same with FRAME_TYPES values
   M1: {
-    from: TIME_IN_SECONDS.MINUTE * candlesLoad,
-    to: TIME_IN_SECONDS.MINUTE * candlesLoad,
+    from: TIME_IN_SECONDS.MINUTE,
+    to: TIME_IN_SECONDS.MINUTE,
   },
   M5: {
-    from: TIME_IN_SECONDS.MINUTE * 5 * candlesLoad,
-    to: TIME_IN_SECONDS.MINUTE * 5 * candlesLoad,
+    from: TIME_IN_SECONDS.MINUTE * 5,
+    to: TIME_IN_SECONDS.MINUTE * 5,
   },
   M15: {
-    from: TIME_IN_SECONDS.MINUTE * 15 * candlesLoad,
-    to: TIME_IN_SECONDS.MINUTE * 15 * candlesLoad,
+    from: TIME_IN_SECONDS.MINUTE * 15,
+    to: TIME_IN_SECONDS.MINUTE * 15,
   },
   M30: {
-    from: TIME_IN_SECONDS.MINUTE * 30 * candlesLoad,
-    to: TIME_IN_SECONDS.MINUTE * 30 * candlesLoad,
+    from: TIME_IN_SECONDS.MINUTE * 30,
+    to: TIME_IN_SECONDS.MINUTE * 30,
   },
   H1: {
-    from: TIME_IN_SECONDS.HOUR * candlesLoad,
-    to: TIME_IN_SECONDS.HOUR * candlesLoad,
+    from: TIME_IN_SECONDS.HOUR,
+    to: TIME_IN_SECONDS.HOUR,
   },
   H4: {
-    from: TIME_IN_SECONDS.HOUR * 4 * candlesLoad,
-    to: TIME_IN_SECONDS.HOUR * 4 * candlesLoad,
+    from: TIME_IN_SECONDS.HOUR * 4,
+    to: TIME_IN_SECONDS.HOUR * 4,
   },
   D1: {
-    from: TIME_IN_SECONDS.DAY * candlesLoad,
-    to: TIME_IN_SECONDS.DAY * candlesLoad,
+    from: TIME_IN_SECONDS.DAY,
+    to: TIME_IN_SECONDS.DAY,
   },
 };

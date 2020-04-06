@@ -11,7 +11,7 @@ import {
   FRAME_TYPES, getTimestamp,
   TIME_FRAMES_CONFIG,
 } from '../../../../../containers/App/constants';
-import { socketIoSubscribeTimeframe } from '../../../../../containers/App/actions';
+import { changeActiveSymbolChart } from '../../../../../containers/App/actions';
 
 export type CurrencyItemsProps = {
   list: Array<{
@@ -34,12 +34,7 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) =>
 
   const handleOpenChartClick = (e, objData) => {
     console.log(objData.symbol);
-    dispatch(socketIoSubscribeTimeframe({
-      symbol: objData.symbol,
-      frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
-      from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
-      to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
-    }));
+    dispatch(changeActiveSymbolChart(objData.symbol));
   };
 
   return (

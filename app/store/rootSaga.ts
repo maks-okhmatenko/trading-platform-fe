@@ -2,16 +2,12 @@ import _sortBy from 'lodash/sortBy';
 import _throttle from 'lodash/throttle';
 import socketIOClient from 'socket.io-client';
 import { eventChannel } from 'redux-saga';
-import { all, call, fork, put, take } from 'redux-saga/effects';
+import { all, call, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { initWebSocket } from '../api/socket';
 import * as AppActions from '../containers/App/actions';
 import {
   ActionTypes,
-  DEFAULT_TIME_FRAME,
   EVENT_NAME,
-  FRAME_TYPES, getTimestamp,
-  TIME_FRAMES_CONFIG,
   WS_IO_URL,
 } from '../containers/App/constants';
 
@@ -22,37 +18,6 @@ function transformTickers(data) {
     return { ...acc, [Symbol]: rest };
   }, {});
 }
-
-function initSocketSaga() {
-  return eventChannel(emitter => {
-    const socketParams = {
-      onOpen: () => emitter(AppActions.socketConnect()),
-      onError: (error) => emitter(AppActions.socketError(error)),
-      onMessage: _throttle((data) => {
-        const sorted = _sortBy(data, 'Bid').reverse();
-        const tickers = transformTickers(sorted);
-        return emitter(AppActions.socketMessage(tickers));
-      }, 1000),
-    };
-
-    initWebSocket(socketParams);
-
-    return () => {
-      // do whatever to interrupt the socket communication here
-    };
-  });
-}
-
-function* watchSocket() {
-  const channel = yield call(initSocketSaga);
-
-  while (true) {
-    const action = yield take(channel);
-    yield put(action);
-  }
-}
-
-// ================================================
 
 export const socketConnect = (url: string, params?: {}) => {
   return socketIOClient(url, params);
@@ -71,15 +36,6 @@ function createSocketChannel(socket) {
 
     socket.once(EVENT_NAME.ON_GLOBAL_CONFIG, (config) => {
       emit(AppActions.socketIoGlobalConfig(config));
-
-      emit(AppActions.socketIoSubscribeTimeframe({
-        symbol: config.TICKER_LIST[0],
-        frameType: config.CONSTANTS.FRAME_TYPES[DEFAULT_TIME_FRAME],
-        from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
-        to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
-      }));
-
-      emit(AppActions.changeActiveSymbolChart(config.TICKER_LIST[0]));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TIME_FRAMES, (initialData) => {
@@ -121,10 +77,14 @@ function* writeSocket(socket) {
   socket.emit(EVENT_NAME.GET_GLOBAL_CONFIG);
   socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS);
 
-  while (true) {
-    const { payload } = yield take(ActionTypes.SOCKET_IO_REQUEST);
-    socket.emit(payload && payload.eventName, payload && payload.data);
-  }
+  yield all([
+    takeEvery(ActionTypes.SOCKET_IO_REQUEST, socketRequest, socket),
+  ]);
+}
+
+function* socketRequest(socket, action) {
+  const { payload } = action;
+  socket.emit(payload && payload.eventName, payload && payload.data);
 }
 
 function* watchSocketIoChannel() {
@@ -138,11 +98,8 @@ function* watchSocketIoChannel() {
   }
 }
 
-// ================================================
-
-export function* wsSagas() {
+export function* rootSagas() {
   yield all([
-    // fork(watchSocket),
     fork(watchSocketIoChannel),
   ]);
 }

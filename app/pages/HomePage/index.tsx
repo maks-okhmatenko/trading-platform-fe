@@ -8,10 +8,11 @@ import {
   makeSelectActiveTimeFrame,
   makeSelectActiveSymbolChart,
   makeSelectChartLoading,
-  makeSelectChartTimeFrame,
+  makeSelectChartData,
   makeSelectLoading,
   makeSelectTickers,
   makeSelectTickersIo,
+  makeSelectAdditionalChartDataLength,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
@@ -22,6 +23,7 @@ import Chart from '../../components/ui/StockChart';
 import {
   socketIoSubscribeTimeframe,
   socketIoLoadTimeFrameByRange,
+  changeActiveTimeFrame,
 } from '../../containers/App/actions';
 
 const HomePageContainer = props => {
@@ -34,12 +36,14 @@ const HomePageContainer = props => {
   };
 
   const chartProps = {
-    chartTimeFrame: props.chartTimeFrame,
+    chartData: props.chartTimeFrame,
+    additionalChartDataLength: props.additionalChartDataLength,
     chartLoading: props.chartLoading,
     activeSymbolChart: props.activeSymbolChart,
     activeTimeFrame: props.activeTimeFrame,
-    chooseTimeframeChartData: props.chooseTimeframeChartData,
-    loadMoreTimeframeChartData: props.loadMoreTimeframeChartData,
+    pickTimeFrame: props.pickTimeFrame,
+    subscribeChartData: props.subscribeChartData,
+    loadMoreChartData: props.loadMoreChartData,
   };
 
   return (
@@ -58,7 +62,7 @@ const HomePageContainer = props => {
       </div>
 
       <div className={styles.chartSection}>
-        <Chart type="hybrid" {...chartProps} />
+        {props.activeSymbolChart ? <Chart type="hybrid" {...chartProps} /> : <></>}
       </div>
     </>
   );
@@ -69,14 +73,16 @@ const mapStateToProps = createStructuredSelector({
   loading: makeSelectLoading(),
   chartLoading: makeSelectChartLoading(),
   tickersIo: makeSelectTickersIo(),
-  chartTimeFrame: makeSelectChartTimeFrame(),
+  chartTimeFrame: makeSelectChartData(),
+  additionalChartDataLength: makeSelectAdditionalChartDataLength(),
   activeSymbolChart: makeSelectActiveSymbolChart(),
   activeTimeFrame: makeSelectActiveTimeFrame(),
 });
 
 const mapDispatchToProps = {
-  chooseTimeframeChartData: socketIoSubscribeTimeframe,
-  loadMoreTimeframeChartData: socketIoLoadTimeFrameByRange,
+  subscribeChartData: socketIoSubscribeTimeframe,
+  loadMoreChartData: socketIoLoadTimeFrameByRange,
+  pickTimeFrame: changeActiveTimeFrame,
 };
 
 export default connect(

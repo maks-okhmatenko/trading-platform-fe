@@ -10,6 +10,7 @@ export const initialState: ContainerState = {
   tickersIo: {},
   chartLoading: false,
   chartTimeFrame: [],
+  additionalChartDataLength: 0,
   globalConfig: {},
   activeSymbolChart: '',
   activeTimeFrame: DEFAULT_TIME_FRAME,
@@ -38,27 +39,33 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.SOCKET_IO_REQUEST:
       draft.chartLoading = true;
-      if (action.payload.eventName === EVENT_NAME.SUBSCRIBE_TIME_FRAME) {
-        draft.activeTimeFrame = action.payload.data.frameType;
-        draft.activeSymbolChart = action.payload.data.symbol;
-      }
       break;
 
     case ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME:
       draft.chartLoading = false;
       draft.chartTimeFrame = action.payload.data;
+      draft.additionalChartDataLength = 0;
       break;
 
     case ActionTypes.SOCKET_IO_APPEND_TIME_FRAME:
-      if (action.payload.appendTo === APPEND_TYPE.BACK) {
+      if (action.payload.appendTo === APPEND_TYPE.ADDITIONAL) {
+        const additionalData = action.payload.data;
+        if (additionalData.length < 1) { return draft; }
+
+        const lastItemId = action.payload.data.length - 1;
+        if (Date.parse(additionalData[lastItemId].date) >= Date.parse(draft.chartTimeFrame[0].date)) {
+          return draft;
+        }
         draft.chartTimeFrame = [...action.payload.data, ...draft.chartTimeFrame];
-      } else if (action.payload.appendTo === APPEND_TYPE.FORWARD) {
-          const lastIdx = draft.chartTimeFrame.length - 1;
-          if (draft.chartTimeFrame[lastIdx].x === action.payload.data.x) {
-            draft.chartTimeFrame[lastIdx] = action.payload.data;
-          } else if (draft.chartTimeFrame[lastIdx].x < action.payload.data.x) {
-            draft.chartTimeFrame = [...draft.chartTimeFrame, ...action.payload.data];
-          }
+        draft.additionalChartDataLength += action.payload.data.length;
+
+      } else if (action.payload.appendTo === APPEND_TYPE.MAIN) {
+        const lastIdx = draft.chartTimeFrame.length - 1;
+        if (draft.chartTimeFrame[lastIdx].x === action.payload.data.x) {
+          draft.chartTimeFrame[lastIdx] = action.payload.data;
+        } else if (draft.chartTimeFrame[lastIdx].x < action.payload.data.x) {
+          draft.chartTimeFrame = [...draft.chartTimeFrame, ...action.payload.data];
+        }
       }
       break;
 
@@ -73,6 +80,10 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART:
       draft.activeSymbolChart = action.payload.data;
+      break;
+
+    case ActionTypes.CHANGE_ACTIVE_TIME_FRAME:
+      draft.activeTimeFrame = action.payload.data;
       break;
 
     default:

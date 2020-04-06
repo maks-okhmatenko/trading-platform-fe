@@ -5,9 +5,9 @@ import { ChartCanvas, Chart } from 'react-stockcharts';
 import { CandlestickSeries } from 'react-stockcharts/lib/series';
 import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { HoverTooltip } from 'react-stockcharts/lib/tooltip';
-import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
-import chartWrapper from './Wrapper';
-import { last, first } from 'react-stockcharts/lib/utils';
+import { discontinuousTimeScaleProviderBuilder } from 'react-stockcharts/lib/scale';
+import chartWrapper from './ChartControlWrapper';
+import { first } from 'react-stockcharts/lib/utils';
 import {
   EdgeIndicator,
   CrossHairCursor,
@@ -52,29 +52,32 @@ function tooltipContent() {
   };
 }
 
-const handleDownloadMore = (start, end) => {
-  console.log(start, end);
-};
-
 class CandleStickStockScaleChart extends React.Component<any, any> {
   public render() {
-    const { type, width, height, chartTimeFrame = [] } = this.props;
+    const {
+      type,
+      width,
+      height,
+      initialData,
+      loadMoreHandler,
+      leftShift = 0,
+    } = this.props;
 
-    if (!chartTimeFrame.length) {
-      return <></>;
-    }
-    const initialData = transformData(chartTimeFrame);
-    const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(
-      d => d.date,
+    const xScaleProvider = discontinuousTimeScaleProviderBuilder().initialIndex(
+      Math.ceil(leftShift),
     );
+
     const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(
       initialData,
     );
-    const margin = { left: 10, right: 70, top: 0, bottom: 50 };
-    const start = xAccessor(last(data)) + 5;
-    const end = start - candlesShow + 5;
-    const xExtents = [start, end];
 
+    const end = xAccessor(first(data));
+    const start = end + candlesShow;
+
+    const xExtents = [start, end];
+    // const xExtents = [leftShift, leftShift + candlesShow];
+
+    const margin = { left: 10, right: 70, top: 0, bottom: 50 };
     const gridHeight = height - margin.top - margin.bottom;
     const gridWidth = width - margin.left - margin.right;
 
@@ -95,7 +98,7 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
         xAccessor={xAccessor}
         displayXAccessor={displayXAccessor}
         xExtents={xExtents}
-        onLoadMore={handleDownloadMore}
+        onLoadMore={loadMoreHandler}
       >
         <Chart id={1} yExtents={d => [d.high, d.low]}>
           <XAxis
@@ -147,7 +150,7 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
             fill={d => (d.close > d.open ? colors.green : colors.red)}
             opacity={1}
           />
-          
+
           <HoverTooltip
             classNames={styles.tooltip}
             yAccessor={d => d.date}
@@ -159,20 +162,5 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
     );
   }
 }
-
-const transformData = initialData => {
-  return initialData.map(item => ({
-    date: new Date(parseInt(item.x, 10) * 1000),
-    open: parseFloat(item.y[0]),
-    high: parseFloat(item.y[1]),
-    low: parseFloat(item.y[2]),
-    close: parseFloat(item.y[3]),
-    volume: 0,
-    split: '',
-    dividend: '',
-    absoluteChange: '',
-    percentChange: '',
-  }));
-};
 
 export default chartWrapper(CandleStickStockScaleChart);

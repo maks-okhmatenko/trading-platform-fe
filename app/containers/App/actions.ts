@@ -33,22 +33,22 @@ export const socketIoError = (error) => ({
 
 export const socketIoInitialTimeframe = (data) => ({
   type: ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME,
-  payload: { data },
+  payload: { data: transformData(data) },
 });
 
 export const socketIoAppendTimeframeBack = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
-  payload: { appendTo: APPEND_TYPE.BACK, data },
+  payload: { appendTo: APPEND_TYPE.ADDITIONAL, data: transformData(data) },
 });
 
 export const socketIoAppendTimeframeForward = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
-  payload: { appendTo: APPEND_TYPE.FORWARD, data },
+  payload: { appendTo: APPEND_TYPE.MAIN, data: transformData(data) },
 });
 
 export const socketIoLoadTimeFrameByRange = (data: socketIoSubscribeTimeframeProps) => ({
   type: ActionTypes.SOCKET_IO_REQUEST,
-  payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME, data },
+  payload: { eventName: EVENT_NAME.GET_TIME_FRAME_BY_RANGE, data },
 });
 
 export const socketIoTickers = (data) => ({
@@ -70,3 +70,30 @@ export const changeActiveSymbolChart = (data) => ({
   type: ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART,
   payload: { data },
 });
+
+export const changeActiveTimeFrame = (data) => ({
+  type: ActionTypes.CHANGE_ACTIVE_TIME_FRAME,
+  payload: { data },
+});
+
+
+const chartDataTransformer = (item) => ({
+  date: new Date(parseInt(item.x, 10) * 1000),
+  open: parseFloat(item.y[0]),
+  high: parseFloat(item.y[1]),
+  low: parseFloat(item.y[2]),
+  close: parseFloat(item.y[3]),
+  volume: 0,
+  split: '',
+  dividend: '',
+  absoluteChange: '',
+  percentChange: '',
+});
+
+const transformData = (chartData) => {
+  if (Array.isArray(chartData)) {
+    return chartData.map(chartDataTransformer);
+  } else {
+    return chartDataTransformer(chartData);
+  }
+};
