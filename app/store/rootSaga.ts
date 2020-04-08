@@ -2,14 +2,16 @@ import _sortBy from 'lodash/sortBy';
 import _throttle from 'lodash/throttle';
 import socketIOClient from 'socket.io-client';
 import { eventChannel } from 'redux-saga';
-import { all, call, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, fork, put, take, takeEvery, select } from 'redux-saga/effects';
 
 import * as AppActions from '../containers/App/actions';
 import {
   ActionTypes,
   EVENT_NAME,
   WS_IO_URL,
+  CHANGE_TYPE,
 } from '../containers/App/constants';
+import { makeSelectActiveSymbolChart } from 'containers/App/selectors';
 
 function transformTickers(data) {
   return data.reduce((acc, curr) => {
@@ -36,6 +38,7 @@ function createSocketChannel(socket) {
 
     socket.once(EVENT_NAME.ON_GLOBAL_CONFIG, (config) => {
       emit(AppActions.socketIoGlobalConfig(config));
+      emit(AppActions.changeFavoriteSymbolList(CHANGE_TYPE.INIT, config.TICKER_LIST));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TIME_FRAMES, (initialData) => {
@@ -46,7 +49,7 @@ function createSocketChannel(socket) {
       emit(AppActions.socketIoAppendTimeframeForward(dataItem));
     });
 
-    socket.on(EVENT_NAME.ON_TIME_FRAME_BY_RANGE, (dataItem) => {
+    socket.on(EVENT_NAME.ON_TIME_FRAME_BY_COUNT, (dataItem) => {
       emit(AppActions.socketIoAppendTimeframeBack(dataItem));
     });
 
@@ -75,11 +78,40 @@ function createSocketChannel(socket) {
 
 function* writeSocket(socket) {
   socket.emit(EVENT_NAME.GET_GLOBAL_CONFIG);
-  socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS);
 
   yield all([
     takeEvery(ActionTypes.SOCKET_IO_REQUEST, socketRequest, socket),
+    takeEvery(ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST, saveFavoriteSymbolList, socket),
   ]);
+}
+
+function* saveFavoriteSymbolList(socket, action) {
+  const favSymbolsStr = localStorage.getItem('favorite-symbols');
+  let favSymbolList = !favSymbolsStr
+                        ? favSymbolsStr === '' // is list empty or not exist
+                          ? []
+                          : null
+                        : favSymbolsStr.split(',');
+  const changeType = action.payload.eventType;
+
+  if (changeType === CHANGE_TYPE.INIT) {
+    favSymbolList = favSymbolList || action.payload.data;
+  }
+  if (favSymbolList) {
+    if (changeType === CHANGE_TYPE.ADD && typeof action.payload.data === 'string' && favSymbolList) {
+      favSymbolList.push(typeof action.payload.data);
+    }
+    if (changeType === CHANGE_TYPE.DELETE && favSymbolList) {
+      const currentSymbol = yield select(makeSelectActiveSymbolChart());
+      if (action.payload.data === currentSymbol) {
+        yield put(AppActions.changeActiveSymbolChart(''));
+      }
+      favSymbolList = favSymbolList.filter(item => action.payload.data !== item);
+    }
+
+    localStorage.setItem('favorite-symbols', favSymbolList.join(','));
+    socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS, { list: favSymbolList });
+  }
 }
 
 function* socketRequest(socket, action) {

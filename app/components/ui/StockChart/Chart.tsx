@@ -1,13 +1,12 @@
 import React from 'react';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
-import { ChartCanvas, Chart } from 'react-stockcharts';
+import { ChartCanvas, Chart, ZoomButtons } from 'react-stockcharts';
 import { CandlestickSeries } from 'react-stockcharts/lib/series';
 import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { HoverTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProviderBuilder } from 'react-stockcharts/lib/scale';
 import chartWrapper from './ChartControlWrapper';
-import { first } from 'react-stockcharts/lib/utils';
 import {
   EdgeIndicator,
   CrossHairCursor,
@@ -15,7 +14,6 @@ import {
   MouseCoordinateY,
 } from 'react-stockcharts/lib/coordinates';
 import styles from './Chart.scss';
-import { candlesShow } from 'containers/App/constants';
 
 const colors = {
   red: '#DF2323',
@@ -24,7 +22,7 @@ const colors = {
   chartStroke: 'white',
 };
 const dateFormat = timeFormat('%Y/%m/%d %H:%M:%S');
-const numberFormat = format('.4f');
+const numberFormat = format('.5f');
 
 function tooltipContent() {
   return ({ currentItem, xAccessor }) => {
@@ -52,7 +50,29 @@ function tooltipContent() {
   };
 }
 
-class CandleStickStockScaleChart extends React.Component<any, any> {
+interface PropsType {
+  type: string;
+  width: number;
+  height: number;
+  initialData: [];
+  leftShift: number;
+  loadMoreHandler: (start, end) => void;
+}
+
+interface StateType {
+  node: ChartCanvas;
+}
+
+class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
+  constructor(props) {
+    super(props);
+    this.saveNode = this.saveNode.bind(this);
+  }
+
+  private saveNode(node: ChartCanvas) {
+    this.setState({ node });
+  }
+
   public render() {
     const {
       type,
@@ -63,19 +83,12 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
       leftShift = 0,
     } = this.props;
 
-    const xScaleProvider = discontinuousTimeScaleProviderBuilder().initialIndex(
-      Math.ceil(leftShift),
-    );
+    const xScaleProvider = discontinuousTimeScaleProviderBuilder()
+    .initialIndex(Math.ceil(leftShift));
 
     const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(
       initialData,
     );
-
-    const end = xAccessor(first(data));
-    const start = end + candlesShow;
-
-    const xExtents = [start, end];
-    // const xExtents = [leftShift, leftShift + candlesShow];
 
     const margin = { left: 10, right: 70, top: 0, bottom: 50 };
     const gridHeight = height - margin.top - margin.bottom;
@@ -87,20 +100,20 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
 
     return (
       <ChartCanvas
+        ref={this.saveNode}
         width={width}
         height={height}
         ratio={1}
         margin={margin}
         type={type}
-        seriesName="MSFT"
+        seriesName={`MSFT`}
         data={data}
         xScale={xScale}
         xAccessor={xAccessor}
         displayXAccessor={displayXAccessor}
-        xExtents={xExtents}
         onLoadMore={loadMoreHandler}
       >
-        <Chart id={1} yExtents={d => [d.high, d.low]}>
+        <Chart id={1} yExtents={d => [d.high, d.low]} chartId="main_candles_chart">
           <XAxis
             axisAt="bottom"
             orient="bottom"
@@ -137,14 +150,13 @@ class CandleStickStockScaleChart extends React.Component<any, any> {
             displayFormat={dateFormat}
           />
           <MouseCoordinateY
-            at="left"
-            orient="left"
+            at="right"
+            orient="right"
             displayFormat={numberFormat}
           />
           <CrossHairCursor stroke={colors.chartStroke} />
 
           <CandlestickSeries
-            displayFormat={format('.4f')}
             stroke={d => (d.close > d.open ? colors.green : colors.red)}
             wickStroke={d => (d.close > d.open ? colors.green : colors.red)}
             fill={d => (d.close > d.open ? colors.green : colors.red)}

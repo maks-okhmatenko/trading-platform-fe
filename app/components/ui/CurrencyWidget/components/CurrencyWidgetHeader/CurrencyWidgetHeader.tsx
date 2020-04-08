@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import styles from './CurrencyWidgetHeader.scss';
+import { useDispatch } from 'react-redux';
 
 const CurrencyWidgetHeader = (props) => {
 

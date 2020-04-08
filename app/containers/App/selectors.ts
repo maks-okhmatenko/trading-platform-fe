@@ -24,9 +24,6 @@ const makeSelectLocation = () =>
 const makeSelectChartLoading = () =>
   createSelector(selectGlobal, globalState => globalState.chartLoading);
 
-const makeSelectTickersIo = () =>
-  createSelector(selectGlobal, globalState => globalState.tickersIo);
-
 const makeSelectChartData = () =>
   createSelector(selectGlobal, globalState => globalState.chartTimeFrame);
 
@@ -47,7 +44,6 @@ export {
   makeSelectError,
   makeSelectLocation,
   makeSelectChartLoading,
-  makeSelectTickersIo,
   makeSelectChartData,
   makeSelectAdditionalChartDataLength,
   makeSelectActiveSymbolChart,

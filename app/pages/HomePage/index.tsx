@@ -11,7 +11,6 @@ import {
   makeSelectChartData,
   makeSelectLoading,
   makeSelectTickers,
-  makeSelectTickersIo,
   makeSelectAdditionalChartDataLength,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
@@ -22,7 +21,7 @@ import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
 import {
   socketIoSubscribeTimeframe,
-  socketIoLoadTimeFrameByRange,
+  socketIoLoadTimeFrameByCount,
   changeActiveTimeFrame,
 } from '../../containers/App/actions';
 
@@ -72,7 +71,6 @@ const mapStateToProps = createStructuredSelector({
   tickers: makeSelectTickers(),
   loading: makeSelectLoading(),
   chartLoading: makeSelectChartLoading(),
-  tickersIo: makeSelectTickersIo(),
   chartTimeFrame: makeSelectChartData(),
   additionalChartDataLength: makeSelectAdditionalChartDataLength(),
   activeSymbolChart: makeSelectActiveSymbolChart(),
@@ -81,7 +79,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = {
   subscribeChartData: socketIoSubscribeTimeframe,
-  loadMoreChartData: socketIoLoadTimeFrameByRange,
+  loadMoreChartData: socketIoLoadTimeFrameByCount,
   pickTimeFrame: changeActiveTimeFrame,
 };
 

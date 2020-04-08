@@ -22,8 +22,15 @@
   background-color: #131722;
   .buttonContainer{
     display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .buttonsRow{
+    display: flex;
     flex-direction: row;
     align-items: center;
+    width: 100%;
+    margin: 5px 0;
   }
   h2 {
     color: white;
@@ -45,5 +52,24 @@
   user-select: none;
   &.active{
     border: 2px solid #FFF6;
+  }
+  border-radius: 3px;
+}
+
+.chartZoomButton {
+  border-radius: 3px;
+  display: flex;
+  font-size: 1em;
+  flex-grow: 1;
+  color: white;
+  background-color: #2d3b64;
+  border: 2px solid #2d3b64;
+  justify-content: center;
+  text-align: center;
+  margin: 2px;
+  cursor: pointer;
+  user-select: none;
+  &:active{
+    border: 2px solid #3654b1;
   }
 }

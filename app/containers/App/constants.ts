@@ -20,6 +20,14 @@ export enum ActionTypes {
   CHANGE_ACTIVE_SYMBOL_CHART = 'App/CHANGE_ACTIVE_SYMBOL_CHART',
   CHANGE_ACTIVE_TIME_FRAME = 'App/CHANGE_ACTIVE_TIME_FRAME',
   SOCKET_IO_LOAD_TIME_FRAME_BY_RANGE = 'App/SOCKET_IO_LOAD_TIME_FRAMES_BY_RANGE',
+
+  CHANGE_FAVORITE_SYMBOL_LIST = 'App/CHANGE_FAVORITE_SYMBOL_LIST',
+}
+
+export enum CHANGE_TYPE {
+  INIT = 'INIT',
+  ADD = 'ADD',
+  DELETE = 'DELETE',
 }
 
 export const WS_URL = 'ws://85.17.172.72:1189';
@@ -31,6 +39,7 @@ export enum EVENT_NAME {
   SUBSCRIBE_TICKERS = 'subscribeTickers',
 
   GET_TIME_FRAME_BY_RANGE = 'getTimeframeByRange',
+  GET_TIME_FRAME_BY_COUNT = 'getTimeframeByCount',
 
   CONNECT = 'connect',
   DISCONNECT = 'disconnect',
@@ -39,6 +48,7 @@ export enum EVENT_NAME {
   ON_APPEND_TIME_FRAME = 'onAppendTimeframe',
   ON_INITIAL_TICKERS = 'onInitialTickers',
   ON_UPDATE_TICKERS = 'onUpdateTickers',
+  ON_TIME_FRAME_BY_COUNT = 'onTimeframeByCount',
   ON_TIME_FRAME_BY_RANGE = 'onTimeframeByRange',
 }
 

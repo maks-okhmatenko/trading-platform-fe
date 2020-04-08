@@ -1,13 +1,12 @@
 import produce from 'immer';
 import { ContainerState } from './types';
-import { ActionTypes, APPEND_TYPE, FRAME_TYPES, DEFAULT_TIME_FRAME, EVENT_NAME } from './constants';
+import { ActionTypes, APPEND_TYPE, FRAME_TYPES, DEFAULT_TIME_FRAME, EVENT_NAME, CHANGE_TYPE } from './constants';
 
 // The initial state of the App
 export const initialState: ContainerState = {
   loading: false,
   tickers: {},
   error: null,
-  tickersIo: {},
   chartLoading: false,
   chartTimeFrame: [],
   additionalChartDataLength: 0,
@@ -30,7 +29,8 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.SOCKET_MESSAGE:
       draft.loading = false;
-      draft.tickers = { ...draft.tickers, ...action.payload.data };
+      // draft.tickers = { ...draft.tickers, ...action.payload.data };
+      draft.tickers = action.payload.data;
       break;
 
 
@@ -53,7 +53,7 @@ const appReducer = produce((draft = initialState, action) => {
         if (additionalData.length < 1) { return draft; }
 
         const lastItemId = action.payload.data.length - 1;
-        if (Date.parse(additionalData[lastItemId].date) >= Date.parse(draft.chartTimeFrame[0].date)) {
+        if (additionalData[lastItemId].date.getTime() >= draft.chartTimeFrame[0].date.getTime()) {
           return draft;
         }
         draft.chartTimeFrame = [...action.payload.data, ...draft.chartTimeFrame];
@@ -61,17 +61,18 @@ const appReducer = produce((draft = initialState, action) => {
 
       } else if (action.payload.appendTo === APPEND_TYPE.MAIN) {
         const lastIdx = draft.chartTimeFrame.length - 1;
-        if (draft.chartTimeFrame[lastIdx].x === action.payload.data.x) {
+        if (draft.chartTimeFrame[lastIdx].date.getTime() === action.payload.data.date.getTime()) {
           draft.chartTimeFrame[lastIdx] = action.payload.data;
-        } else if (draft.chartTimeFrame[lastIdx].x < action.payload.data.x) {
-          draft.chartTimeFrame = [...draft.chartTimeFrame, ...action.payload.data];
+        } else if (draft.chartTimeFrame[lastIdx].date.getTime() < action.payload.data.date.getTime()) {
+          draft.chartTimeFrame.push(action.payload.data);
         }
       }
       break;
 
     case ActionTypes.SOCKET_IO_TICKERS:
       draft.loading = false;
-      draft.tickers = { ...draft.tickers, ...action.payload.data };
+      // draft.tickers = { ...draft.tickers, ...action.payload.data };
+      draft.tickers = action.payload.data;
       break;
 
     case ActionTypes.SOCKET_IO_GLOBAL_CONFIG:

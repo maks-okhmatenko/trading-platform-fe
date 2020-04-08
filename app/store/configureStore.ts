@@ -21,7 +21,7 @@ export default function configureStore(initialState: ApplicationRootState | {} =
 
   const middlewares = [
     routerMiddleware(history),
-    // logger, // TODO: need remove logger for prod env
+    logger, // TODO: need remove logger for prod env
     websocketMiddleware,
     sagaMiddleware,
   ];

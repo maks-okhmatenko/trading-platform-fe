@@ -1,4 +1,5 @@
-import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE } from './constants';
+import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE } from './constants';
+import { transformChartData } from './utils';
 
 type socketIoSubscribeTimeframeProps = {
   symbol: string;
@@ -33,22 +34,22 @@ export const socketIoError = (error) => ({
 
 export const socketIoInitialTimeframe = (data) => ({
   type: ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME,
-  payload: { data: transformData(data) },
+  payload: { data: transformChartData(data) },
 });
 
 export const socketIoAppendTimeframeBack = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
-  payload: { appendTo: APPEND_TYPE.ADDITIONAL, data: transformData(data) },
+  payload: { appendTo: APPEND_TYPE.ADDITIONAL, data: transformChartData(data) },
 });
 
 export const socketIoAppendTimeframeForward = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
-  payload: { appendTo: APPEND_TYPE.MAIN, data: transformData(data) },
+  payload: { appendTo: APPEND_TYPE.MAIN, data: transformChartData(data) },
 });
 
-export const socketIoLoadTimeFrameByRange = (data: socketIoSubscribeTimeframeProps) => ({
+export const socketIoLoadTimeFrameByCount = (data: socketIoSubscribeTimeframeProps) => ({
   type: ActionTypes.SOCKET_IO_REQUEST,
-  payload: { eventName: EVENT_NAME.GET_TIME_FRAME_BY_RANGE, data },
+  payload: { eventName: EVENT_NAME.GET_TIME_FRAME_BY_COUNT, data },
 });
 
 export const socketIoTickers = (data) => ({
@@ -76,24 +77,7 @@ export const changeActiveTimeFrame = (data) => ({
   payload: { data },
 });
 
-
-const chartDataTransformer = (item) => ({
-  date: new Date(parseInt(item.x, 10) * 1000),
-  open: parseFloat(item.y[0]),
-  high: parseFloat(item.y[1]),
-  low: parseFloat(item.y[2]),
-  close: parseFloat(item.y[3]),
-  volume: 0,
-  split: '',
-  dividend: '',
-  absoluteChange: '',
-  percentChange: '',
+export const changeFavoriteSymbolList = (eventType: CHANGE_TYPE, data?) => ({
+  type: ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST,
+  payload: { eventType, data },
 });
-
-const transformData = (chartData) => {
-  if (Array.isArray(chartData)) {
-    return chartData.map(chartDataTransformer);
-  } else {
-    return chartDataTransformer(chartData);
-  }
-};
