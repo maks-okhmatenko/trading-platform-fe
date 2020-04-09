@@ -4,15 +4,20 @@ import { ActionTypes, APPEND_TYPE, FRAME_TYPES, DEFAULT_TIME_FRAME, EVENT_NAME, 
 
 // The initial state of the App
 export const initialState: ContainerState = {
-  loading: false,
-  tickers: {},
-  error: null,
   chartLoading: false,
-  chartTimeFrame: [],
-  additionalChartDataLength: 0,
-  globalConfig: {},
+  loading: false,
+  error: null,
+
+  globalConfig: { TICKER_LIST: [] },
+  tickers: {},
+  openedSymbols: [],
+  favoriteTickers: [],
+  allTickersShow: false,
   activeSymbolChart: '',
   activeTimeFrame: DEFAULT_TIME_FRAME,
+
+  chartTimeFrame: [],
+  additionalChartDataLength: 0,
 };
 
 // @ts-ignore
@@ -27,9 +32,8 @@ const appReducer = produce((draft = initialState, action) => {
       draft.error = action.payload.error;
       break;
 
-    case ActionTypes.SOCKET_MESSAGE:
+    case ActionTypes.SOCKET_INITIAL_TICKERS:
       draft.loading = false;
-      // draft.tickers = { ...draft.tickers, ...action.payload.data };
       draft.tickers = action.payload.data;
       break;
 
@@ -71,20 +75,57 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.SOCKET_IO_TICKERS:
       draft.loading = false;
-      // draft.tickers = { ...draft.tickers, ...action.payload.data };
-      draft.tickers = action.payload.data;
+      draft.tickers = { ...draft.tickers, ...action.payload.data };
       break;
 
     case ActionTypes.SOCKET_IO_GLOBAL_CONFIG:
       draft.globalConfig = action.payload.data;
       break;
 
-    case ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART:
-      draft.activeSymbolChart = action.payload.data;
+    case ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART_LIST:
+      const eventType = action.payload.eventType;
+      const symbolToChange = action.payload.data;
+      if (eventType === CHANGE_TYPE.ADD) {
+        draft.activeSymbolChart = symbolToChange;
+      }
+      if (!draft.openedSymbols.find(item => item === symbolToChange)) {
+        draft.openedSymbols.unshift(symbolToChange);
+      } else {
+        if (eventType === CHANGE_TYPE.DELETE) {
+          draft.openedSymbols = draft.openedSymbols.filter(item => item !== symbolToChange);
+          if (draft.activeSymbolChart === symbolToChange) {
+            draft.activeSymbolChart = draft.openedSymbols[0] || '';
+          }
+        }
+      }
+      break;
+
+    case ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST:
+      const favSymbolsStr = localStorage.getItem('favorite-symbols');
+      const favSymbolList = !favSymbolsStr
+                              ? []
+                              : favSymbolsStr.split(',');
+      const changeType = action.payload.eventType;
+
+      draft.favoriteTickers = favSymbolList;
+      if (changeType === CHANGE_TYPE.INIT) {
+        // do nothing
+      }
+      if (changeType === CHANGE_TYPE.ADD && typeof action.payload.data === 'string' && favSymbolList) {
+        draft.favoriteTickers.push(action.payload.data);
+      }
+      if (changeType === CHANGE_TYPE.DELETE && favSymbolList) {
+        draft.favoriteTickers = draft.favoriteTickers.filter(item => action.payload.data !== item);
+      }
+      localStorage.setItem('favorite-symbols', draft.favoriteTickers.join(','));
       break;
 
     case ActionTypes.CHANGE_ACTIVE_TIME_FRAME:
       draft.activeTimeFrame = action.payload.data;
+      break;
+
+    case ActionTypes.SET_ALL_TICKERS_SHOW:
+      draft.allTickersShow = action.payload.data;
       break;
 
     default:

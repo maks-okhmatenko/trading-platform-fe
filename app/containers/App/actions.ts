@@ -17,12 +17,6 @@ export const socketError = (error) => ({
   payload: { error },
 });
 
-export const socketMessage = (data) => ({
-  type: ActionTypes.SOCKET_MESSAGE,
-  payload: { data },
-});
-
-
 export const socketIoConnect = () => ({
   type: ActionTypes.SOCKET_IO_CONNECT,
 });
@@ -52,6 +46,11 @@ export const socketIoLoadTimeFrameByCount = (data: socketIoSubscribeTimeframePro
   payload: { eventName: EVENT_NAME.GET_TIME_FRAME_BY_COUNT, data },
 });
 
+export const initTickers = (data) => ({
+  type: ActionTypes.SOCKET_INITIAL_TICKERS,
+  payload: { data },
+});
+
 export const socketIoTickers = (data) => ({
   type: ActionTypes.SOCKET_IO_TICKERS,
   payload: { data },
@@ -67,9 +66,9 @@ export const socketIoGlobalConfig = (data) => ({
   payload: { data },
 });
 
-export const changeActiveSymbolChart = (data) => ({
-  type: ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART,
-  payload: { data },
+export const changeActiveSymbolChart = (eventType: CHANGE_TYPE, data) => ({
+  type: ActionTypes.CHANGE_ACTIVE_SYMBOL_CHART_LIST,
+  payload: { eventType, data },
 });
 
 export const changeActiveTimeFrame = (data) => ({
@@ -80,4 +79,9 @@ export const changeActiveTimeFrame = (data) => ({
 export const changeFavoriteSymbolList = (eventType: CHANGE_TYPE, data?) => ({
   type: ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST,
   payload: { eventType, data },
+});
+
+export const setAllTickersShow = (data: boolean) => ({
+  type: ActionTypes.SET_ALL_TICKERS_SHOW,
+  payload: { data },
 });

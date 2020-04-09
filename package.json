@@ -72,12 +72,15 @@
     "babel-core": "7.0.0-bridge.0"
   },
   "dependencies": {
-    "apexcharts": "^3.17.0",
     "chalk": "^2.4.2",
     "classnames": "^2.2.6",
     "compression": "1.7.4",
     "connected-react-router": "6.5.0",
     "cross-env": "5.2.0",
+    "d3-dsv": "^1.0.8",
+    "d3-format": "^1.2.1",
+    "d3-scale": "^1.0.7",
+    "d3-time-format": "^2.1.1",
     "express": "4.17.1",
     "fontfaceobserver": "2.1.0",
     "history": "4.9.0",
@@ -104,11 +107,7 @@
     "sanitize.css": "10.0.0",
     "socket.io-client": "^2.3.0",
     "styled-components": "4.3.2",
-    "typesafe-actions": "4.4.0",
-    "d3-dsv": "^1.0.8",
-    "d3-format": "^1.2.1",
-    "d3-scale": "^1.0.7",
-    "d3-time-format": "^2.1.1"
+    "typesafe-actions": "4.4.0"
   },
   "devDependencies": {
     "@babel/cli": "7.5.0",

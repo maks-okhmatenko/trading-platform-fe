@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { changeActiveSymbolChart } from '../../../../../containers/App/actions';
 import { changeFavoriteSymbolList } from './../../../../../containers/App/actions';
 import { CHANGE_TYPE } from 'containers/App/constants';
+import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 
 export type CurrencyItemsProps = {
   list: Array<{
@@ -18,12 +19,16 @@ export type CurrencyItemsProps = {
     Digits: string;
     Time?: number;
   }>;
+  favoriteTickers: [];
+  filter: string;
 };
 
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({
   list,
+  favoriteTickers,
+  filter,
 }) => {
   const dispatch = useDispatch();
   const handleNewOrderClick = e => {
@@ -31,19 +36,24 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({
   };
 
   const handleOpenChartClick = (e, data) => {
-    dispatch(changeActiveSymbolChart(data.symbol));
+    dispatch(changeActiveSymbolChart(CHANGE_TYPE.ADD, data.symbol));
   };
 
-  const handleDeletePair = (e, data) => {
-    dispatch(changeFavoriteSymbolList(CHANGE_TYPE.DELETE, data.symbol));
+  const handleSwitchIsFavorite = (isFavorite, symbol) => {
+    dispatch(changeFavoriteSymbolList(
+      isFavorite ? CHANGE_TYPE.DELETE : CHANGE_TYPE.ADD,
+      symbol,
+      ),
+    );
   };
 
   return (
     <div className={styles.currencyItemsWrap}>
       <ul className={styles.currencyList}>
-        {Object.keys(list).map((item, index) => {
-          const ticker = list[item];
+        {Object.keys(list).filter(item => item.includes(filter)).map((symbol, index) => {
+          const ticker = list[symbol];
           const direction = ticker.Direction;
+          const isFavorite = !!favoriteTickers.find(item => item === symbol);
 
           const classNames = classnames(styles.currencyItem, {
             [styles.up]: direction === '1',
@@ -51,15 +61,16 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({
           });
           const time = moment.unix(ticker.Time / 1000).format('HH:mm:ss');
           return (
-            <ContextMenuTrigger id={`${TICKER_CTX_MENU}-${item}`} key={item}>
+            <ContextMenuTrigger id={`${TICKER_CTX_MENU}-${symbol}`} key={symbol}>
               <li className={classNames}>
+                <FavoriteIcon active={isFavorite} onClick={(e) => handleSwitchIsFavorite(isFavorite, symbol)}/>
                 <div
                   className={styles.currencySymbol}
                   onDoubleClick={e => {
-                    handleOpenChartClick(e, { symbol: item });
+                    handleOpenChartClick(e, { symbol });
                   }}
                 >
-                  {item.toUpperCase()}
+                  {symbol.toUpperCase()}
                 </div>
                 <div className={styles.bidMarket}>
                   {Number.parseFloat(ticker.Bid).toFixed(5)}
@@ -71,18 +82,15 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({
                 <div className={styles.time}>{time}</div>
               </li>
 
-              <ContextMenu id={`${TICKER_CTX_MENU}-${item}`}>
-                <MenuItem data={{ symbol: item }} onClick={handleNewOrderClick}>
+              <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
+                <MenuItem data={{ symbol }} onClick={handleNewOrderClick}>
                   New order
                 </MenuItem>
                 <MenuItem
-                  data={{ symbol: item }}
+                  data={{ symbol }}
                   onClick={handleOpenChartClick}
                 >
                   Open chart
-                </MenuItem>
-                <MenuItem data={{ symbol: item }} onClick={handleDeletePair}>
-                  Delete pair
                 </MenuItem>
               </ContextMenu>
             </ContextMenuTrigger>

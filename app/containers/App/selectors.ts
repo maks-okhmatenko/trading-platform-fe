@@ -36,6 +36,18 @@ const makeSelectActiveSymbolChart = () =>
 const makeSelectActiveTimeFrame = () =>
   createSelector(selectGlobal, globalState => globalState.activeTimeFrame);
 
+const makeSelectOpenedSymbols = () =>
+  createSelector(selectGlobal, globalState => globalState.openedSymbols);
+
+const makeSelectAllTickersShow = () =>
+  createSelector(selectGlobal, globalState => globalState.allTickersShow);
+
+const makeSelectFavoriteTickers = () =>
+  createSelector(selectGlobal, globalState => globalState.favoriteTickers);
+
+const makeSelectGlobalConfigTickers = () =>
+  createSelector(selectGlobal, globalState => globalState.globalConfig.TICKER_LIST);
+
 
 export {
   selectGlobal,
@@ -48,4 +60,8 @@ export {
   makeSelectAdditionalChartDataLength,
   makeSelectActiveSymbolChart,
   makeSelectActiveTimeFrame,
+  makeSelectOpenedSymbols,
+  makeSelectAllTickersShow,
+  makeSelectFavoriteTickers,
+  makeSelectGlobalConfigTickers,
 };

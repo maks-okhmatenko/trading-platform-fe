@@ -6,16 +6,36 @@ import {
   TIME_FRAMES_CONFIG,
   getTimestamp,
   candlesLoad,
+  CHANGE_TYPE,
 } from 'containers/App/constants';
 import classnames from 'classnames';
 import chartZoomControllerBuilder from './zoomer';
 
 const ChartControlPanel: React.FC<any> = props => {
-  const { activeSymbolChart, activeTimeFrame, pickTimeFrame, zoom } = props;
+  const { activeSymbolChart, activeTimeFrame, pickTimeFrame, zoom, openedSymbols, pickSymbolChart } = props;
 
   const buttonFrameTypes = Object.keys(FRAME_TYPES).map(
     item => FRAME_TYPES[item],
   );
+
+  const closeSymbolChartHandler = (symbol) => (e) => {
+    e.stopPropagation();
+    pickSymbolChart(CHANGE_TYPE.DELETE , symbol);
+  };
+
+  const activeSymbolChartButtons = openedSymbols
+  .map((symbol, idx) => {
+    const classes = classnames(
+      styles.tickerButton, {
+      [styles.active] : activeSymbolChart === symbol,
+    });
+    return (
+      <div className={classes} onClick={() => pickSymbolChart(CHANGE_TYPE.ADD , symbol)} key={idx}>
+        <h4>{symbol}</h4>
+        <div className={styles.closeButton} onClick={closeSymbolChartHandler(symbol)}>X</div>
+      </div>
+    );
+  });
 
   const timeframeButtonSetting = buttonFrameTypes.map((frameType, index) => {
     const classes = classnames(
@@ -45,7 +65,11 @@ const ChartControlPanel: React.FC<any> = props => {
 
   return (
     <div className={styles.controller}>
-      <h2>{activeSymbolChart}</h2>
+        <div className={styles.activeTickersRow}>
+          <div className={styles.scrollable}>
+              {activeSymbolChartButtons}
+          </div>
+        </div>
       <div className={styles.buttonContainer}>
         <div className={styles.buttonsRow}>{timeframeButtonSetting}</div>
         <div className={styles.buttonsRow}>

@@ -9,10 +9,13 @@ interface AppState {
   loading: boolean;
   error: any;
   tickers: {};
+  allTickersShow: boolean; 
   chartLoading: boolean;
   chartTimeFrame: [];
   additionalChartDataLength: number;
-  globalConfig: {};
+  globalConfig: { TICKER_LIST: [] };
+  openedSymbols: [];
+  favoriteTickers: [];
   activeSymbolChart: string;
   activeTimeFrame: FRAME_TYPES;
 }

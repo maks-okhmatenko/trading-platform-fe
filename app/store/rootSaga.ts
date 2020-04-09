@@ -11,7 +11,11 @@ import {
   WS_IO_URL,
   CHANGE_TYPE,
 } from '../containers/App/constants';
-import { makeSelectActiveSymbolChart } from 'containers/App/selectors';
+import {
+  makeSelectFavoriteTickers,
+  makeSelectAllTickersShow,
+  makeSelectGlobalConfigTickers,
+} from 'containers/App/selectors';
 
 function transformTickers(data) {
   return data.reduce((acc, curr) => {
@@ -38,7 +42,7 @@ function createSocketChannel(socket) {
 
     socket.once(EVENT_NAME.ON_GLOBAL_CONFIG, (config) => {
       emit(AppActions.socketIoGlobalConfig(config));
-      emit(AppActions.changeFavoriteSymbolList(CHANGE_TYPE.INIT, config.TICKER_LIST));
+      emit(AppActions.changeFavoriteSymbolList(CHANGE_TYPE.INIT));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TIME_FRAMES, (initialData) => {
@@ -55,7 +59,7 @@ function createSocketChannel(socket) {
 
     socket.on(EVENT_NAME.ON_INITIAL_TICKERS, (tickers) => {
       const tickersSorted = transformTickers(tickers);
-      emit(AppActions.socketIoTickers(tickersSorted));
+      emit(AppActions.initTickers(tickersSorted));
     });
 
     socket.on(EVENT_NAME.ON_UPDATE_TICKERS, (tickers) => {
@@ -81,37 +85,18 @@ function* writeSocket(socket) {
 
   yield all([
     takeEvery(ActionTypes.SOCKET_IO_REQUEST, socketRequest, socket),
-    takeEvery(ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST, saveFavoriteSymbolList, socket),
+    takeEvery([ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST, ActionTypes.SET_ALL_TICKERS_SHOW], subscribeTickers, socket),
   ]);
 }
 
-function* saveFavoriteSymbolList(socket, action) {
-  const favSymbolsStr = localStorage.getItem('favorite-symbols');
-  let favSymbolList = !favSymbolsStr
-                        ? favSymbolsStr === '' // is list empty or not exist
-                          ? []
-                          : null
-                        : favSymbolsStr.split(',');
-  const changeType = action.payload.eventType;
+function* subscribeTickers(socket) {
+  const isAllTickersShow = yield select(makeSelectAllTickersShow());
 
-  if (changeType === CHANGE_TYPE.INIT) {
-    favSymbolList = favSymbolList || action.payload.data;
-  }
-  if (favSymbolList) {
-    if (changeType === CHANGE_TYPE.ADD && typeof action.payload.data === 'string' && favSymbolList) {
-      favSymbolList.push(typeof action.payload.data);
-    }
-    if (changeType === CHANGE_TYPE.DELETE && favSymbolList) {
-      const currentSymbol = yield select(makeSelectActiveSymbolChart());
-      if (action.payload.data === currentSymbol) {
-        yield put(AppActions.changeActiveSymbolChart(''));
-      }
-      favSymbolList = favSymbolList.filter(item => action.payload.data !== item);
-    }
+  const tickersToSub = isAllTickersShow
+    ? yield select(makeSelectGlobalConfigTickers())
+    : yield select(makeSelectFavoriteTickers());
 
-    localStorage.setItem('favorite-symbols', favSymbolList.join(','));
-    socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS, { list: favSymbolList });
-  }
+  socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS, { list: tickersToSub });
 }
 
 function* socketRequest(socket, action) {

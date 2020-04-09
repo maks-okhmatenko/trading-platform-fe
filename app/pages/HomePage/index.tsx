@@ -12,6 +12,9 @@ import {
   makeSelectLoading,
   makeSelectTickers,
   makeSelectAdditionalChartDataLength,
+  makeSelectOpenedSymbols,
+  makeSelectAllTickersShow,
+  makeSelectFavoriteTickers,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
@@ -19,6 +22,7 @@ import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
+import { changeActiveSymbolChart } from 'containers/App/actions';
 import {
   socketIoSubscribeTimeframe,
   socketIoLoadTimeFrameByCount,
@@ -26,12 +30,14 @@ import {
 } from '../../containers/App/actions';
 
 const HomePageContainer = props => {
-  const { loading, tickers } = props;
+  const { loading, tickers, allTickersShow, favoriteTickers } = props;
   useInjectReducer({ key: 'app', reducer: appReducer });
 
   const currencyWidgetProps = {
     loading,
     tickers,
+    allTickersShow,
+    favoriteTickers,
   };
 
   const chartProps = {
@@ -43,6 +49,8 @@ const HomePageContainer = props => {
     pickTimeFrame: props.pickTimeFrame,
     subscribeChartData: props.subscribeChartData,
     loadMoreChartData: props.loadMoreChartData,
+    openedSymbols: props.openedSymbols,
+    pickSymbolChart: props.pickSymbolChart,
   };
 
   return (
@@ -75,12 +83,16 @@ const mapStateToProps = createStructuredSelector({
   additionalChartDataLength: makeSelectAdditionalChartDataLength(),
   activeSymbolChart: makeSelectActiveSymbolChart(),
   activeTimeFrame: makeSelectActiveTimeFrame(),
+  openedSymbols: makeSelectOpenedSymbols(),
+  allTickersShow: makeSelectAllTickersShow(),
+  favoriteTickers: makeSelectFavoriteTickers(),
 });
 
 const mapDispatchToProps = {
   subscribeChartData: socketIoSubscribeTimeframe,
   loadMoreChartData: socketIoLoadTimeFrameByCount,
   pickTimeFrame: changeActiveTimeFrame,
+  pickSymbolChart: changeActiveSymbolChart,
 };
 
 export default connect(

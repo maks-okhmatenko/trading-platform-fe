@@ -4,18 +4,19 @@ import CurrencyItems from './components/CurrencyItems';
 
 import styles from './CurrencyWidget.scss';
 
-const CurrencyWidget = ({ tickers, loading }) => {
+const CurrencyWidget = ({ tickers, loading, allTickersShow, favoriteTickers }) => {
+  const [filter, setFilter] = React.useState('');
   return (
     <div className={styles.currencyWidget}>
 
-      <CurrencyWidgetHeader />
+      <CurrencyWidgetHeader allTickersShow={allTickersShow} onFilterSet={setFilter}/>
 
       {loading ? (
         <span>Loading...</span>
       ) : null}
 
       {tickers && !loading ? (
-        <CurrencyItems list={tickers} />
+        <CurrencyItems list={tickers} favoriteTickers={favoriteTickers} filter={filter}/>
       ) : null}
 
     </div>
