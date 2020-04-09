@@ -93,8 +93,8 @@ const ChartControlWrapper = WrappedComponent => {
 
     const sizerRef = useRef(null);
     const [chartNodeRef, setChartNode] = useState(null);
-    const { width, height } = useInit(sizerRef, props);
     const zoomer = chartZoomControllerBuilder(chartNodeRef);
+    const { width, height } = useInit(sizerRef, props, zoomer);
     const loadMoreHandler = _.debounce((start, end) => {
       if (Math.ceil(start) === end) {
         return;
@@ -109,7 +109,7 @@ const ChartControlWrapper = WrappedComponent => {
         count: rowsToDownload,
         to: getTimestamp.add(0, startTimestamp),
       });
-    }, 70);
+    }, 100);
 
     const chartProps = {
       ref: setChartNode,
@@ -137,13 +137,15 @@ const ChartControlWrapper = WrappedComponent => {
   };
 };
 
-const useInit = (ref, props) => {
+const useInit = (ref, props, zoomer) => {
   const { activeTimeFrame, activeSymbolChart, subscribeChartData } = props;
 
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
+    if (zoomer.reset) { zoomer.reset(); }
+
     setWidth((ref.current && ref.current.clientWidth) || 0);
     setHeight((ref.current && ref.current.clientHeight) || 0);
 
