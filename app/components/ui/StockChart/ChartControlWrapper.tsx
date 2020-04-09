@@ -10,6 +10,7 @@ import {
 } from 'containers/App/constants';
 import classnames from 'classnames';
 import chartZoomControllerBuilder from './zoomer';
+import _ from 'lodash';
 
 const ChartControlPanel: React.FC<any> = props => {
   const { activeSymbolChart, activeTimeFrame, pickTimeFrame, zoom, openedSymbols, pickSymbolChart } = props;
@@ -94,10 +95,11 @@ const ChartControlWrapper = WrappedComponent => {
     const [chartNodeRef, setChartNode] = useState(null);
     const { width, height } = useInit(sizerRef, props);
     const zoomer = chartZoomControllerBuilder(chartNodeRef);
-    const loadMoreHandler = (start, end) => {
+    const loadMoreHandler = _.debounce((start, end) => {
       if (Math.ceil(start) === end) {
         return;
       }
+      console.log('load', start, end);
       const startTimestamp = Date.parse(chartData[0].date) / 1000 - 1;
       const rowsToDownload = end - Math.ceil(start);
 
@@ -107,8 +109,8 @@ const ChartControlWrapper = WrappedComponent => {
         count: rowsToDownload,
         to: getTimestamp.add(0, startTimestamp),
       });
-    };
-    // if(additionalChartDataLength === 0 && zoomer.reset) zoomer.reset();
+    }, 70);
+
     const chartProps = {
       ref: setChartNode,
       leftShift: -additionalChartDataLength,
