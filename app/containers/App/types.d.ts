@@ -9,7 +9,6 @@ interface AppState {
   loading: boolean;
   error: any;
   tickers: {};
-  allTickersShow: boolean; 
   chartLoading: boolean;
   chartTimeFrame: [];
   additionalChartDataLength: number;

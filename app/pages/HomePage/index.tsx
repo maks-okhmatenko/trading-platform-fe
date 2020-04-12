@@ -13,8 +13,8 @@ import {
   makeSelectTickers,
   makeSelectAdditionalChartDataLength,
   makeSelectOpenedSymbols,
-  makeSelectAllTickersShow,
   makeSelectFavoriteTickers,
+  makeSelectGlobalSymbolList,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
@@ -38,9 +38,11 @@ const HomePageContainer = props => {
     tickers,
     allTickersShow,
     favoriteTickers,
+    globalSymbolList: props.globalSymbolList,
   };
 
   const chartProps = {
+    ticker: tickers[props.activeSymbolChart],
     chartData: props.chartTimeFrame,
     additionalChartDataLength: props.additionalChartDataLength,
     chartLoading: props.chartLoading,
@@ -69,7 +71,7 @@ const HomePageContainer = props => {
       </div>
 
       <div className={styles.chartSection}>
-        {props.activeSymbolChart ? <Chart type="hybrid" {...chartProps} /> : <></>}
+        {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
       </div>
     </>
   );
@@ -84,8 +86,8 @@ const mapStateToProps = createStructuredSelector({
   activeSymbolChart: makeSelectActiveSymbolChart(),
   activeTimeFrame: makeSelectActiveTimeFrame(),
   openedSymbols: makeSelectOpenedSymbols(),
-  allTickersShow: makeSelectAllTickersShow(),
   favoriteTickers: makeSelectFavoriteTickers(),
+  globalSymbolList: makeSelectGlobalSymbolList(),
 });
 
 const mapDispatchToProps = {

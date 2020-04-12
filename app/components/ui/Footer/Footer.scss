@@ -1,0 +1,36 @@
+@import '../../../containers/App/theme.scss';
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  height: 40px;
+  background-color: $footer-bg;
+  color: white;
+}
+
+.footerContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 15px;
+  height: 100%;
+  align-items: center;
+}
+
+.themeController {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  color: $control-text;
+  font-family: Arial, Helvetica, sans-serif;
+  & *{
+    margin: 0 10px;
+    display: inline-block;
+  }
+  &:before{
+    content: 'Light';
+  }
+  &:after{
+    content: 'Dark';
+  }
+}

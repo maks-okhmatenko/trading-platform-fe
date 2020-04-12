@@ -13,8 +13,6 @@ import {
 } from '../containers/App/constants';
 import {
   makeSelectFavoriteTickers,
-  makeSelectAllTickersShow,
-  makeSelectGlobalConfigTickers,
 } from 'containers/App/selectors';
 
 function transformTickers(data) {
@@ -85,17 +83,12 @@ function* writeSocket(socket) {
 
   yield all([
     takeEvery(ActionTypes.SOCKET_IO_REQUEST, socketRequest, socket),
-    takeEvery([ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST, ActionTypes.SET_ALL_TICKERS_SHOW], subscribeTickers, socket),
+    takeEvery([ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST], subscribeTickers, socket),
   ]);
 }
 
 function* subscribeTickers(socket) {
-  const isAllTickersShow = yield select(makeSelectAllTickersShow());
-
-  const tickersToSub = isAllTickersShow
-    ? yield select(makeSelectGlobalConfigTickers())
-    : yield select(makeSelectFavoriteTickers());
-
+  const tickersToSub = yield select(makeSelectFavoriteTickers());
   socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS, { list: tickersToSub });
 }
 

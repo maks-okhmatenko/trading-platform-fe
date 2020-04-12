@@ -1,7 +1,9 @@
+@import '../../../containers/App/theme.scss';
+
 .header {
   display: block;
   height: 70px;
-  background-color: #181f2c;
+  background-color: $header-bg;
   color: white;
 }
 

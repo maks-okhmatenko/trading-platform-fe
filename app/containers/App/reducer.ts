@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { ContainerState } from './types';
-import { ActionTypes, APPEND_TYPE, FRAME_TYPES, DEFAULT_TIME_FRAME, EVENT_NAME, CHANGE_TYPE } from './constants';
+import { ActionTypes, APPEND_TYPE, DEFAULT_TIME_FRAME, CHANGE_TYPE } from './constants';
 
 // The initial state of the App
 export const initialState: ContainerState = {
@@ -12,7 +12,6 @@ export const initialState: ContainerState = {
   tickers: {},
   openedSymbols: [],
   favoriteTickers: [],
-  allTickersShow: false,
   activeSymbolChart: '',
   activeTimeFrame: DEFAULT_TIME_FRAME,
 
@@ -103,7 +102,9 @@ const appReducer = produce((draft = initialState, action) => {
     case ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST:
       const favSymbolsStr = localStorage.getItem('favorite-symbols');
       const favSymbolList = !favSymbolsStr
-                              ? []
+                              ? favSymbolsStr === ''
+                                ? []
+                                : draft.globalConfig.TICKER_LIST.slice(0, 5)
                               : favSymbolsStr.split(',');
       const changeType = action.payload.eventType;
 
@@ -122,10 +123,6 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.CHANGE_ACTIVE_TIME_FRAME:
       draft.activeTimeFrame = action.payload.data;
-      break;
-
-    case ActionTypes.SET_ALL_TICKERS_SHOW:
-      draft.allTickersShow = action.payload.data;
       break;
 
     default:

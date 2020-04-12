@@ -84,6 +84,7 @@ const ChartControlPanel: React.FC<any> = props => {
 const ChartControlWrapper = WrappedComponent => {
   return props => {
     const {
+      ticker,
       chartData,
       additionalChartDataLength,
       activeTimeFrame,
@@ -118,6 +119,7 @@ const ChartControlWrapper = WrappedComponent => {
       width,
       height,
       loadMoreHandler,
+      ticker,
     };
 
     return (

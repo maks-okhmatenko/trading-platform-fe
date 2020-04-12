@@ -1,5 +1,7 @@
+@import '../../../containers/App/theme.scss';
+
 .currencyWidget {
-  background-color: #171b29;
+  background-color: $widget-body;
   color: white;
   width: 370px;
   height: 300px;

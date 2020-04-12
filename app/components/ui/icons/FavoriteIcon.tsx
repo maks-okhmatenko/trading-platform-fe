@@ -11,7 +11,8 @@ const FavoriteIcon = props => {
       viewBox="-30 -30 582 552"
       width={width}
       height={height}
-      stroke={color}
+      stroke="#333F"
+      strokeOpacity={1}
       fill={color}
       fillOpacity={!active ? 0 : 1}
 

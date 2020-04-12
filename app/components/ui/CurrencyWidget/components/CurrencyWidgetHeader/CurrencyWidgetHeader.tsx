@@ -1,34 +1,54 @@
 import * as React from 'react';
-import styles from './CurrencyWidgetHeader.scss';
 import { useDispatch } from 'react-redux';
+import styles from './CurrencyWidgetHeader.scss';
+import moment from 'moment';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
-import { setAllTickersShow } from 'containers/App/actions';
+import { changeFavoriteSymbolList } from 'containers/App/actions';
+import { CHANGE_TYPE } from 'containers/App/constants';
 
 const CurrencyWidgetHeader = (props) => {
-  const { allTickersShow, onFilterSet } = props;
+  const { symbolList = [], favoriteTickers } = props;
+  const time = moment.unix(moment.now() / 1000).format('HH:mm:ss');
+  const [filter, setFilter] = React.useState('');
+
   const dispatch = useDispatch();
-  const handleSwitchTickersView = () => dispatch(setAllTickersShow(!allTickersShow));
+  const handleSwitchIsFavorite = (isFavorite, symbol) => {
+    dispatch(
+      changeFavoriteSymbolList(
+        isFavorite ? CHANGE_TYPE.DELETE : CHANGE_TYPE.ADD,
+        symbol,
+      ),
+    );
+  };
 
   return (
     <>
       <div className={styles.currencyWidgetHeader}>
         <div className={styles.mainSectionWrap}>
           <span className={styles.widgetHeader}>WATCHLIST</span>
-          <input type="input" placeholder="Search..."
-            className={styles.searchInput}
-            onChange={(e) => onFilterSet(e.target.value.toUpperCase())}
-          />
+          <span className={styles.widgetHeaderTime}>{time}</span>
+          <div className={styles.searchContainer} tabIndex={0}>
+            <input type="input" placeholder="Search..."
+              className={styles.searchInput}
+              onChange={(e) => setFilter(e.target.value.toUpperCase())}
+            />
+            <div className={styles.addButton}>
+              <div>+</div>
+            </div>
+            <ul className={styles.addList}>
+              {symbolList.filter(item => item.includes(filter)).map(symbol => {
+                const active = favoriteTickers.find(item => item === symbol);
+
+                return (
+                  <li key={symbol} onClick={(e) => handleSwitchIsFavorite(active, symbol)}>
+                    <FavoriteIcon active={active}/>
+                    <span>{symbol}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
-      </div>
-      <div className={styles.subSectionWrap}>
-        <ul className={styles.tableTitle}>
-          <FavoriteIcon active={!allTickersShow} onClick={handleSwitchTickersView}/>
-          <li>Symbol</li>
-          <li>Bid</li>
-          <li>Aks</li>
-          <li>!</li>
-          <li>Time</li>
-        </ul>
       </div>
     </>
   );

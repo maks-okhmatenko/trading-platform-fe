@@ -1,0 +1,30 @@
+@import '../../../containers/App/theme.scss';
+
+.label {
+    position: relative;
+    display: block;
+    background-color: $control-bg;
+    width: 44px;
+    height: 24px;
+    border: 2px solid $control-tab-active-light; 
+
+    .checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+        & ~ .mark {
+            margin: 2px;
+            content: '';
+            width: 16px;
+            height: 16px;
+            background-color: $control-tab-active-light;
+            position: absolute;
+            display: block;
+        }
+        &:checked ~ .mark{
+            margin-left: 22px;
+        }
+    }
+}

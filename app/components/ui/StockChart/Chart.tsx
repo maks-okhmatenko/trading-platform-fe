@@ -1,14 +1,14 @@
 import React from 'react';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
-import { ChartCanvas, Chart, ZoomButtons } from 'react-stockcharts';
+import { ChartCanvas, Chart } from 'react-stockcharts';
 import { CandlestickSeries } from 'react-stockcharts/lib/series';
 import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { HoverTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProviderBuilder } from 'react-stockcharts/lib/scale';
 import chartWrapper from './ChartControlWrapper';
 import {
-  EdgeIndicator,
+  PriceCoordinate,
   CrossHairCursor,
   MouseCoordinateX,
   MouseCoordinateY,
@@ -19,7 +19,7 @@ const colors = {
   red: '#DF2323',
   green: '#29C359',
   text: 'white',
-  chartStroke: 'white',
+  lines: '#888F',
 };
 const dateFormat = timeFormat('%Y/%m/%d %H:%M:%S');
 const numberFormat = format('.5f');
@@ -56,6 +56,7 @@ interface PropsType {
   height: number;
   initialData: [];
   leftShift: number;
+  ticker: any;
   loadMoreHandler: (start, end) => void;
 }
 
@@ -75,6 +76,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
 
   public render() {
     const {
+      ticker,
       type,
       width,
       height,
@@ -118,8 +120,8 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             axisAt="bottom"
             orient="bottom"
             ticks={5}
-            tickStroke="#FFF7"
-            stroke="#FFF7"
+            tickStroke={colors.lines}
+            stroke={colors.lines}
             {...xGrid}
           />
           <YAxis
@@ -127,21 +129,10 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             orient="right"
             ticks={7}
             fill={colors.text}
-            tickStroke="#FFF7"
-            stroke="#FFF7"
+            tickStroke={colors.lines}
+            stroke={colors.lines}
             tickFormat={numberFormat}
             {...yGrid}
-          />
-
-          <EdgeIndicator
-            itemType="last"
-            orient="right"
-            edgeAt="right"
-            yAccessor={d => d.close}
-            fill={d => (d.close > d.open ? colors.green : colors.red)}
-            lineStroke={d => (d.close > d.open ? colors.green : colors.red)}
-            textFill="black"
-            displayFormat={numberFormat}
           />
 
           <MouseCoordinateX
@@ -154,7 +145,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             orient="right"
             displayFormat={numberFormat}
           />
-          <CrossHairCursor stroke={colors.chartStroke} />
+          <CrossHairCursor stroke={colors.lines} />
 
           <CandlestickSeries
             stroke={d => (d.close > d.open ? colors.green : colors.red)}
@@ -162,6 +153,33 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             fill={d => (d.close > d.open ? colors.green : colors.red)}
             opacity={1}
           />
+
+          {ticker ? (
+          <>
+            <PriceCoordinate
+              at="right"
+              orient="right"
+              price={ticker.Bid}
+              lineStroke={colors.lines}
+              displayFormat={numberFormat}
+              strokeDasharray="ShortDash"
+              arrowWidth={7}
+              stroke={colors.lines}
+              fill="#1D2435"
+            />
+            <PriceCoordinate
+              at="right"
+              orient="right"
+              price={ticker.Ask}
+              lineStroke={colors.lines}
+              displayFormat={numberFormat}
+              strokeDasharray="ShortDash"
+              arrowWidth={7}
+              stroke={colors.lines}
+              fill="#1D2435"
+            />
+          </>
+          ) : (<></>)}
 
           <HoverTooltip
             classNames={styles.tooltip}

@@ -1,3 +1,5 @@
+@import '../../../containers/App/theme.scss';
+
 .chartContainer {
   position: relative;
   height: 97%;
@@ -21,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0px 70px 0px 2px;
-  background-color: #131722;
+  background-color: $control-bg;
   .buttonContainer{
     display: flex;
     flex-direction: column;
@@ -53,9 +55,9 @@
 .timeFrameButton {
   font-size: 1em;
   width: 3em;
-  color: white;
-  background-color: #353C4F;
-  border: 2px solid #353C4F;
+  color: $control-text;
+  background-color: $control-timeframe-btn;
+  border: 2px solid $control-timeframe-btn;
   justify-content: center;
   text-align: center;
   padding: 3px 0;
@@ -63,7 +65,8 @@
   cursor: pointer;
   user-select: none;
   &.active{
-    border: 2px solid #FFF6;
+    color: $control-tab-active-light;
+    border: 2px solid $control-tab-active-light;
   }
   border-radius: 3px;
 }
@@ -73,9 +76,9 @@
   display: flex;
   font-size: 1em;
   flex-grow: 1;
-  color: white;
-  background-color: #2d3b64;
-  border: 2px solid #2d3b64;
+  color: $control-text;
+  background-color: $control-zoom-btn;
+  border: 2px solid $control-zoom-btn;
   justify-content: center;
   text-align: center;
   margin: 3px;
@@ -90,17 +93,17 @@
   position: relative;
   min-width: 110px;
   border-radius: 6px;
-  color: rgba(255, 255, 255, 0.657);
-  background-color: #27304b;
-  border-top: 4px solid #3b445c;
+  color: #b4b4b4;
+  background-color: $control-tab-bg;
+  border-top: 4px solid $control-tab-light;
   text-align: center;
   margin: 0 2px;
   cursor: pointer;
   user-select: none;
   &.active{
-    color: white;
-    background-color: #2d3b64;
-    border-top: 4px solid #1dc000;
+    color: $control-text;
+    background-color: $control-tab-active-bg;
+    border-top: 4px solid $control-tab-active-light;
   }
 
   h4{
@@ -115,10 +118,10 @@
   font-size: 0.7em;
   width: 1.5em;
   border-radius: 3px;
-  color: #3b445c;
-  background-color: #161c2f;
+  color: $control-tab-bg;
+  background-color: $control-bg;
   &:hover {
     color: white;
-    background-color: rgb(126, 0, 0);
+    background-color: #970000;
   }
 }

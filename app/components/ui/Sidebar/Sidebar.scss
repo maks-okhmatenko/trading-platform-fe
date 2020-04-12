@@ -1,6 +1,8 @@
+@import '../../../containers/App/theme.scss';
+
 .sidebarWrap {
   width: 70px;
-  background-color: #131722;
+  background-color: $control-bg;
 }
 
 .sidebarList {
@@ -17,12 +19,12 @@
   justify-content: center;
   cursor: pointer;
   position: relative;
-  color: white;
+  color: $control-text;
   text-decoration: none;
   padding: 10px 0;
 
   &:hover {
-    background-color: #1c2030;
+    background-color: $control-hover-bg;
   }
 
   .icon {
@@ -34,7 +36,7 @@
   }
 
   span {
-    color: #fff;
+    color: $control-text;
     text-align: center;
     text-transform: uppercase;
     font-size: 10px;

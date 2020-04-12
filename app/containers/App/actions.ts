@@ -80,8 +80,3 @@ export const changeFavoriteSymbolList = (eventType: CHANGE_TYPE, data?) => ({
   type: ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST,
   payload: { eventType, data },
 });
-
-export const setAllTickersShow = (data: boolean) => ({
-  type: ActionTypes.SET_ALL_TICKERS_SHOW,
-  payload: { data },
-});
