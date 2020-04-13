@@ -2,8 +2,8 @@ import React from 'react';
 import styles from './CheckBox.scss';
 
 const CheckBox: React.FC<any> = (props) => {
-    const { onChange } = props;
-    const [value, setValue] = React.useState(true);
+    const { onChange, defaultValue } = props;
+    const [value, setValue] = React.useState(defaultValue);
     const handleOnChange = ({target: { checked }}) => {
         setValue(checked);
         onChange(checked);
@@ -14,7 +14,7 @@ const CheckBox: React.FC<any> = (props) => {
             <input type="checkbox"
                 className={styles.checkbox}
                 checked={value} onChange={handleOnChange}
-                />
+            />
             <span className={styles.mark} />
         </label>
     );

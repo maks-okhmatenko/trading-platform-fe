@@ -11,7 +11,21 @@ import themeStyles from './theme.scss';
 import Footer from 'components/ui/Footer';
 
 const App = () => {
-  const [theme, setTheme] = React.useState('dark');
+  const [theme, setTheme] = React.useState('');
+
+  React.useEffect(() => {
+    if (!theme) {
+      const localTheme = localStorage.getItem('theme');
+      if (!localTheme) {
+        setTheme('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        setTheme(localTheme);
+      }
+    } else {
+      localStorage.setItem('theme', theme);
+    }
+  }, [theme]);
 
   const classes = classnames(styles.app, themeStyles[theme]);
   return (
@@ -20,17 +34,17 @@ const App = () => {
         titleTemplate="%s - React.js Boilerplate"
         defaultTitle="React.js Boilerplate"
       >
-        <meta name="description" content="A React.js Boilerplate application"/>
+        <meta name="description" content="A React.js Boilerplate application" />
       </Helmet>
-      <HeaderContainer/>
+      <HeaderContainer />
 
       <main className={styles.main}>
-        <SidebarContainer/>
+        <SidebarContainer />
         <Switch>
-          <Route exact path="/" component={HomePage}/>
+          <Route exact path="/" component={HomePage} />
         </Switch>
       </main>
-      <Footer onThemeChange={setTheme} theme={theme}/>
+      <Footer onThemeChange={setTheme} theme={theme} />
     </div>
   );
 };

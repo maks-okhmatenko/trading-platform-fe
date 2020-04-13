@@ -8,8 +8,17 @@ import { CHANGE_TYPE } from 'containers/App/constants';
 
 const CurrencyWidgetHeader = (props) => {
   const { symbolList = [], favoriteTickers } = props;
-  const time = moment.unix(moment.now() / 1000).format('HH:mm:ss');
   const [filter, setFilter] = React.useState('');
+  const [time, setTime] = React.useState('');
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(moment.unix(moment.now() / 1000).format('HH:mm:ss'));
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const dispatch = useDispatch();
   const handleSwitchIsFavorite = (isFavorite, symbol) => {
