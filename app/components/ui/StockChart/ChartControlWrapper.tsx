@@ -9,7 +9,6 @@ import {
   CHANGE_TYPE,
 } from 'containers/App/constants';
 import classnames from 'classnames';
-import chartZoomControllerBuilder from './zoomer';
 import _ from 'lodash';
 
 const ChartControlPanel: React.FC<any> = props => {
@@ -54,15 +53,17 @@ const ChartControlPanel: React.FC<any> = props => {
     );
   });
 
-  const zoomButtons = [
-    { handler: zoom.in, value: 'Zoom +' },
-    { handler: zoom.reset, value: 'Reset' },
-    { handler: zoom.out, value: 'Zoom -' },
-  ].map((item, idx) => (
-    <div className={styles.chartZoomButton} onClick={item.handler} key={idx}>
-      {item.value}
-    </div>
-  ));
+  const zoomButtons = !zoom
+    ? (<></>)
+    : [
+      { handler: zoom.in, value: 'Zoom +' },
+      { handler: zoom.reset, value: 'Reset' },
+      { handler: zoom.out, value: 'Zoom -' },
+    ].map((item, idx) => (
+      <div className={styles.chartZoomButton} onClick={item.handler} key={idx}>
+        {item.value}
+      </div>
+    ));
 
   return (
     <div className={styles.controller}>
@@ -93,14 +94,13 @@ const ChartControlWrapper = WrappedComponent => {
     } = props;
 
     const sizerRef = useRef(null);
-    const [chartNodeRef, setChartNode] = useState(null);
-    const zoomer = chartZoomControllerBuilder(chartNodeRef);
+    const [zoomer, setZoomer] = useState(null);
     const { width, height } = useInit(sizerRef, props, zoomer);
     const loadMoreHandler = _.debounce((start, end) => {
       if (Math.ceil(start) === end) {
         return;
       }
-      console.log('load', start, end);
+
       const startTimestamp = Date.parse(chartData[0].date) / 1000 - 1;
       const rowsToDownload = end - Math.ceil(start);
 
@@ -113,7 +113,6 @@ const ChartControlWrapper = WrappedComponent => {
     }, 100);
 
     const chartProps = {
-      ref: setChartNode,
       leftShift: -additionalChartDataLength,
       initialData: chartData,
       width,
@@ -124,11 +123,16 @@ const ChartControlWrapper = WrappedComponent => {
 
     return (
       <>
-        <ChartControlPanel {...props} zoom={zoomer} />
         <div className={styles.flexContainer}>
-          <div ref={sizerRef}>
-            {width > 300 && height > 300 && chartData.length > 0 ? (
-              <WrappedComponent {...chartProps} />
+          <ChartControlPanel {...props} zoom={zoomer} />
+          <div className={styles.body} ref={sizerRef}>
+            {width > 10 && height > 10 && chartData.length > 0 ? (
+              <WrappedComponent {...chartProps} >
+                {(props) => {
+                  const { zoom } = props;
+                  setZoomer(zoom);
+                }}
+              </WrappedComponent>
             ) : (
               <></>
             )}
@@ -146,7 +150,9 @@ const useInit = (ref, props, zoomer) => {
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    if (zoomer.reset) { zoomer.reset(); }
+    if (zoomer) {
+      zoomer.reset();
+    }
 
     setWidth((ref.current && ref.current.clientWidth) || 0);
     setHeight((ref.current && ref.current.clientHeight) || 0);

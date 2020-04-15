@@ -5,6 +5,7 @@ import moment from 'moment';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 import { changeFavoriteSymbolList } from 'containers/App/actions';
 import { CHANGE_TYPE } from 'containers/App/constants';
+import _ from 'lodash';
 
 const CurrencyWidgetHeader = (props) => {
   const { symbolList = [], favoriteTickers } = props;
@@ -30,6 +31,18 @@ const CurrencyWidgetHeader = (props) => {
     );
   };
 
+  const handlePickAll = (active) => {
+    const newFavoriteList = !active ? symbolList : [];
+    dispatch(
+      changeFavoriteSymbolList(
+        CHANGE_TYPE.INIT,
+        newFavoriteList,
+      ),
+    );
+  };
+
+  const allSymbolsIsFavorite = _.difference(symbolList, favoriteTickers).length === 0;
+
   return (
     <>
       <div className={styles.currencyWidgetHeader}>
@@ -45,6 +58,10 @@ const CurrencyWidgetHeader = (props) => {
               <div>+</div>
             </div>
             <ul className={styles.addList}>
+              <li key={1} onClick={() => { handlePickAll(allSymbolsIsFavorite); }}>
+                <FavoriteIcon active={allSymbolsIsFavorite}/>
+                <span>ALL</span>
+              </li>
               {symbolList.filter(item => item.includes(filter)).map(symbol => {
                 const active = favoriteTickers.find(item => item === symbol);
 

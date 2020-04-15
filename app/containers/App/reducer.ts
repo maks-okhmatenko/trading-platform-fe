@@ -109,8 +109,10 @@ const appReducer = produce((draft = initialState, action) => {
       const changeType = action.payload.eventType;
 
       draft.favoriteTickers = favSymbolList;
-      if (changeType === CHANGE_TYPE.INIT) {
-        // do nothing
+      if (changeType === CHANGE_TYPE.INIT && action.payload.data) {
+        if (Array.isArray(action.payload.data)) {
+          draft.favoriteTickers = action.payload.data;
+        }
       }
       if (changeType === CHANGE_TYPE.ADD && typeof action.payload.data === 'string' && favSymbolList) {
         draft.favoriteTickers.push(action.payload.data);

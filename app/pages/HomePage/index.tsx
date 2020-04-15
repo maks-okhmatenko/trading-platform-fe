@@ -65,13 +65,16 @@ const HomePageContainer = props => {
         />
       </Helmet>
 
-      <div className={styles.widgetContainer}>
-        <CurrencyWidgetContainer {...currencyWidgetProps} />
-        <CurrencyDetailsWidgetContainer />
-      </div>
-
-      <div className={styles.chartSection}>
-        {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
+      <div className={styles.bodyContainer}>
+        <div className={styles.chartSection}>
+          <div className={styles.widgetContainer}>
+            <CurrencyWidgetContainer {...currencyWidgetProps} />
+          </div>
+          {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
+        </div>
+        <div className={styles.ordersSection}>
+            {/* <CurrencyDetailsWidgetContainer /> */}
+        </div>
       </div>
     </>
   );

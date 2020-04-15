@@ -98,6 +98,7 @@
     "react-dom": "16.8.6",
     "react-helmet": "6.0.0-beta",
     "react-intl": "2.9.0",
+    "react-modal": "^3.11.2",
     "react-redux": "7.1.0",
     "react-router-dom": "5.0.1",
     "react-stockcharts": "^0.7.8",

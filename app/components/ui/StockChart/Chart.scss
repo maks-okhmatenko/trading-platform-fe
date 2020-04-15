@@ -1,16 +1,13 @@
 @import '../../../containers/App/theme.scss';
 
-.chartContainer {
-  position: relative;
-  height: 97%;
-}
-
 .flexContainer {
   position: relative;
-  width: 100%;
+  flex: 1;
   height: 100%;
-  &>div{
-    position: absolute;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  .body {
     width: inherit;
     height: inherit;
   }
