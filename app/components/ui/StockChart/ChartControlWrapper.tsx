@@ -119,6 +119,7 @@ const ChartControlWrapper = WrappedComponent => {
       height,
       loadMoreHandler,
       ticker,
+      timeFrame: `${activeSymbolChart} ${activeTimeFrame}`,
     };
 
     return (

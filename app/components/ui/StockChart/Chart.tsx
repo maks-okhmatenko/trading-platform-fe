@@ -7,7 +7,7 @@ import { XAxis, YAxis } from 'react-stockcharts/lib/axes';
 import { HoverTooltip, OHLCTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import chartWrapper from './ChartControlWrapper';
-import { last } from 'react-stockcharts/lib/utils';
+import { last, first } from 'react-stockcharts/lib/utils';
 import {
   PriceCoordinate,
   CrossHairCursor,
@@ -16,6 +16,7 @@ import {
 } from 'react-stockcharts/lib/coordinates';
 import styles from './Chart.scss';
 import { candlesLoad } from 'containers/App/constants';
+import { symbol } from 'prop-types';
 
 const colors = {
   red: '#DF2323',
@@ -52,6 +53,18 @@ function tooltipContent() {
   };
 }
 
+function OHLCDisplayDefault(symbol) {
+  return {
+    d: `${symbol} Date: `,
+    o: ' O: ',
+    h: ' H: ',
+    l: ' L: ',
+    c: ' C: ',
+    v: ' Vol: ',
+    na: 'n/a',
+  };
+}
+
 interface PropsType {
   children: any;
   type: string;
@@ -61,14 +74,16 @@ interface PropsType {
   leftShift: number;
   ticker: any;
   seriesName: string;
+  timeFrame: string;
   loadMoreHandler: (start, end) => void;
 }
 
 interface StateType {
   nodeX?: ChartCanvas;
   nodeY?: Chart;
-  delta: number;
-  zoom: number;
+  deltaX: number;
+  deltaY: number;
+  zoomMulDelta: number;
   isYFlex: boolean;
   resetX: boolean;
 }
@@ -78,6 +93,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     super(props);
     this.saveXNode = this.saveXNode.bind(this);
     this.saveYNode = this.saveYNode.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
     this.calcXExtents = this.calcXExtents.bind(this);
     this.calcYExtents = this.calcYExtents.bind(this);
@@ -92,8 +108,9 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     };
     this.props.children({zoom});
     this.state = {
-      zoom: 1,
-      delta: 0,
+      zoomMulDelta: 1,
+      deltaX: 0,
+      deltaY: 0,
       isYFlex: true,
       resetX: false,
     };
@@ -109,8 +126,12 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
   }
 
 
+  private handleDrag(e) {
+    console.log(e);
+  }
+
   private handleScroll(e) {
-    this.setState({delta: e.deltaY > 0 ? -10 : 10});
+    this.setState({deltaX: e.deltaY > 0 ? -10 : 10});
   }
 
 
@@ -120,7 +141,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
 
 
   public handleZoom(zoom) {
-    this.setState({ zoom });
+    this.setState({ zoomMulDelta: zoom });
   }
 
 
@@ -129,7 +150,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     if (!nodeX) { return null; }
 
     const { xScale, plotData, xAccessor } = nodeX.state;
-    const c = this.state.zoom;
+    const c = this.state.zoomMulDelta;
     if (c === 1) {
       return xScale.domain();
     }
@@ -148,14 +169,14 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
 
 
   private calcXExtents() {
-    const domainX = this.calcZoom();
+    const domainX = this.calcZoom() || [candlesLoad, 0];
 
-    const newDomain = domainX && !this.state.resetX
-      ? domainX[1] > candlesLoad && this.state.delta > 0
+    const newDomain = !this.state.resetX
+      ? domainX[1] > candlesLoad && this.state.deltaX > 0
         ? domainX
         : [
-          domainX[0] + this.state.delta,
-          domainX[1] + this.state.delta,
+          domainX[0] + this.state.deltaX,
+          domainX[1] + this.state.deltaX,
         ]
       : [candlesLoad, 0];
 
@@ -167,6 +188,17 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       const overDelta = newDomain[1] - candlesLoad;
       newDomain[1] -= overDelta;
       newDomain[0] -= overDelta;
+    }
+
+    const nodeX = this.state.nodeX;
+    if (!nodeX) { return domainX; }
+
+    const { plotData, xAccessor } = nodeX.state;
+    const shiftDelta = xAccessor(first(plotData)) - newDomain[0];
+    if (shiftDelta > candlesLoad / 2) {
+      const overDelta = shiftDelta - candlesLoad / 2;
+      newDomain[1] += overDelta;
+      newDomain[0] += overDelta;
     }
     return newDomain;
   }
@@ -198,6 +230,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       loadMoreHandler,
       leftShift = 0,
       seriesName,
+      timeFrame = '',
     } = this.props;
 
     const xScaleProvider = discontinuousTimeScaleProvider
@@ -208,8 +241,8 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       initialData,
     );
 
-    if (this.state && (this.state.delta !== 0 || this.state.delta === undefined)) {
-      this.setState({delta: 0});
+    if (this.state && (this.state.deltaX !== 0 || this.state.deltaX === undefined)) {
+      this.setState({deltaX: 0});
     }
 
     const margin = { left: 10, right: 70, top: 0, bottom: 30 };
@@ -221,7 +254,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     const xGrid = showGrid ? { innerTickSize: -1 * gridHeight, tickStrokeDasharray: 'ShortDash' } : {};
 
     return (
-      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll}>
+      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll} onDrag={this.handleDrag}>
         <ChartCanvas
           ref={this.saveXNode}
           width={width}
@@ -246,6 +279,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
               ohlcFormat={numberFormat}
               textFill="tomato"
               fontSize={16}
+              displayTexts={OHLCDisplayDefault(timeFrame)}
             />
 
             <XAxis
