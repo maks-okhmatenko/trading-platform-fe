@@ -1,0 +1,10 @@
+@import '../../../containers/App/theme.scss';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  float: 1;
+  background-color: $widget-body;
+  width: 100%;
+  height: 100%;
+}

@@ -19,7 +19,6 @@ import {
 import { useInjectReducer } from 'utils/injectReducer';
 
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
-import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
 import { changeActiveSymbolChart } from 'containers/App/actions';
@@ -28,6 +27,7 @@ import {
   socketIoLoadTimeFrameByCount,
   changeActiveTimeFrame,
 } from '../../containers/App/actions';
+import { OrderList, PropsType as OrdersProps } from 'components/ui/OrderList/OrderList';
 
 const HomePageContainer = props => {
   const { loading, tickers, allTickersShow, favoriteTickers } = props;
@@ -55,6 +55,11 @@ const HomePageContainer = props => {
     pickSymbolChart: props.pickSymbolChart,
   };
 
+  const ordersProps: OrdersProps = {
+    itemList: [],
+    loading: false,
+  };
+
   return (
     <>
       <Helmet>
@@ -73,7 +78,7 @@ const HomePageContainer = props => {
           {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
         </div>
         <div className={styles.ordersSection}>
-            {/* <CurrencyDetailsWidgetContainer /> */}
+          <OrderList {...ordersProps} />
         </div>
       </div>
     </>

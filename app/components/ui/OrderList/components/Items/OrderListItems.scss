@@ -1,0 +1,87 @@
+@import '../../../../../containers/App/theme.scss';
+
+$grey: #888F;
+
+.mainContainer {
+  display: block;
+  flex: 1;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  height: 100%;
+  background-color: $control-bg;
+}
+
+.tableContainer {
+  width: 100%;
+  position: relative;
+  tr {
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  td, th {
+    text-align: start;
+    z-index: 5;
+    padding: 0 1rem;
+    max-width: 100px; 
+    text-overflow: ellipsis;
+    flex-wrap: wrap;
+  }
+
+  th {
+    user-select: none;
+    position:-webkit-sticky;
+    position: sticky;
+    top: 0;
+    color: $grey;
+    font-size: .8em;
+    background-color: $control-bg;
+    box-shadow: 0 2px 0px  $grey;
+    z-index: 10;
+    text-transform: uppercase;
+    &:hover {
+      background-color: #FFF1;
+    }
+  }
+}
+
+.body {
+  color: $control-text;
+  span {
+    color: #888F;
+  }
+}
+
+.sortBy { 
+	padding-right: 18px;
+	position: relative;
+}
+.sortByUp:before,
+.sortByDown:after {
+	border: 6px solid transparent;
+	content: "";
+	display: block;
+	height: 0;
+	right: 1rem;
+	top: 50%;
+	position: absolute;
+	width: 0;
+}
+.sortByUp:before {
+	border-bottom-color: $grey;
+	margin-top: -14px;
+}
+.sortByDown:after {
+	border-top-color: $grey;
+	margin-top: 0px;
+}
+
+.green {
+  color: $up-text;
+}
+.red {
+  color: $down-text;
+}

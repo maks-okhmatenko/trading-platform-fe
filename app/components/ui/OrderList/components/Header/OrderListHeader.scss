@@ -1,0 +1,42 @@
+@import '../../../../../containers/App/theme.scss';
+
+.headerContainer {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  width: 100%;
+  background-color: $control-bg;
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tabContainer {
+  display: flex;
+  flex: 1;
+}
+
+.tab {
+  list-style-type: none;
+  padding: 10px 20px;
+  color: #888F;
+  background-color: $control-bg;
+  text-align: center;
+  font-size: 1.4em;
+  border-bottom: 2px solid $control-tab-light;
+  user-select: none;
+  &.active {
+    color: $control-text;
+    border-bottom: 2px solid $control-tab-active-light;
+  }
+}
+
+.button { 
+  margin: auto;
+  font-size: 1.4em;
+  color: $control-text;
+}
