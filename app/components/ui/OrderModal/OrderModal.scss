@@ -1,0 +1,107 @@
+@import '../../../containers/App/theme.scss';
+
+$grey: #888F;
+
+.modalMain {
+  z-index: 100;
+  width: 500px;
+  height: 600px;
+  margin: 50px auto;
+
+  background-color: $control-bg;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  justify-content: space-between;
+  background-color: $widget-head;
+  color: $control-text;
+  align-items: center;
+}
+
+h1 {
+  color: $control-text;
+  height: 1em;
+  line-height: 1em;
+}
+
+.body {
+  justify-content: space-evenly;
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0 20px;
+  align-items: center;
+  .left {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: flex-start;
+    * {
+      // width: 50%;
+      font-size: 1.4em;
+      justify-content: start;
+      text-align: start;
+    }
+  }
+  .right {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: flex-end;
+    * {
+      // width: 50%;
+      font-size: 1.4em;
+      justify-content: end;
+      text-align: end;
+    }
+  }
+}
+
+
+.footer {
+  height: 100px;
+  justify-content: space-around;
+  background-color: $widget-head;
+  color: $control-text;
+}
+
+.squareButton {
+  color: $grey;
+  font-size: 1.5em;
+  line-height: 1em;
+  text-align: center;
+  height: 30px;
+  width: 30px;
+  border: 1px solid $grey;
+  border-radius: 10px;
+  user-select: none;
+  &:active {
+    border-color: $control-tab-active-light;
+    color: $control-tab-active-light;
+  }
+}
+
+.buy {
+  background-color: $up-text;
+}
+.sell {
+  background-color: $down-text;
+}
+
+.button {
+  font-size: 1.8em;
+  color: $control-text;
+  justify-content: center;
+  height: 50%;
+  display: flex;
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  margin: 5px;
+}

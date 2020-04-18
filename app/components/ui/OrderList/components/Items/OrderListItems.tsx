@@ -84,7 +84,8 @@ export class OrderListItems extends Component<PropsType, StateType> {
             </tr>
           </thead>
           <tbody className={styles.body}>
-            {orderList.map(order => (
+            {orderList.map(order => {
+              return (
               <tr key={order.id}>
                 {propList.map(prop => {
                   const value = order[prop.name];
@@ -107,11 +108,14 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   }
 
                   return (
-                    <td key={prop.name}>{value}</td>
+                    <td key={prop.name}>
+                      {value}
+                    </td>
                   );
                 })}
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

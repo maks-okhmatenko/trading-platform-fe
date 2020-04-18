@@ -9,6 +9,10 @@ import { changeFavoriteSymbolList } from './../../../../../containers/App/action
 import { CHANGE_TYPE } from 'containers/App/constants';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 import ArrowIcon from 'components/ui/icons/Arrow_icon';
+import { OrderModal, PropsType as ModalPropsType } from 'components/ui/OrderModal/OrderModal';
+import { symbol } from 'prop-types';
+
+const { useState } = React;
 
 export type CurrencyItemsProps = {
   list: Array<{
@@ -28,8 +32,17 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = (props) => {
     list,
   } = props;
   const dispatch = useDispatch();
-  const handleNewOrderClick = e => {
-    console.log(e);
+  const [modalVisible, setModalVisible] = useState(true);
+  const [modalProps, setModalProps] = useState() as [ModalPropsType, any];
+
+  const handleNewOrderClick = (symbol, bid, ask) => {
+    const modal: ModalPropsType = {
+      symbol,
+      ask,
+      bid,
+    };
+    setModalProps(modal);
+    setModalVisible(true);
   };
 
   const handleOpenChartClick = (e, data) => {
@@ -44,6 +57,7 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = (props) => {
 
   return (
     <div className={styles.currencyItemsWrap}>
+      <OrderModal {...modalProps} isVisible={modalVisible} showModal={setModalVisible}/>
       <table className={styles.currencyList}>
         <thead className={styles.currencyItem}>
           <tr>
@@ -91,7 +105,7 @@ const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = (props) => {
                 <FavoriteIcon active onClick={(e) => handleSwitchIsFavorite(symbol)}/>
               </td>
               <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
-                <MenuItem data={{ symbol }} onClick={handleNewOrderClick}>
+                <MenuItem data={{ symbol }} onClick={(e) => handleNewOrderClick(symbol, ticker.Bid, ticker.Ask)}>
                   New order
                 </MenuItem>
                 <MenuItem data={{ symbol }} onClick={handleOpenChartClick}>

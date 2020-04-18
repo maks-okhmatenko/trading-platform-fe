@@ -4,34 +4,30 @@ $grey: #888F;
 
 .mainContainer {
   display: block;
+  font-size: 0.9em;
   flex: 1;
   overflow: auto;
   &::-webkit-scrollbar {
     display: none;
   }
   -ms-overflow-style: none;
-  height: 100%;
   background-color: $control-bg;
 }
 
 .tableContainer {
   width: 100%;
   position: relative;
-  tr {
-    height: 40px;
-    border-radius: 10px;
-  }
-
+  border-spacing: 0 7px;
+  border-collapse: separate;
+  
   td, th {
     text-align: start;
-    z-index: 5;
     padding: 0 1rem;
-    max-width: 100px; 
-    text-overflow: ellipsis;
-    flex-wrap: wrap;
+    max-width: 100px;
   }
-
+  
   th {
+    height: 30px;
     user-select: none;
     position:-webkit-sticky;
     position: sticky;
@@ -40,10 +36,23 @@ $grey: #888F;
     font-size: .8em;
     background-color: $control-bg;
     box-shadow: 0 2px 0px  $grey;
-    z-index: 10;
     text-transform: uppercase;
     &:hover {
-      background-color: #FFF1;
+      background-color: $list-primary-bg;
+    }
+  }
+
+  td {
+    justify-content: space-between;
+    text-overflow: ellipsis;
+    flex-wrap: wrap;
+    padding: 5px 1rem;
+    background-color: $widget-head;
+    &:first-child {
+      border-radius: 12px 0 0 12px;
+    }
+    &:last-child {
+      border-radius: 0 12px 12px 0;
     }
   }
 }
@@ -65,7 +74,7 @@ $grey: #888F;
 	content: "";
 	display: block;
 	height: 0;
-	right: 1rem;
+	right: 5px;
 	top: 50%;
 	position: absolute;
 	width: 0;
