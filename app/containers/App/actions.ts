@@ -58,7 +58,12 @@ export const socketIoTickers = (data) => ({
 
 export const socketIoSubscribeTimeframe = (data: socketIoSubscribeTimeframeProps) => ({
   type: ActionTypes.SOCKET_IO_REQUEST,
-  payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME, data },
+  payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME_INIT_BY_RANGE, data },
+});
+
+export const socketIoSubscribeTimeframeInitByCount = (data: socketIoSubscribeTimeframeProps) => ({
+  type: ActionTypes.SOCKET_IO_REQUEST,
+  payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME_INIT_BY_COUNT, data },
 });
 
 export const socketIoGlobalConfig = (data) => ({

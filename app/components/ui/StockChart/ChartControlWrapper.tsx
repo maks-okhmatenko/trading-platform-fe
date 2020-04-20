@@ -161,9 +161,7 @@ const useInit = (ref, props, zoomer) => {
     subscribeChartData({
       symbol: activeSymbolChart,
       frameType: activeTimeFrame,
-      from: getTimestamp.subtract(
-        TIME_FRAMES_CONFIG[activeTimeFrame].from * candlesLoad,
-      ),
+      count: candlesLoad * 0.75,
       to: getTimestamp.add(
         TIME_FRAMES_CONFIG[activeTimeFrame].to * candlesLoad,
       ),

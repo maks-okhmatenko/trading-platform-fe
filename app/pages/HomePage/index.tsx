@@ -23,7 +23,7 @@ import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
 import { changeActiveSymbolChart } from 'containers/App/actions';
 import {
-  socketIoSubscribeTimeframe,
+  socketIoSubscribeTimeframeInitByCount,
   socketIoLoadTimeFrameByCount,
   changeActiveTimeFrame,
 } from '../../containers/App/actions';
@@ -99,7 +99,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  subscribeChartData: socketIoSubscribeTimeframe,
+  subscribeChartData: socketIoSubscribeTimeframeInitByCount,
   loadMoreChartData: socketIoLoadTimeFrameByCount,
   pickTimeFrame: changeActiveTimeFrame,
   pickSymbolChart: changeActiveSymbolChart,

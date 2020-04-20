@@ -24,7 +24,8 @@ export enum ActionTypes {
 
 export enum EVENT_NAME {
   GET_GLOBAL_CONFIG = 'getGlobalConfig',
-  SUBSCRIBE_TIME_FRAME = 'subscribeTimeframe',
+  SUBSCRIBE_TIME_FRAME_INIT_BY_RANGE = 'subscribeTimeframe',
+  SUBSCRIBE_TIME_FRAME_INIT_BY_COUNT = 'subscribeTimeframeInitByCount',
   SUBSCRIBE_TICKERS = 'subscribeTickers',
 
   GET_TIME_FRAME_BY_RANGE = 'getTimeframeByRange',
