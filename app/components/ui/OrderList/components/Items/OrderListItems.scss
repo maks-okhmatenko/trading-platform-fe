@@ -94,3 +94,28 @@ $grey: #888F;
 .red {
   color: $down-text;
 }
+
+.squareButton {
+  color: $grey;
+  font-size: 1.2em;
+  line-height: 1.1em;
+  text-align: center;
+  height: 20px;
+  width: 20px;
+  border: 1px solid $grey;
+  border-radius: 5px;
+  user-select: none;
+  &:active {
+    border-color: $control-tab-active-light;
+    color: $control-tab-active-light;
+  }
+}
+
+.inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  * {
+    margin: 0 10px; 
+  }
+}

@@ -4,8 +4,7 @@ $grey: #888F;
 
 .modalMain {
   z-index: 100;
-  width: 500px;
-  height: 600px;
+  width: 450px;
   margin: 50px auto;
 
   background-color: $control-bg;
@@ -17,17 +16,20 @@ $grey: #888F;
   justify-content: space-between;
   background-color: $widget-head;
   color: $control-text;
-  align-items: center;
+  align-items: center !important;
 }
 
 h1 {
   color: $control-text;
   height: 1em;
   line-height: 1em;
+  margin: 5px 0;
+  text-align: center;
 }
 
 .body {
-  justify-content: space-evenly;
+  align-items: center;
+  justify-content: center;
   flex: 1;
 }
 
@@ -35,29 +37,42 @@ h1 {
   display: flex;
   flex-direction: row;
   width: 100%;
-  padding: 0 20px;
-  align-items: center;
+  padding: 10px 20px;
+  margin: 5px 0;
+  align-items: flex-start;
+  justify-content: space-between;
   .left {
+    flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    flex: 1;
     align-items: flex-start;
-    * {
-      // width: 50%;
+    h1 {
+      margin: 10px 0;
       font-size: 1.4em;
-      justify-content: start;
+    }
+    input {
+      margin: 10px 0;
+      width: 150px;
+      font-size: 1.4em;
       text-align: start;
     }
   }
   .right {
+    flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    flex: 1;
     align-items: flex-end;
-    * {
-      // width: 50%;
+    h1 {
+      margin: 10px 0;
       font-size: 1.4em;
-      justify-content: end;
+      text-align: end;
+    }
+    input {
+      margin: 10px 0;
+      width: 150px;
+      font-size: 1.4em;
       text-align: end;
     }
   }
@@ -65,7 +80,6 @@ h1 {
 
 
 .footer {
-  height: 100px;
   justify-content: space-around;
   background-color: $widget-head;
   color: $control-text;
@@ -103,5 +117,45 @@ h1 {
   flex: 1;
   border: none;
   border-radius: 10px;
-  margin: 5px;
+  margin: 10px;
+}
+
+.digitInput {
+  h1 {
+    text-align: center;
+    margin: 5px;
+    color: $grey;
+    font-size: 1.2em;
+  }
+  .input {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    * {
+      min-width: 30px;
+      border-radius: 0;
+      &:first-child {
+        border-radius: 10px 0 0 10px;
+      }
+      &:last-child {
+        border-radius: 0 10px 10px 0;
+      }
+    }
+    input {
+      height: 100%;
+      padding: 5px;
+      font-size: 15px;
+      width: 100px;
+      text-align: center;
+    }
+  }
+}
+
+.dropdown {
+  flex: 1;
+  font-size: 1.8em;
+  color: $control-text;
+  background-color: $control-bg;
+  border-color: $grey;
 }

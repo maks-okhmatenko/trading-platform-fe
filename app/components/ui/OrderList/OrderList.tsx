@@ -30,7 +30,7 @@ const testOrderList: ORDER_ITEM_TYPE[] = [
     netProfit: '-0.001',
   },
   {
-    id: '111',
+    id: '1fgjh11',
     date: moment.now(),
     symbol: 'ASDASD',
     volume: '0.012',
@@ -44,7 +44,7 @@ const testOrderList: ORDER_ITEM_TYPE[] = [
     netProfit: '-0.001',
   },
   {
-    id: '111',
+    id: '178911',
     date: moment.now(),
     symbol: 'ASDASD',
     volume: '0.012',
@@ -58,18 +58,18 @@ const testOrderList: ORDER_ITEM_TYPE[] = [
     netProfit: '-0.001',
   },
   {
-    id: '111',
+    id: '1911',
     date: moment.now(),
     symbol: 'ASDASD',
     volume: '0.012',
     side: SIDE_TYPE.BUY,
     openPrice: '0.123',
     currentPrice: '0.213',
-    stopLoss: '0.333',
-    takeProfit: '0.21',
+    stopLoss: '',
+    takeProfit: '0',
     swap: '0.00',
     commission: '0.00',
-    netProfit: '-0.001',
+    netProfit: '0.001',
   },
 ];
 
@@ -98,6 +98,9 @@ export const OrderList: React.FC<PropsType> = props => {
 
   const itemsProps: ItemsProps = {
     orderList: testOrderList,
+    onOrderDelete: (id) => console.log('delete ' + id),
+    onOrderUpdate: (props) => console.log(props),
+    onSort: (sotrBy, direction) => console.log('sortBy' + sotrBy + ' dir:' + direction),
   };
 
   // Render

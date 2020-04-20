@@ -9,27 +9,34 @@ import styles from './OrderListItems.scss';
 const { Component } = React;
 
 const propList = [
-  { label: 'Id',            name: 'id'           },
-  { label: 'Open Time',     name: 'date'         },
-  { label: 'Symbol',        name: 'symbol'       },
-  { label: 'Volume',        name: 'volume'       },
-  { label: 'Side',          name: 'side'         },
-  { label: 'Open Price',    name: 'openPrice'    },
-  { label: 'Current Price', name: 'currentPrice' },
-  { label: 'Stop Loss',     name: 'stopLoss'     },
-  { label: 'Take Profit',   name: 'takeProfit'   },
-  { label: 'Swap',          name: 'swap'         },
+  { label: 'Id',            name: 'id',           sortable: true  },
+  { label: 'Open Time',     name: 'date',         sortable: true  },
+  { label: 'Symbol',        name: 'symbol',       sortable: true  },
+  { label: 'Volume',        name: 'volume',       sortable: true  },
+  { label: 'Side',          name: 'side',         sortable: true  },
+  { label: 'Open Price',    name: 'openPrice',    sortable: true  },
+  { label: 'Current Price', name: 'currentPrice', sortable: true  },
+  { label: 'Stop Loss',     name: 'stopLoss',     sortable: true  },
+  { label: 'Take Profit',   name: 'takeProfit',   sortable: true  },
+  { label: 'Swap',          name: 'swap',         sortable: true  },
+  { label: 'Commission',    name: 'commission',   sortable: true  },
+  { label: 'Net profit',    name: 'netProfit',    sortable: true  },
+  { label: '',              name: 'delete',       sortable: false },
 ];
 
 // PropsType
 export type PropsType = {
   orderList: ORDER_ITEM_TYPE[],
+  onOrderDelete: (id: string) => void,
+  onOrderUpdate: (props: any) => void,
+  onSort: (colName: string, direction: boolean) => void,
 };
 
 // StateType
 export type StateType = {
   sortBy: string,
   sortDir: boolean,
+  onSort: (colName: string, direction: boolean) => void,
 };
 
 // Component
@@ -38,10 +45,11 @@ export class OrderListItems extends Component<PropsType, StateType> {
   // Constructor
   constructor(props) {
     super(props);
-
+    const { onSort } = props;
     this.state = {
       sortBy: '',
       sortDir: true,
+      onSort,
     };
   }
 
@@ -53,11 +61,12 @@ export class OrderListItems extends Component<PropsType, StateType> {
     } else {
       this.setState({sortDir: false, sortBy: propName});
     }
+    this.state.onSort(sortBy, sortDir);
   }
 
   // Render
   public render() {
-    const { orderList } = this.props;
+    const { orderList, onOrderDelete, onOrderUpdate } = this.props;
     const { sortBy, sortDir } = this.state;
 
     return (
@@ -66,11 +75,13 @@ export class OrderListItems extends Component<PropsType, StateType> {
           <thead className={styles.header}>
             <tr>
               {propList.map(item => {
-                const classes = item.name === sortBy
-                  ? sortDir
-                    ? styles.sortByUp
-                    : styles.sortByDown
-                  : classnames(styles.sortByUp, styles.sortByDown);
+                const classes = item.sortable
+                  ? item.name === sortBy
+                    ? sortDir
+                      ? styles.sortByUp
+                      : styles.sortByDown
+                    : classnames(styles.sortByUp, styles.sortByDown)
+                  : '';
 
                 return (
                   <th className={classes}
@@ -103,6 +114,39 @@ export class OrderListItems extends Component<PropsType, StateType> {
                     return (
                       <td className={styles[value === SIDE_TYPE.BUY ? 'green' : 'red']}>
                         {value}
+                      </td>
+                    );
+                  }
+
+                  if (prop.name === 'netProfit') {
+                    return (
+                      <td className={styles[Number(value) > 0 ? 'green' : 'red']}>
+                        {value}
+                      </td>
+                    );
+                  }
+
+                  if (prop.name === 'stopLoss' || prop.name === 'takeProfit') {
+                    return (
+                      <td>
+                        <div className={styles.inline}>
+                          {Number(value || 0).toFixed(3)}
+                          { !value ? (
+                            <div className={styles.squareButton}
+                              onClick={() => onOrderUpdate({id: order.id, [prop.name]: 1 })}
+                            >+</div>
+                          ) : (<></>)}
+                        </div>
+                      </td>
+                    );
+                  }
+
+                  if (prop.name === 'delete') {
+                    return (
+                      <td key="deleteButton">
+                        <div className={styles.squareButton}
+                          onClick={() => onOrderDelete(order.id)}
+                        >X</div>
                       </td>
                     );
                   }

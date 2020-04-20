@@ -10,7 +10,7 @@ import { CHANGE_TYPE } from 'containers/App/constants';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 import ArrowIcon from 'components/ui/icons/Arrow_icon';
 import { OrderModal, PropsType as ModalPropsType } from 'components/ui/OrderModal/OrderModal';
-import { symbol } from 'prop-types';
+
 
 const { useState } = React;
 
@@ -27,12 +27,12 @@ export type CurrencyItemsProps = {
 
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
-const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = (props) => {
+const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
   const {
     list,
   } = props;
   const dispatch = useDispatch();
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [modalProps, setModalProps] = useState() as [ModalPropsType, any];
 
   const handleNewOrderClick = (symbol, bid, ask) => {
