@@ -116,17 +116,17 @@ const ChartControlWrapper = WrappedComponent => {
       leftShift: -additionalChartDataLength,
       initialData: chartData,
       width,
-      height: height - 20,
+      height: height - 70,
       loadMoreHandler,
       ticker,
       timeFrame: `${activeSymbolChart} ${activeTimeFrame}`,
     };
 
     return (
-      <>
-        <div className={styles.flexContainer}>
+      <div className={styles.flexContainer} ref={sizerRef}>
+        <div>
           <ChartControlPanel {...props} zoom={zoomer} />
-          <div className={styles.body} ref={sizerRef}>
+
             {width > 10 && height > 10 && chartData.length > 0 ? (
               <WrappedComponent {...chartProps} >
                 {(props) => {
@@ -137,9 +137,8 @@ const ChartControlWrapper = WrappedComponent => {
             ) : (
               <></>
             )}
-          </div>
         </div>
-      </>
+      </div>
     );
   };
 };

@@ -1,16 +1,15 @@
 @import '../../../containers/App/theme.scss';
 
 .flexContainer {
-  position: relative;
-  flex: 1;
-  height: 100%;
+  width: 100%;
   display: flex;
+  position: relative;
   flex-direction: column;
-  flex-grow: 1;
-  .body {
-    width: inherit;
-    height: inherit;
-  }
+}
+
+.chartWrapper {
+  position: absolute;
+  width: initial;
 }
 
 .controller {

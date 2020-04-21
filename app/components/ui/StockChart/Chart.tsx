@@ -256,7 +256,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     const xGrid = showGrid ? { innerTickSize: -1 * gridHeight, tickStrokeDasharray: 'ShortDash' } : {};
 
     return (
-      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll}>
+      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll} className={styles.chartWrapper}>
         <ChartCanvas
           ref={this.saveXNode}
           width={width}
