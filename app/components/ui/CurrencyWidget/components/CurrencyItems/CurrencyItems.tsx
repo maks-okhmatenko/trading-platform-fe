@@ -35,6 +35,8 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalProps, setModalProps] = useState() as [ModalPropsType, any];
 
+  const thisRef = React.useRef(null);
+
   const handleNewOrderClick = (symbol, bid, ask) => {
     const modal: ModalPropsType = {
       symbol,
@@ -56,8 +58,12 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
   };
 
   return (
-    <div className={styles.currencyItemsWrap}>
-      <OrderModal {...modalProps} isVisible={modalVisible} showModal={setModalVisible}/>
+    <div className={styles.currencyItemsWrap} ref={thisRef}>
+      <OrderModal {...modalProps}
+        isVisible={modalVisible}
+        showModal={setModalVisible}
+        parentRef={thisRef.current}
+      />
       <table className={styles.currencyList}>
         <thead className={styles.currencyItem}>
           <tr>
@@ -103,15 +109,15 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
               <td>{time}</td>
               <td>
                 <FavoriteIcon active onClick={(e) => handleSwitchIsFavorite(symbol)}/>
+                <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
+                  <MenuItem data={{ symbol }} onClick={(e) => handleNewOrderClick(symbol, ticker.Bid, ticker.Ask)}>
+                    New order
+                  </MenuItem>
+                  <MenuItem data={{ symbol }} onClick={handleOpenChartClick}>
+                    Open chart
+                  </MenuItem>
+                </ContextMenu>
               </td>
-              <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
-                <MenuItem data={{ symbol }} onClick={(e) => handleNewOrderClick(symbol, ticker.Bid, ticker.Ask)}>
-                  New order
-                </MenuItem>
-                <MenuItem data={{ symbol }} onClick={handleOpenChartClick}>
-                  Open chart
-                </MenuItem>
-              </ContextMenu>
             </ContextMenuTrigger>
           );
         })}

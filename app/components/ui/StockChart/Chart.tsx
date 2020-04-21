@@ -8,6 +8,7 @@ import { HoverTooltip, OHLCTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import chartWrapper from './ChartControlWrapper';
 import { last, first } from 'react-stockcharts/lib/utils';
+import _ from 'lodash';
 import {
   PriceCoordinate,
   CrossHairCursor,
@@ -65,6 +66,7 @@ function OHLCDisplayDefault(symbol) {
   };
 }
 
+// PropsType
 interface PropsType {
   children: any;
   type: string;
@@ -73,11 +75,11 @@ interface PropsType {
   initialData: [];
   leftShift: number;
   ticker: any;
-  seriesName: string;
   timeFrame: string;
   loadMoreHandler: (start, end) => void;
 }
 
+// StateType
 interface StateType {
   nodeX?: ChartCanvas;
   nodeY?: Chart;
@@ -88,6 +90,7 @@ interface StateType {
   resetX: boolean;
 }
 
+// Container
 class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
   constructor(props) {
     super(props);
@@ -229,7 +232,6 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       initialData,
       loadMoreHandler,
       leftShift = 0,
-      seriesName,
       timeFrame = '',
     } = this.props;
 
@@ -245,7 +247,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       this.setState({deltaX: 0});
     }
 
-    const margin = { left: 10, right: 70, top: 0, bottom: 30 };
+    const margin = { left: 10, right: 70, top: 20, bottom: 30 };
     const gridHeight = height - margin.top - margin.bottom;
     const gridWidth = width - margin.left - margin.right;
 
@@ -254,7 +256,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     const xGrid = showGrid ? { innerTickSize: -1 * gridHeight, tickStrokeDasharray: 'ShortDash' } : {};
 
     return (
-      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll} onDrag={this.handleDrag}>
+      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll}>
         <ChartCanvas
           ref={this.saveXNode}
           width={width}
@@ -262,7 +264,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
           ratio={1}
           margin={margin}
           type={type}
-          seriesName={seriesName}
+          seriesName="MainChart"
           data={data}
           xScale={xScale}
           xAccessor={xAccessor}
@@ -275,7 +277,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             yExtents={this.calcYExtents()}
             chartId="main_candles_chart"
           >
-            <OHLCTooltip origin={[10, 10]}
+            <OHLCTooltip origin={[0, -10]}
               ohlcFormat={numberFormat}
               textFill="tomato"
               fontSize={16}
@@ -328,7 +330,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
               <PriceCoordinate
                 at="right"
                 orient="right"
-                price={ticker.Bid}
+                price={_.toNumber(ticker.Bid)}
                 lineStroke={colors.lines}
                 displayFormat={numberFormat}
                 strokeDasharray="Solid"
@@ -340,7 +342,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
               <PriceCoordinate
                 at="right"
                 orient="right"
-                price={ticker.Ask}
+                price={_.toNumber(ticker.Ask)}
                 lineStroke={colors.lines}
                 displayFormat={numberFormat}
                 strokeDasharray="Solid"

@@ -85,7 +85,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
 
                 return (
                   <th className={classes}
-                    onClick={() => { this.handleSort(item.name); }}
+                    onClick={item.sortable ? () => this.handleSort(item.name) : undefined}
                     key={item.name}
                   >
                     {item.label}
@@ -97,13 +97,13 @@ export class OrderListItems extends Component<PropsType, StateType> {
           <tbody className={styles.body}>
             {orderList.map(order => {
               return (
-              <tr key={order.id}>
+              <tr key={order.id || '1'}>
                 {propList.map(prop => {
                   const value = order[prop.name];
 
                   if (prop.name === 'date') {
                     return (
-                      <td>
+                      <td key={prop.name}>
                         {moment(value).format('DD.MM.YYYY')}
                         <span> {moment(value).format('hh:mm:ss')}</span>
                       </td>
@@ -112,7 +112,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
 
                   if (prop.name === 'side') {
                     return (
-                      <td className={styles[value === SIDE_TYPE.BUY ? 'green' : 'red']}>
+                      <td key={prop.name} className={styles[value === SIDE_TYPE.BUY ? 'green' : 'red']}>
                         {value}
                       </td>
                     );
@@ -120,7 +120,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
 
                   if (prop.name === 'netProfit') {
                     return (
-                      <td className={styles[Number(value) > 0 ? 'green' : 'red']}>
+                      <td key={prop.name} className={styles[Number(value) > 0 ? 'green' : 'red']}>
                         {value}
                       </td>
                     );
@@ -128,7 +128,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
 
                   if (prop.name === 'stopLoss' || prop.name === 'takeProfit') {
                     return (
-                      <td>
+                      <td key={prop.name}>
                         <div className={styles.inline}>
                           {Number(value || 0).toFixed(3)}
                           { !value ? (

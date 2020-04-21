@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 export const WS_URL = 'ws://85.17.172.72:1189';
-export const WS_IO_URL = 'http://35.207.78.105:8080/'; // 'ws://localhost:8080';
+export const WS_IO_URL = 'http://35.207.78.105:8080/'; // 'http://localhost:8080';
 
 export enum ActionTypes {
   SOCKET_CONNECT = 'App/SOCKET_CONNECT_DONE',
@@ -77,6 +77,17 @@ export type ORDER_ITEM_TYPE = {
   swap: string,
   commission: string,
   netProfit: string,
+};
+
+export type NEW_ORDER = {
+  id?: string,
+  volume: number,
+  price?: number,
+  stopLoss?: string,
+  takeProfit?: string,
+  side: SIDE_TYPE,
+  bid: string,
+  ask: string,
 };
 
 export enum FRAME_TYPES {

@@ -5,19 +5,8 @@ import moment from 'moment';
 import classnames from 'classnames';
 
 import styles from './OrderModal.scss';
-import { SIDE_TYPE } from 'containers/App/constants';
+import { SIDE_TYPE, NEW_ORDER } from 'containers/App/constants';
 
-// TODO move to constants
-type Order = {
-  id?: string,
-  volume: number,
-  price?: number,
-  stopLoss?: string,
-  takeProfit?: string,
-  side: SIDE_TYPE,
-  bid: string,
-  ask: string,
-};
 
 const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
 
@@ -78,12 +67,13 @@ export type PropsType = {
 
   isVisible?: boolean,
   showModal?: (arg: boolean) => void,
-  onSubmit?: (order: Order) => void,
+  onSubmit?: (order: NEW_ORDER) => void,
+  parentRef?: any,
 };
 
 // Component
 export const OrderModal: React.FC<PropsType> = (props) => {
-  const { isVisible, showModal, symbol, bid, ask, onSubmit } = props;
+  const { isVisible, showModal, symbol, bid, ask, onSubmit, parentRef } = props;
 
   // Declarations
   const [orderType, setOrderType] = React.useState('pending');
@@ -94,7 +84,7 @@ export const OrderModal: React.FC<PropsType> = (props) => {
 
   // Handlers
   const handleSubmit = (side) => {
-    const newOrder: Order = {
+    const newOrder: NEW_ORDER = {
       volume,
       price,
       bid,
@@ -111,7 +101,10 @@ export const OrderModal: React.FC<PropsType> = (props) => {
   // Render
   return (
     <Modal className={styles.modalMain}
+      overlayClassName={styles.modalOverlay}
+      parentSelector={parentRef ? () => parentRef : undefined}
       isOpen={isVisible}
+      ariaHideApp={false}
       onRequestClose={handleClose}
       contentLabel="OrderModal"
     >
@@ -133,7 +126,7 @@ export const OrderModal: React.FC<PropsType> = (props) => {
       <div className={styles.body}>
         <div className={styles.row}>
           <DigitInput title="Volume" value={volume} setValue={setVolume} />
-          {orderType !== 'market'
+          {orderType === 'market'
             ? <></>
             : <DigitInput title="Price" value={price} setValue={setPrice} />
           }

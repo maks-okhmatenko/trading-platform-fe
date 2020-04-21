@@ -116,7 +116,7 @@ const ChartControlWrapper = WrappedComponent => {
       leftShift: -additionalChartDataLength,
       initialData: chartData,
       width,
-      height,
+      height: height - 20,
       loadMoreHandler,
       ticker,
       timeFrame: `${activeSymbolChart} ${activeTimeFrame}`,
@@ -161,7 +161,7 @@ const useInit = (ref, props, zoomer) => {
     subscribeChartData({
       symbol: activeSymbolChart,
       frameType: activeTimeFrame,
-      count: candlesLoad * 0.75,
+      count: candlesLoad * 0.5,
       to: getTimestamp.add(
         TIME_FRAMES_CONFIG[activeTimeFrame].to * candlesLoad,
       ),
@@ -170,6 +170,7 @@ const useInit = (ref, props, zoomer) => {
 
   useEffect(() => {
     const handleResize = () => {
+      console.log('resize');
       setWidth((ref.current && ref.current.clientWidth) || 0);
       setHeight((ref.current && ref.current.clientHeight) || 0);
     };

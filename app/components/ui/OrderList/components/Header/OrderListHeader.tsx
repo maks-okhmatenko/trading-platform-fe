@@ -42,10 +42,6 @@ export const OrderListHeader: React.FC<PropsType> = (props) => {
               );
             })}
           </ul>
-
-          <div className={styles.button}
-            onClick={(e) => console.log('switch extending')}
-          >Extend X</div>
         </div>
       </div>
     </>
