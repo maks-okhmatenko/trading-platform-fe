@@ -45,6 +45,12 @@ const makeSelectFavoriteTickers = () =>
 const makeSelectGlobalSymbolList = () =>
   createSelector(selectGlobal, globalState => globalState.globalConfig.TICKER_LIST);
 
+const makeSelectOrdersLoading = () =>
+  createSelector(selectGlobal, globalState => globalState.ordersLoading);
+
+const makeSelectOrders = () =>
+  createSelector(selectGlobal, globalState => globalState.orders);
+
 
 export {
   selectGlobal,
@@ -60,4 +66,6 @@ export {
   makeSelectOpenedSymbols,
   makeSelectFavoriteTickers,
   makeSelectGlobalSymbolList,
+  makeSelectOrders,
+  makeSelectOrdersLoading,
 };

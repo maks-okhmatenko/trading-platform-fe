@@ -10,7 +10,7 @@ import {
 } from './components/Items/OrderListItems';
 
 import styles from './OrderList.scss';
-import { ORDER_ITEM_TYPE, SIDE_TYPE } from 'containers/App/constants';
+import { ORDER_ITEM_TYPE, SIDE_TYPE, ORDER } from 'containers/App/constants';
 
 const { useState } = React;
 
@@ -78,12 +78,13 @@ const tabList = ['Orders', 'History'];
 // PropsType
 export type PropsType = {
   loading: boolean;
-  itemList: [];
+  itemList: ORDER[];
+  onDelete: (order: ORDER) => void;
 };
 
 // Component
 export const OrderList: React.FC<PropsType> = props => {
-  const { loading, itemList } = props;
+  const { loading, itemList, onDelete } = props;
 
   // Declaration
   // - state
@@ -96,23 +97,30 @@ export const OrderList: React.FC<PropsType> = props => {
     onTabChange,
   };
 
+  // - handlers
+  const handleOrderDelete = (id) => {
+    const ordertoDelete = itemList.find(order => order.id === id);
+    if (ordertoDelete) { onDelete(ordertoDelete); }
+  };
+
   const itemsProps: ItemsProps = {
-    orderList: testOrderList,
-    onOrderDelete: (id) => console.log('delete ' + id),
+    orderList: itemList,
+    loading,
+    onOrderDelete: handleOrderDelete,
     onOrderUpdate: (props) => console.log(props),
     onSort: (sotrBy, direction) => console.log('sortBy' + sotrBy + ' dir:' + direction),
   };
 
   // Render
   return (
-    <div className={styles.container}>
+    <div className={styles.mainContainer}>
       <OrderListHeader {...headerProps} />
 
-      {loading ? (
+      {!itemList ? (
         <span>Loading...</span>
-      ) : itemList && !loading ? (
+      ) : (
         <OrderListItems {...itemsProps} />
-      ) : null}
+      )}
     </div>
   );
 };

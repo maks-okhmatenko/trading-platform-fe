@@ -2,7 +2,8 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import classnames from 'classnames';
-import { ORDER_ITEM_TYPE, SIDE_TYPE } from 'containers/App/constants';
+import { ORDER, SIDE_TYPE } from 'containers/App/constants';
+import _ from 'lodash';
 
 import styles from './OrderListItems.scss';
 
@@ -10,14 +11,14 @@ const { Component } = React;
 
 const propList = [
   { label: 'Id',            name: 'id',           sortable: true  },
-  { label: 'Open Time',     name: 'date',         sortable: true  },
-  { label: 'Symbol',        name: 'symbol',       sortable: true  },
-  { label: 'Volume',        name: 'volume',       sortable: true  },
-  { label: 'Side',          name: 'side',         sortable: true  },
-  { label: 'Open Price',    name: 'openPrice',    sortable: true  },
+  { label: 'Open Time',     name: 'OpenTime',     sortable: true  },
+  { label: 'Symbol',        name: 'Symbol',       sortable: true  },
+  { label: 'Volume',        name: 'Volume',       sortable: true  },
+  { label: 'Side',          name: 'Cmd',          sortable: true  },
+  { label: 'Open Price',    name: 'Price',        sortable: true  },
   { label: 'Current Price', name: 'currentPrice', sortable: true  },
-  { label: 'Stop Loss',     name: 'stopLoss',     sortable: true  },
-  { label: 'Take Profit',   name: 'takeProfit',   sortable: true  },
+  { label: 'Stop Loss',     name: 'Sl',           sortable: true  },
+  { label: 'Take Profit',   name: 'Tp',           sortable: true  },
   { label: 'Swap',          name: 'swap',         sortable: true  },
   { label: 'Commission',    name: 'commission',   sortable: true  },
   { label: 'Net profit',    name: 'netProfit',    sortable: true  },
@@ -26,7 +27,8 @@ const propList = [
 
 // PropsType
 export type PropsType = {
-  orderList: ORDER_ITEM_TYPE[],
+  orderList: ORDER[],
+  loading: boolean,
   onOrderDelete: (id: string) => void,
   onOrderUpdate: (props: any) => void,
   onSort: (colName: string, direction: boolean) => void,
@@ -66,7 +68,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
 
   // Render
   public render() {
-    const { orderList, onOrderDelete, onOrderUpdate } = this.props;
+    const { orderList, onOrderDelete, onOrderUpdate, loading } = this.props;
     const { sortBy, sortDir } = this.state;
 
     return (
@@ -95,38 +97,44 @@ export class OrderListItems extends Component<PropsType, StateType> {
             </tr>
           </thead>
           <tbody className={styles.body}>
+            {loading ? <div className={styles.loading}/> : null}
             {orderList.map(order => {
               return (
-              <tr key={order.id || '1'}>
+              <tr key={order.id}>
                 {propList.map(prop => {
                   const value = order[prop.name];
 
-                  if (prop.name === 'date') {
+                  if (prop.name === 'OpenTime') {
+                    const openMoment = moment.unix(value);
                     return (
                       <td key={prop.name}>
-                        {moment(value).format('DD.MM.YYYY')}
-                        <span> {moment(value).format('hh:mm:ss')}</span>
+                        {!value ? null : <>
+                          {openMoment.format('DD.MM.YYYY')}
+                          <span> {openMoment.format('hh:mm:ss')}</span>
+                        </>}
                       </td>
                     );
                   }
 
-                  if (prop.name === 'side') {
+                  if (prop.name === 'Cmd') {
+                    const color = value === SIDE_TYPE.BUY ? 'green' : 'red';
                     return (
-                      <td key={prop.name} className={styles[value === SIDE_TYPE.BUY ? 'green' : 'red']}>
+                      <td key={prop.name} className={styles[color]}>
                         {value}
                       </td>
                     );
                   }
 
                   if (prop.name === 'netProfit') {
+                    const color = _.toNumber(value) > 0 ? 'green' : 'red';
                     return (
-                      <td key={prop.name} className={styles[Number(value) > 0 ? 'green' : 'red']}>
+                      <td key={prop.name} className={styles[color]}>
                         {value}
                       </td>
                     );
                   }
 
-                  if (prop.name === 'stopLoss' || prop.name === 'takeProfit') {
+                  if (prop.name === 'Sl' || prop.name === 'Tp') {
                     return (
                       <td key={prop.name}>
                         <div className={styles.inline}>
@@ -145,7 +153,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                     return (
                       <td key="deleteButton">
                         <div className={styles.squareButton}
-                          onClick={() => onOrderDelete(order.id)}
+                          onClick={() => order.id && onOrderDelete(order.id)}
                         >X</div>
                       </td>
                     );

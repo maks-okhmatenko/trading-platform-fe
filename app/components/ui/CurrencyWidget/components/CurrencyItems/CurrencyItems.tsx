@@ -48,6 +48,11 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     );
   };
 
+  const handleModalSubmit = (newOrder) => {
+    setModalSymbol('');
+    dispatch(openNewOrder(newOrder));
+  };
+
   // ModalProps
   const currTicker = list[modalSymbol];
   const liveModalProps = currTicker ? {
@@ -58,7 +63,7 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
   const modalProps = {
       isVisible: !!modalSymbol,
       handleClose: () => setModalSymbol(''),
-      onSubmit: (newOrder) => dispatch(openNewOrder(newOrder)),
+      onSubmit: handleModalSubmit,
       ...liveModalProps,
   };
 

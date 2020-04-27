@@ -3,6 +3,7 @@
 $grey: #888F;
 
 .mainContainer {
+  position: relative;
   display: block;
   font-size: 0.9em;
   flex: 1;
@@ -118,4 +119,14 @@ $grey: #888F;
   * {
     margin: 0 10px; 
   }
+}
+
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #7773;
+  z-index: 2;
 }

@@ -15,13 +15,15 @@ import {
   makeSelectOpenedSymbols,
   makeSelectFavoriteTickers,
   makeSelectGlobalSymbolList,
+  makeSelectOrders,
+  makeSelectOrdersLoading,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
-import { changeActiveSymbolChart } from 'containers/App/actions';
+import { changeActiveSymbolChart, closeOrder } from 'containers/App/actions';
 import {
   socketIoSubscribeTimeframeInitByCount,
   socketIoLoadTimeFrameByCount,
@@ -30,7 +32,7 @@ import {
 import { OrderList, PropsType as OrdersProps } from 'components/ui/OrderList/OrderList';
 
 const HomePageContainer = props => {
-  const { loading, tickers, allTickersShow, favoriteTickers } = props;
+  const { loading, tickers, allTickersShow, favoriteTickers, orders, deleteOrder, ordersLoading } = props;
   useInjectReducer({ key: 'app', reducer: appReducer });
 
   const currencyWidgetProps = {
@@ -56,8 +58,9 @@ const HomePageContainer = props => {
   };
 
   const ordersProps: OrdersProps = {
-    itemList: [],
-    loading: false,
+    itemList: orders,
+    loading: ordersLoading,
+    onDelete: deleteOrder,
   };
 
   return (
@@ -96,6 +99,8 @@ const mapStateToProps = createStructuredSelector({
   openedSymbols: makeSelectOpenedSymbols(),
   favoriteTickers: makeSelectFavoriteTickers(),
   globalSymbolList: makeSelectGlobalSymbolList(),
+  orders: makeSelectOrders(),
+  ordersLoading: makeSelectOrdersLoading(),
 });
 
 const mapDispatchToProps = {
@@ -103,6 +108,7 @@ const mapDispatchToProps = {
   loadMoreChartData: socketIoLoadTimeFrameByCount,
   pickTimeFrame: changeActiveTimeFrame,
   pickSymbolChart: changeActiveSymbolChart,
+  deleteOrder: closeOrder,
 };
 
 export default connect(

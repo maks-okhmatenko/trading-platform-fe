@@ -3,7 +3,7 @@ import _ from 'lodash';
 import classnames from 'classnames';
 
 import styles from './OrderModal.scss';
-import { SIDE_TYPE, NEW_ORDER } from 'containers/App/constants';
+import { SIDE_TYPE, ORDER } from 'containers/App/constants';
 import CheckBox from './../CheckBox';
 
 
@@ -80,7 +80,7 @@ export type PropsType = {
 
   isVisible?: boolean;
   handleClose?: () => void;
-  onSubmit?: (order: NEW_ORDER) => void;
+  onSubmit?: (order: ORDER) => void;
 };
 
 // OrderModal Component
@@ -117,7 +117,7 @@ export const OrderModal: React.FC<PropsType> = props => {
 
   // Handlers
   const handleSubmit = side => {
-    const newOrder: NEW_ORDER = {
+    const newOrder: ORDER = {
       Login: 'default',
       Symbol: symbol,
       Volume: volume,
@@ -237,7 +237,7 @@ export const OrderModal: React.FC<PropsType> = props => {
             <div className={styles.row}>
               <button
                 className={classnames(styles.button, styles.sell)}
-                onClick={() => handleSubmit(SIDE_TYPE.BUY)}
+                onClick={() => handleSubmit(SIDE_TYPE.SELL)}
               >SELL</button>
               <button
                 className={classnames(styles.button, styles.buy)}

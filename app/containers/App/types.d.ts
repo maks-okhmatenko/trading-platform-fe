@@ -17,6 +17,9 @@ interface AppState {
   favoriteTickers: [];
   activeSymbolChart: string;
   activeTimeFrame: FRAME_TYPES;
+
+  ordersLoading: boolean;
+  orders: [];
 }
 
 interface UserData {

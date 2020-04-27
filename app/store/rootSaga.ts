@@ -10,10 +10,12 @@ import {
   EVENT_NAME,
   WS_IO_URL,
   CHANGE_TYPE,
+  ORDER_API_URL,
 } from '../containers/App/constants';
 import {
   makeSelectFavoriteTickers,
 } from 'containers/App/selectors';
+import moment from 'moment';
 
 function transformTickers(data) {
   return data.reduce((acc, curr) => {
@@ -108,32 +110,51 @@ function* watchSocketIoChannel() {
   }
 }
 
-export const openOrder = (url: string, data) => {
+async function httpRequst(url: string, data) {
+  const formData = new FormData();
+
+  // tslint:disable-next-line: forin
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
   return fetch(url, {
     method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-    },
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer',
-    body: JSON.stringify(data),
-  });
-};
+    body: formData,
+  }).then(response => response.json());
+}
 
 function* openOrderSaga(action) {
-  const request = {
+  const requestData = {
     action: 'OrderOpen',
     ...action.payload,
   };
-  const data = yield call(openOrder, 'http://test.greathead.net/order.php', request);
-  console.log(data);
+  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  if (data) {
+    const order = {
+      id: data.message,
+      OpenTime: moment(moment.now()).unix(),
+      ...action.payload,
+    };
+    yield put(AppActions.openOrderSuccess(order));
+  }
+}
+
+function* closeOrderSaga(action) {
+  const requestData = {
+    action: 'OrderClose',
+    Orders: [action.payload],
+  };
+  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  if (data && data.message) {
+    yield put(AppActions.closeOrderSuccess(action.payload.id));
+  }
 }
 
 export function* rootSagas() {
+  yield put(AppActions.openOrderSuccess());
   yield all([
     fork(watchSocketIoChannel),
     takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),
+    takeEvery(ActionTypes.CLOSE_ORDER, closeOrderSaga),
   ]);
 }

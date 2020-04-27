@@ -17,6 +17,9 @@ export const initialState: ContainerState = {
 
   chartTimeFrame: [],
   additionalChartDataLength: 0,
+
+  ordersLoading: false,
+  orders: [],
 };
 
 // @ts-ignore
@@ -127,6 +130,35 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.CHANGE_ACTIVE_TIME_FRAME:
       draft.activeTimeFrame = action.payload.data;
+      break;
+
+    case ActionTypes.OPEN_NEW_ORDER:
+    case ActionTypes.CLOSE_ORDER:
+      draft.ordersLoading = true;
+      break;
+
+    case ActionTypes.OPEN_ORDER_SUCCESS:
+      const ordersStr = localStorage.getItem('orders');
+      draft.ordersLoading = false;
+      if (ordersStr !== null) {
+        draft.orders = JSON.parse(ordersStr);
+      }
+      if (action.payload) {
+        draft.orders.push(action.payload);
+      }
+      localStorage.setItem('orders', JSON.stringify(draft.orders));
+      break;
+
+    case ActionTypes.CLOSE_ORDER_SUCCESS:
+      const ordersListStr = localStorage.getItem('orders');
+      draft.ordersLoading = false;
+      if (ordersListStr !== null) {
+        const orders = JSON.parse(ordersListStr);
+        console.log(orders, action.payload);
+        draft.orders = orders
+          .filter(order => order.id !== action.payload);
+      }
+      localStorage.setItem('orders', JSON.stringify(draft.orders));
       break;
 
     default:

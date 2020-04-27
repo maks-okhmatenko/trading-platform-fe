@@ -1,6 +1,7 @@
 @import '../../../containers/App/theme.scss';
 
-.container {
+.mainContainer {
+  position: relative;
   display: flex;
   flex-direction: column;
   float: 1;
