@@ -8,15 +8,15 @@ const Footer = (props) => {
 
   return (
     <footer className={styles.footer}>
-      <label className={styles.themeController}>
         {theme ? (
           <CheckBox
             defaultValue={(theme === 'dark')}
             onChange={(checked) => onThemeChange(checked ? 'dark' : 'light')}
+            titleChecked="Dark"
+            titleUnchecked="Light"
           />
-          ) : (<></>)
+          ) : null
         }
-      </label>
     </footer>
   );
 };

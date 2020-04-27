@@ -2,11 +2,27 @@
 
 $grey: #888F;
 
+.mainWrapper {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.eventsAll {
+  pointer-events: all;
+}
+.eventsNone {
+  pointer-events: none;
+}
+
 .modalMain {
+  pointer-events: all;
   z-index: 100;
   width: 400px;
-  margin: 50px auto;
-
+  position: fixed;
   background-color: $control-bg;
   display: flex;
   flex-direction: column;
@@ -17,14 +33,15 @@ $grey: #888F;
   justify-content: space-between;
   background-color: $widget-head;
   color: $control-text;
-  align-items: center !important;
+  padding: 10px 20px;
+  user-select: none;
 }
 
 h1 {
   color: $control-text;
   font-size: 1.5em;
   line-height: 1em;
-  margin: 5px 0;
+  margin: 0;
   text-align: center;
 }
 
@@ -32,51 +49,21 @@ h1 {
   align-items: center;
   justify-content: center;
   flex: 1;
+  .row {
+    justify-content: center;
+  }
+  h1 {
+    margin: 15px;
+  }
 }
 
 .row {
   display: flex;
   flex-direction: row;
   width: 100%;
-  padding: 10px 20px;
   margin: 5px 0;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  .left {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    h1 {
-      margin: 10px 0;
-      font-size: 1.2em;
-    }
-    input {
-      margin: 10px 0;
-      width: 150px;
-      font-size: 1.2em;
-      text-align: start;
-    }
-  }
-  .right {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    h1 {
-      margin: 10px 0;
-      font-size: 1.2em;
-      text-align: end;
-    }
-    input {
-      margin: 10px 0;
-      width: 150px;
-      font-size: 1.2em;
-      text-align: end;
-    }
-  }
 }
 
 
@@ -84,9 +71,11 @@ h1 {
   justify-content: space-around;
   background-color: $widget-head;
   color: $control-text;
+  padding: 10px 20px;
 }
 
 .squareButton {
+  background-color: #0000;
   color: $grey;
   font-size: 1.5em;
   line-height: 1em;
@@ -122,10 +111,11 @@ h1 {
 }
 
 .digitInput {
+  margin: 5px auto;
   h1 {
     text-align: center;
     margin: 5px;
-    color: $grey;
+    color: $control-text;
     font-size: 1.2em;
   }
   .input {
@@ -137,37 +127,42 @@ h1 {
       min-width: 30px;
       border-radius: 0;
       &:first-child {
-        border-radius: 10px 0 0 10px;
+        border-bottom-left-radius: 10px;
+        border-top-left-radius: 10px;
       }
       &:last-child {
-        border-radius: 0 10px 10px 0;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
       }
     }
     input {
-      // height: 2em;
+      width: 250px;
+      margin: 0;
       padding: 3px;
       font-size: 1.2em;
-      width: 100px;
       text-align: center;
       border: 1px solid $grey;
+      &:disabled {
+        width: 310px;
+        background-color: #FFF0;
+        color: $control-text;
+      }
     }
   }
 }
 
-.dropdown {
-  flex: 1;
-  font-size: 1.2em;
-  color: $control-text;
-  background-color: $control-bg;
-  border-color: $grey;
-}
-
-.modalOverlay {
-  z-index: 99;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  background-color: rgba(255, 255, 255, 0.6);
+.switcherLable {
+  margin: 5px auto;
+  color: $grey;
+  justify-content: center;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  user-select: none;
+  & > * {
+    margin: 5px 10px;
+  }
 }

@@ -108,8 +108,32 @@ function* watchSocketIoChannel() {
   }
 }
 
+export const openOrder = (url: string, data) => {
+  return fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify(data),
+  });
+};
+
+function* openOrderSaga(action) {
+  const request = {
+    action: 'OrderOpen',
+    ...action.payload,
+  };
+  const data = yield call(openOrder, 'http://test.greathead.net/order.php', request);
+  console.log(data);
+}
+
 export function* rootSagas() {
   yield all([
     fork(watchSocketIoChannel),
+    takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),
   ]);
 }

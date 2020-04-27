@@ -1,4 +1,4 @@
-import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE } from './constants';
+import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE, NEW_ORDER } from './constants';
 import { transformChartData } from './utils';
 
 type socketIoSubscribeTimeframeProps = {
@@ -84,4 +84,9 @@ export const changeActiveTimeFrame = (data) => ({
 export const changeFavoriteSymbolList = (eventType: CHANGE_TYPE, data?) => ({
   type: ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST,
   payload: { eventType, data },
+});
+
+export const openNewOrder = (order: NEW_ORDER) => ({
+  type: ActionTypes.OPEN_NEW_ORDER,
+  payload: order,
 });

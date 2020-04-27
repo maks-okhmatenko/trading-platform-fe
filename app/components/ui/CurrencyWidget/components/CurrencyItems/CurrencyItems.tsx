@@ -4,12 +4,12 @@ import moment from 'moment';
 import styles from './CurrencyItems.scss';
 import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
 import { useDispatch } from 'react-redux';
-import { changeActiveSymbolChart } from '../../../../../containers/App/actions';
+import { changeActiveSymbolChart, openNewOrder } from '../../../../../containers/App/actions';
 import { changeFavoriteSymbolList } from './../../../../../containers/App/actions';
 import { CHANGE_TYPE } from 'containers/App/constants';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 import ArrowIcon from 'components/ui/icons/Arrow_icon';
-import { OrderModal, PropsType as ModalPropsType } from 'components/ui/OrderModal/OrderModal';
+import OrderModal from 'components/ui/OrderModal/OrderModal';
 
 
 const { useState } = React;
@@ -28,23 +28,14 @@ export type CurrencyItemsProps = {
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
-  const {
-    list,
-  } = props;
+  const { list } = props;
+
   const dispatch = useDispatch();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalProps, setModalProps] = useState() as [ModalPropsType, any];
+  const [modalSymbol, setModalSymbol] = useState('');
 
-  const thisRef = React.useRef(null);
-
-  const handleNewOrderClick = (symbol, bid, ask) => {
-    const modal: ModalPropsType = {
-      symbol,
-      ask,
-      bid,
-    };
-    setModalProps(modal);
-    setModalVisible(true);
+  // Handlers
+  const handleNewOrderClick = (symbol) => {
+    setModalSymbol(symbol);
   };
 
   const handleOpenChartClick = (e, data) => {
@@ -57,13 +48,24 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     );
   };
 
+  // ModalProps
+  const currTicker = list[modalSymbol];
+  const liveModalProps = currTicker ? {
+    symbol: modalSymbol,
+    ask: currTicker.Ask,
+    bid: currTicker.Bid,
+  } : {};
+  const modalProps = {
+      isVisible: !!modalSymbol,
+      handleClose: () => setModalSymbol(''),
+      onSubmit: (newOrder) => dispatch(openNewOrder(newOrder)),
+      ...liveModalProps,
+  };
+
+  // Render
   return (
-    <div className={styles.currencyItemsWrap} ref={thisRef}>
-      <OrderModal {...modalProps}
-        isVisible={modalVisible}
-        showModal={setModalVisible}
-        parentRef={thisRef.current}
-      />
+    <div className={styles.currencyItemsWrap}>
+      <OrderModal {...modalProps} />
       <table className={styles.currencyList}>
         <thead className={styles.currencyItem}>
           <tr>
@@ -110,7 +112,7 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
               <td>
                 <FavoriteIcon active onClick={(e) => handleSwitchIsFavorite(symbol)}/>
                 <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
-                  <MenuItem data={{ symbol }} onClick={(e) => handleNewOrderClick(symbol, ticker.Bid, ticker.Ask)}>
+                  <MenuItem data={{ symbol }} onClick={(e) => handleNewOrderClick(symbol)}>
                     New order
                   </MenuItem>
                   <MenuItem data={{ symbol }} onClick={handleOpenChartClick}>

@@ -54,7 +54,7 @@ const ChartControlPanel: React.FC<any> = props => {
   });
 
   const zoomButtons = !zoom
-    ? (<></>)
+    ? null
     : [
       { handler: zoom.in, value: 'Zoom +' },
       { handler: zoom.reset, value: 'Reset' },
@@ -91,6 +91,7 @@ const ChartControlWrapper = WrappedComponent => {
       activeTimeFrame,
       activeSymbolChart,
       loadMoreChartData,
+      chartLoading,
     } = props;
 
     const sizerRef = useRef(null);
@@ -107,11 +108,12 @@ const ChartControlWrapper = WrappedComponent => {
       loadMoreChartData({
         symbol: activeSymbolChart,
         frameType: activeTimeFrame,
-        count: rowsToDownload,
+        count: rowsToDownload * 2,
         to: getTimestamp.add(0, startTimestamp),
       });
     }, 100);
 
+    const isChartVisible = width > 0 && height > 0 && chartData.length > 0;
     const chartProps = {
       leftShift: -additionalChartDataLength,
       initialData: chartData,
@@ -127,16 +129,14 @@ const ChartControlWrapper = WrappedComponent => {
         <div>
           <ChartControlPanel {...props} zoom={zoomer} />
 
-            {width > 10 && height > 10 && chartData.length > 0 ? (
+            {isChartVisible ? (
               <WrappedComponent {...chartProps} >
                 {(props) => {
                   const { zoom } = props;
-                  setZoomer(zoom);
+                  if (zoomer !== zoom) { setZoomer(zoom); }
                 }}
               </WrappedComponent>
-            ) : (
-              <></>
-            )}
+            ) : null }
         </div>
       </div>
     );
@@ -150,9 +150,11 @@ const useInit = (ref, props, zoomer) => {
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    if (zoomer) {
-      zoomer.reset();
-    }
+    if (zoomer) { zoomer.reset(); }
+  }, [zoomer]);
+
+  useEffect(() => {
+    if (zoomer) { zoomer.reset(); }
 
     setWidth((ref.current && ref.current.clientWidth) || 0);
     setHeight((ref.current && ref.current.clientHeight) || 0);
@@ -160,7 +162,7 @@ const useInit = (ref, props, zoomer) => {
     subscribeChartData({
       symbol: activeSymbolChart,
       frameType: activeTimeFrame,
-      count: candlesLoad * 0.5,
+      count: Math.ceil(candlesLoad * 0.5),
       to: getTimestamp.add(
         TIME_FRAMES_CONFIG[activeTimeFrame].to * candlesLoad,
       ),
@@ -169,7 +171,6 @@ const useInit = (ref, props, zoomer) => {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log('resize');
       setWidth((ref.current && ref.current.clientWidth) || 0);
       setHeight((ref.current && ref.current.clientHeight) || 0);
     };

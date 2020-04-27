@@ -8,6 +8,7 @@ import { HoverTooltip, OHLCTooltip } from 'react-stockcharts/lib/tooltip';
 import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import chartWrapper from './ChartControlWrapper';
 import { last, first } from 'react-stockcharts/lib/utils';
+import { interpolateNumber } from 'd3-interpolate';
 import _ from 'lodash';
 import {
   PriceCoordinate,
@@ -17,13 +18,13 @@ import {
 } from 'react-stockcharts/lib/coordinates';
 import styles from './Chart.scss';
 import { candlesLoad } from 'containers/App/constants';
-import { symbol } from 'prop-types';
+
 
 const colors = {
   red: '#DF2323',
   green: '#29C359',
-  text: 'white',
   lines: '#888F',
+  grid: '#7777',
 };
 const dateFormat = timeFormat('%Y/%m/%d %H:%M:%S');
 const numberFormat = format('.5f');
@@ -76,6 +77,7 @@ interface PropsType {
   leftShift: number;
   ticker: any;
   timeFrame: string;
+  showGrid: boolean;
   loadMoreHandler: (start, end) => void;
 }
 
@@ -83,144 +85,83 @@ interface PropsType {
 interface StateType {
   nodeX?: ChartCanvas;
   nodeY?: Chart;
-  deltaX: number;
-  deltaY: number;
-  zoomMulDelta: number;
-  isYFlex: boolean;
-  resetX: boolean;
+
+  xLimiterRight: number;
+  xLimiterLeft: number;
 }
 
 // Container
 class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
   constructor(props) {
     super(props);
-    this.saveXNode = this.saveXNode.bind(this);
-    this.saveYNode = this.saveYNode.bind(this);
-    this.handleDrag = this.handleDrag.bind(this);
-    this.handleScroll = this.handleScroll.bind(this);
-    this.calcXExtents = this.calcXExtents.bind(this);
-    this.calcYExtents = this.calcYExtents.bind(this);
-    this.calcZoom = this.calcZoom.bind(this);
-    this.handleReset = this.handleReset.bind(this);
-    this.handleZoom = this.handleZoom.bind(this);
 
     const zoom = {
-      in: () => this.handleZoom(0.75),
-      out: () => this.handleZoom(1.25),
-      reset: this.handleReset,
+      in: () => this.handleZoom(-1),
+      out: () => this.handleZoom(1),
+      reset: () => this.handleReset(),
     };
+
     this.props.children({zoom});
     this.state = {
-      zoomMulDelta: 1,
-      deltaX: 0,
-      deltaY: 0,
-      isYFlex: true,
-      resetX: false,
+      xLimiterRight: candlesLoad / 2,
+      xLimiterLeft: candlesLoad / 2,
     };
   }
 
-  private saveXNode(node: ChartCanvas) {
+  private saveXNode = (node: ChartCanvas) => {
     this.setState({ nodeX: node });
   }
 
 
-  private saveYNode(node: Chart) {
+  private saveYNode = (node: Chart) => {
     this.setState({ nodeY: node });
   }
 
 
-  private handleDrag(e) {
-    console.log(e);
-  }
-
-  private handleScroll(e) {
-    this.setState({deltaX: e.deltaY > 0 ? -10 : 10});
-  }
-
-
-  public handleReset() {
-    this.setState({isYFlex: true, resetX: true});
-  }
-
-
-  public handleZoom(zoom) {
-    this.setState({ zoomMulDelta: zoom });
-  }
-
-
-  private calcZoom() {
-    const nodeX = this.state.nodeX;
-    if (!nodeX) { return null; }
-
-    const { xScale, plotData, xAccessor } = nodeX.state;
-    const c = this.state.zoomMulDelta;
-    if (c === 1) {
-      return xScale.domain();
+  private handleReset = () => {
+    const {nodeX: node} = this.state;
+    if (!node) {
+      return;
     }
 
+    this.handleZoom(0);
+    node.resetYDomain();
+  }
+
+
+  public handleZoom = (direction) => {
+    const {nodeX: node} = this.state;
+    const { xScale, plotData, xAccessor } = node.state;
+    const { xAxisZoom } = node;
     const cx = xScale(xAccessor(last(plotData)));
-    const newDomain = xScale.range()
+    const zoomMultiplier = 1.25;
+
+    const c = direction > 0 ? 1 * zoomMultiplier : 1 / zoomMultiplier;
+
+    const [start, end] = xScale.domain();
+    const [newStart, newEnd] =
+      direction === 0
+        ? [0, Math.ceil(candlesLoad) + 3]
+        : xScale.range()
           .map(x => cx + (x - cx) * c)
           .map(xScale.invert);
-    const delta = newDomain[1] - newDomain[0];
-    if (delta > 300 || delta < 10) {
-      return xScale.domain();
-    }
-    this.handleZoom(1);
-    return newDomain;
-  }
 
+    const left = interpolateNumber(start, newStart);
+    const right = interpolateNumber(end, newEnd);
 
-  private calcXExtents() {
-    const domainX = this.calcZoom() || [candlesLoad, 0];
+    const steps = [1].map(i => {
+      return [left(i), right(i)];
+    });
 
-    const newDomain = !this.state.resetX
-      ? domainX[1] > candlesLoad && this.state.deltaX > 0
-        ? domainX
-        : [
-          domainX[0] + this.state.deltaX,
-          domainX[1] + this.state.deltaX,
-        ]
-      : [candlesLoad, 0];
-
-    if (this.state.resetX) {
-      this.setState({resetX: false});
-    }
-
-    if (newDomain[1] > candlesLoad) {
-      const overDelta = newDomain[1] - candlesLoad;
-      newDomain[1] -= overDelta;
-      newDomain[0] -= overDelta;
-    }
-
-    const nodeX = this.state.nodeX;
-    if (!nodeX) { return domainX; }
-
-    const { plotData, xAccessor } = nodeX.state;
-    const shiftDelta = xAccessor(first(plotData)) - newDomain[0];
-    if (shiftDelta > candlesLoad / 2) {
-      const overDelta = shiftDelta - candlesLoad / 2;
-      newDomain[1] += overDelta;
-      newDomain[0] += overDelta;
-    }
-    return newDomain;
-  }
-
-
-  private calcYExtents() {
-    if (this.state.nodeY) {
-      const domainY = this.state.nodeY.context.chartConfig[0].yScale.domain();
-      if (this.state.isYFlex) {
-        const realDomainY = this.state.nodeY.context.chartConfig[0].realYDomain;
-        if (realDomainY[0] !== domainY[0]) {
-          this.setState({isYFlex: false});
-        }
-      } else {
-        return domainY;
+    node.interval = setInterval(() => {
+      xAxisZoom(steps.shift());
+      if (steps.length === 0) {
+        clearInterval(node.interval);
+        delete node.interval;
       }
-    }
-    return ((d) => [d.high, d.low]);
+    }, 10);
   }
+
 
   // Render
   public render() {
@@ -233,6 +174,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       loadMoreHandler,
       leftShift = 0,
       timeFrame = '',
+      showGrid = true,
     } = this.props;
 
     const xScaleProvider = discontinuousTimeScaleProvider
@@ -243,20 +185,15 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       initialData,
     );
 
-    if (this.state && (this.state.deltaX !== 0 || this.state.deltaX === undefined)) {
-      this.setState({deltaX: 0});
-    }
-
     const margin = { left: 10, right: 70, top: 20, bottom: 30 };
     const gridHeight = height - margin.top - margin.bottom;
     const gridWidth = width - margin.left - margin.right;
 
-    const showGrid = true;
     const yGrid = showGrid ? { innerTickSize: -1 * gridWidth, tickStrokeDasharray: 'ShortDash' } : {};
     const xGrid = showGrid ? { innerTickSize: -1 * gridHeight, tickStrokeDasharray: 'ShortDash' } : {};
 
     return (
-      <div onWheel={this.handleScroll} onDragEnd={this.handleScroll} className={styles.chartWrapper}>
+      <div className={styles.chartWrapper}>
         <ChartCanvas
           ref={this.saveXNode}
           width={width}
@@ -270,11 +207,10 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
           xAccessor={xAccessor}
           displayXAccessor={displayXAccessor}
           onLoadMore={loadMoreHandler}
-          xExtents={this.calcXExtents()}
         >
           <Chart id={1}
             ref={this.saveYNode}
-            yExtents={this.calcYExtents()}
+            yExtents={(d) => [d.high, d.low]}
             chartId="main_candles_chart"
           >
             <OHLCTooltip origin={[0, -10]}
@@ -287,8 +223,9 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             <XAxis
               axisAt="bottom"
               orient="bottom"
+              fontSize={15}
               ticks={12}
-              tickStroke={colors.lines}
+              tickStroke={colors.grid}
               stroke={colors.lines}
               {...xGrid}
               tickPadding={2}
@@ -296,9 +233,9 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
             <YAxis
               axisAt="right"
               orient="right"
+              fontSize={15}
               ticks={14}
-              fill={colors.text}
-              tickStroke={colors.lines}
+              tickStroke={colors.grid}
               stroke={colors.lines}
               tickFormat={numberFormat}
               {...yGrid}
@@ -343,7 +280,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
                 at="right"
                 orient="right"
                 price={_.toNumber(ticker.Ask)}
-                lineStroke={colors.lines}
+                lineStroke="red"
                 displayFormat={numberFormat}
                 strokeDasharray="Solid"
                 arrowWidth={7}
@@ -352,7 +289,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
                 fill="red"
               />
             </>
-            ) : (<></>)}
+            ) : null}
 
             <HoverTooltip
               classNames={styles.tooltip}

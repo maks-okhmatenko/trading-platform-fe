@@ -10,6 +10,7 @@ $control-tab-bg: var(--theme-color-control-tab-bg);
 $control-tab-active-bg: var(--theme-color-control-tab-active-bg);
 $control-tab-light: var(--theme-color-control-tab-light);
 $control-tab-active-light: var(--theme-color-control-tab-active-light);
+$control-tab-inactive-light: var(--theme-color-control-tab-inactive-light);
 $control-timeframe-btn: var(--theme-color-control-timeframe-btn);
 $control-zoom-btn: var(--theme-color-control-zoom-btn);
 
@@ -34,6 +35,7 @@ $down-text: var(--theme-color-down-text);
   --theme-color-control-tab-light: #3b445c;
   --theme-color-control-tab-active-bg: #2d3b64;
   --theme-color-control-tab-active-light: #1dc000;
+  --theme-color-control-tab-inactive-light: #888F;
   --theme-color-control-timeframe-btn: #353c4f;
   --theme-color-control-zoom-btn: #1f2d58;
 
@@ -60,6 +62,7 @@ $down-text: var(--theme-color-down-text);
   --theme-color-control-tab-light: #cfcfcf;
   --theme-color-control-tab-active-bg: #ffffff;
   --theme-color-control-tab-active-light: tomato;
+  --theme-color-control-tab-inactive-light: #888F;
   --theme-color-control-timeframe-btn: #ffffff;
   --theme-color-control-zoom-btn: #9aa4c0;
 

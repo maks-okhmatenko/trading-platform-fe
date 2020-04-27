@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 export const WS_URL = 'ws://85.17.172.72:1189';
-export const WS_IO_URL = 'http://35.207.78.105:8080/'; // 'http://localhost:8080';
+export const WS_IO_URL = 'http://35.207.78.105:8080'; // 'http://localhost:8080';
 
 export enum ActionTypes {
   SOCKET_CONNECT = 'App/SOCKET_CONNECT_DONE',
@@ -20,6 +20,8 @@ export enum ActionTypes {
   SOCKET_IO_LOAD_TIME_FRAME_BY_RANGE = 'App/SOCKET_IO_LOAD_TIME_FRAMES_BY_RANGE',
 
   CHANGE_FAVORITE_SYMBOL_LIST = 'App/CHANGE_FAVORITE_SYMBOL_LIST',
+
+  OPEN_NEW_ORDER = 'App/OPEN_NEW_ORDER',
 }
 
 export enum EVENT_NAME {
@@ -81,13 +83,13 @@ export type ORDER_ITEM_TYPE = {
 
 export type NEW_ORDER = {
   id?: string,
-  volume: number,
-  price?: number,
-  stopLoss?: string,
-  takeProfit?: string,
-  side: SIDE_TYPE,
-  bid: string,
-  ask: string,
+  Login: string,
+  Volume: string,
+  Symbol: string,
+  Price: string,
+  Sl?: string,
+  Tp?: string,
+  Cmd: SIDE_TYPE,
 };
 
 export enum FRAME_TYPES {

@@ -64,10 +64,12 @@ const appReducer = produce((draft = initialState, action) => {
 
       } else if (action.payload.appendTo === APPEND_TYPE.MAIN) {
         const lastIdx = draft.chartTimeFrame.length - 1;
-        if (draft.chartTimeFrame[lastIdx].date.getTime() === action.payload.data.date.getTime()) {
-          draft.chartTimeFrame[lastIdx] = action.payload.data;
-        } else if (draft.chartTimeFrame[lastIdx].date.getTime() < action.payload.data.date.getTime()) {
-          draft.chartTimeFrame.push(action.payload.data);
+        if (lastIdx >= 0) {
+          if (draft.chartTimeFrame[lastIdx].date.getTime() === action.payload.data.date.getTime()) {
+            draft.chartTimeFrame[lastIdx] = action.payload.data;
+          } else if (draft.chartTimeFrame[lastIdx].date.getTime() < action.payload.data.date.getTime()) {
+            draft.chartTimeFrame.push(action.payload.data);
+          }
         }
       }
       break;

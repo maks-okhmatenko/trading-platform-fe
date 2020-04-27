@@ -1,159 +1,253 @@
 import * as React from 'react';
-import Modal from 'react-modal';
-import { useDispatch } from 'react-redux';
-import moment from 'moment';
+import _ from 'lodash';
 import classnames from 'classnames';
 
 import styles from './OrderModal.scss';
 import { SIDE_TYPE, NEW_ORDER } from 'containers/App/constants';
+import CheckBox from './../CheckBox';
 
 
 const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
 
-const filteredOnChange = (setter, regex) => {
-  return (e) => {
-    const newValue = e.target.value;
-    if (newValue === '' || newValue.match(regex) !== null) {
-      setter(newValue);
-    }
-  };
+const filter = (value, regex) => {
+  const newValue = value && value.split(' ').join('');
+  if (newValue && newValue.match(regex) !== null) {
+    return _.toNumber(newValue).toFixed(5);
+  } else {
+    return (0).toFixed(5);
+  }
 };
 
-const SwitchableInput: React.FC<any> = (props) => {
+// SwitchableInput Component
+const SwitchableInput: React.FC<any> = props => {
   const { title, onChange, value } = props;
-
-  return (
-    <>
-      <h1>{title}</h1>
-      <div className={styles.squareButton} onClick={() => onChange(value === null ? '' : null)}>
-        {value === null ? '+' : '-'}
-      </div>
-      {value !== null ? (
-        <input type="text" value={value} onChange={filteredOnChange(onChange, floatRegex)} autoFocus/>
-      ) : (
-        <></>
-      )}
-    </>
-  );
-};
-
-const DigitInput: React.FC<any> = (props) => {
-  const { title, value, setValue, delta = 0.01 } = props;
-
-  const decrement = () => {
-    setValue((Number(value) - delta).toFixed(2));
-  };
-  const increment = () => {
-    setValue((Number(value) + delta).toFixed(2));
-  };
-
+  const [visible, setVisible] = React.useState(false);
   return (
     <div className={styles.digitInput}>
-      <h1>{title}</h1>
-      <div className={styles.input}>
-        <div className={styles.squareButton} onClick={decrement}>-</div>
-        <input type="text" disabled value={value}/>
-        <div className={styles.squareButton} onClick={increment}>+</div>
-      </div>
+      <label className={styles.switcherLable}>
+        <h1>{title}</h1>
+        <CheckBox
+          defaultValue={visible}
+          onChange={checked => setVisible(checked)}
+        />
+      </label>
+      {!visible ? null : (
+        <DigitInput value={value} setValue={onChange} autoFocus />
+      )}
     </div>
   );
 };
 
-// PropsType
-export type PropsType = {
-  ask: string,
-  bid: string,
-  symbol: string,
+// DigitalInput Component
+const DigitInput: React.FC<any> = props => {
+  const { value, setValue, delta = 0.01, disabled, autoFocus } = props;
 
-  isVisible?: boolean,
-  showModal?: (arg: boolean) => void,
-  onSubmit?: (order: NEW_ORDER) => void,
-  parentRef?: any,
-};
-
-// Component
-export const OrderModal: React.FC<PropsType> = (props) => {
-  const { isVisible, showModal, symbol, bid, ask, onSubmit, parentRef } = props;
-
-  // Declarations
-  const [orderType, setOrderType] = React.useState('pending');
-  const [volume, setVolume] = React.useState(0);
-  const [price, setPrice] = React.useState(0);
-  const [stopLoss, setStopLoss] = React.useState(null) as [string | null, any];
-  const [takeProfit, setTakeProfit] = React.useState(null) as [string | null, any];
-
-  // Handlers
-  const handleSubmit = (side) => {
-    const newOrder: NEW_ORDER = {
-      volume,
-      price,
-      bid,
-      ask,
-      side,
-    };
-    if (onSubmit) {
-      onSubmit(newOrder);
-    }
+  const decrement = () => {
+    setValue((Number(value) - delta).toFixed(5));
+  };
+  const increment = () => {
+    setValue((Number(value) + delta).toFixed(5));
+  };
+  const onCommit = () => {
+    setValue(filter(value, floatRegex));
   };
 
-  const handleClose = () => showModal && showModal(false);
+  return (
+    <div className={styles.input}>
+      {disabled ? null : (
+        <div className={styles.squareButton} onClick={decrement}>-</div>
+      )}
+      <input
+        type="text"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onBlur={onCommit}
+        autoFocus={autoFocus}
+        disabled={disabled}
+      />
+      {disabled ? null : (
+        <div className={styles.squareButton} onClick={increment}>+</div>
+      )}
+    </div>
+  );
+};
+
+// OrderModal PropsType
+export type PropsType = {
+  ask?: string;
+  bid?: string;
+  symbol?: string;
+
+  isVisible?: boolean;
+  handleClose?: () => void;
+  onSubmit?: (order: NEW_ORDER) => void;
+};
+
+// OrderModal Component
+export const OrderModal: React.FC<PropsType> = props => {
+  const {
+    isVisible,
+    handleClose,
+    symbol = '',
+    bid = '',
+    ask = '',
+    onSubmit,
+  } = props;
+
+  // Declarations
+  const [volume, setVolume] = React.useState('');
+  const [priceMarket, setPriceMarket] = React.useState(false);
+  const [price, setPrice] = React.useState('');
+  const [stopLoss, setStopLoss] = React.useState('') as [string, any];
+  const [takeProfit, setTakeProfit] = React.useState('') as [string, any];
+
+  // - onDrag vars
+  const [point, setPoint] = React.useState(null) as [{ x: number; y: number } | null, any];
+  const [pos, setPos] = React.useState({ x: 100, y: 100 });
+
+  // - dinamic styles
+  const customStyles = {
+    left: `${pos.x}px`,
+    top: `${pos.y}px`,
+  };
+  const mainWrapperClasses = classnames(styles.mainWrapper, {
+    [styles.eventsAll]: point,
+    [styles.eventsNone]: !point,
+  });
+
+  // Handlers
+  const handleSubmit = side => {
+    const newOrder: NEW_ORDER = {
+      Login: 'default',
+      Symbol: symbol,
+      Volume: volume,
+      Price: price,
+      Cmd: side,
+    };
+    if (stopLoss) { _.set(newOrder, 'Sl', stopLoss); }
+    if (takeProfit) { _.set(newOrder, 'Tp', takeProfit); }
+    if (onSubmit) { onSubmit(newOrder); }
+  };
+  const handlePriceSourceSwitch = checked => setPriceMarket(checked);
+
+  // - onDrag handlers
+  const onDragStart = ({ nativeEvent: { x, y } }) => {
+    setPoint({ x, y });
+  };
+  const onDragEnd = () => {
+    setPoint(null);
+  };
+
+  const onDrag = _.throttle(({ nativeEvent: e }) => {
+    if (!e || !point) {
+      return;
+    }
+    const { x, y } = e;
+    setPos({
+      x: pos.x + (x - point.x),
+      y: pos.y + (y - point.y),
+    });
+    setPoint({ x, y });
+  }, 100);
+
+  // Init
+  // - clear on open
+  React.useEffect(() => {
+    setStopLoss('');
+    setTakeProfit('');
+    setVolume('');
+  }, [symbol]);
+  // - set price by market
+  if (!priceMarket && price !== bid) { setPrice(bid); }
 
   // Render
   return (
-    <Modal className={styles.modalMain}
-      overlayClassName={styles.modalOverlay}
-      parentSelector={parentRef ? () => parentRef : undefined}
-      isOpen={isVisible}
-      ariaHideApp={false}
-      onRequestClose={handleClose}
-      contentLabel="OrderModal"
-    >
-      {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.row}>
-          <h1>{symbol}</h1>
-          <div className={styles.squareButton} onClick={handleClose}>x</div>
-        </div>
-        <div className={styles.row}>
-          <select value={orderType} className={styles.dropdown} onChange={(e) => setOrderType(e.target.value)}>
-            <option value="pending">Pending Order</option>
-            <option value="market">Market</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className={styles.body}>
-        <div className={styles.row}>
-          <DigitInput title="Volume" value={volume} setValue={setVolume} />
-          {orderType === 'market'
-            ? <></>
-            : <DigitInput title="Price" value={price} setValue={setPrice} />
-          }
-        </div>
-        <div className={styles.row}>
-          <div className={styles.left}>
-            <SwitchableInput title="Stop loss" value={stopLoss} onChange={setStopLoss}/>
+    <div className={mainWrapperClasses} onMouseMove={!!point ? onDrag : undefined}>
+      {!isVisible ? null : (
+        <div className={styles.modalMain} style={customStyles}>
+          {/* Header */}
+          <div
+            className={styles.header}
+            onMouseUp={onDragEnd}
+            onMouseDown={onDragStart}
+          >
+            <div className={styles.row}>
+              <h1>{symbol}</h1>
+              <div className={styles.squareButton} onClick={handleClose}>x</div>
+            </div>
           </div>
-          <div className={styles.right}>
-            <SwitchableInput title="Take profit" value={takeProfit} onChange={setTakeProfit}/>
+
+          {/* Body */}
+          <div className={styles.body}>
+            {/* - Volume - */}
+            <div className={styles.row}>
+              <div className={styles.digitInput}>
+                <h1>Volume</h1>
+                <DigitInput value={volume} setValue={setVolume} autoFocus />
+              </div>
+            </div>
+
+            {/* - Price - */}
+            <div className={styles.row}>
+              <div className={styles.digitInput}>
+                <h1>Price</h1>
+                <CheckBox
+                  defaultValue={priceMarket}
+                  onChange={handlePriceSourceSwitch}
+                  titleUnchecked="market"
+                  titleChecked="custom"
+                />
+                <DigitInput
+                  value={price}
+                  setValue={setPrice}
+                  disabled={!priceMarket}
+                />
+              </div>
+            </div>
+
+            {/* - Stop loss - */}
+            <div className={styles.row}>
+              <SwitchableInput
+                title="Stop loss"
+                value={stopLoss}
+                onChange={setStopLoss}
+              />
+            </div>
+
+            {/* - Take profit - */}
+            <div className={styles.row}>
+              <SwitchableInput
+                title="Take profit"
+                value={takeProfit}
+                onChange={setTakeProfit}
+              />
+            </div>
+
+            {/* - Bid/Ask - */}
+            <div className={styles.row}>
+              <h1>
+                {`${Number.parseFloat(bid).toFixed(5)} / ${Number.parseFloat(ask).toFixed(5)}`}
+              </h1>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className={styles.footer}>
+            {/* - SELL/BUY - */}
+            <div className={styles.row}>
+              <button
+                className={classnames(styles.button, styles.sell)}
+                onClick={() => handleSubmit(SIDE_TYPE.BUY)}
+              >SELL</button>
+              <button
+                className={classnames(styles.button, styles.buy)}
+                onClick={() => handleSubmit(SIDE_TYPE.BUY)}
+              >BUY</button>
+            </div>
           </div>
         </div>
-        <h1>{Number.parseFloat(bid).toFixed(5)} / {Number.parseFloat(ask).toFixed(5)}</h1>
-      </div>
-
-      {/* Footer  */}
-      <div className={styles.footer}>
-        <div className={styles.row}>
-          <button className={classnames(styles.button, styles.sell)}
-            onClick={() => handleSubmit(SIDE_TYPE.BUY)}
-          >SELL</button>
-          <button className={classnames(styles.button, styles.buy)}
-            onClick={() => handleSubmit(SIDE_TYPE.BUY)}
-          >BUY</button>
-        </div>
-      </div>
-    </Modal>
+      )}
+    </div>
   );
 };
 
