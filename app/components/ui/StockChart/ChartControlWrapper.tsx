@@ -7,6 +7,7 @@ import {
   getTimestamp,
   candlesLoad,
   CHANGE_TYPE,
+  candlesShow,
 } from 'containers/App/constants';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -108,7 +109,7 @@ const ChartControlWrapper = WrappedComponent => {
       loadMoreChartData({
         symbol: activeSymbolChart,
         frameType: activeTimeFrame,
-        count: rowsToDownload * 2,
+        count: rowsToDownload * 4,
         to: getTimestamp.add(0, startTimestamp),
       });
     }, 100);
@@ -129,14 +130,14 @@ const ChartControlWrapper = WrappedComponent => {
         <div>
           <ChartControlPanel {...props} zoom={zoomer} />
 
-            {isChartVisible ? (
-              <WrappedComponent {...chartProps} >
-                {(props) => {
-                  const { zoom } = props;
-                  if (zoomer !== zoom) { setZoomer(zoom); }
-                }}
-              </WrappedComponent>
-            ) : null }
+          {isChartVisible ? (
+            <WrappedComponent {...chartProps} >
+              {(props) => {
+                const { zoom } = props;
+                if (zoomer !== zoom) { setZoomer(zoom); }
+              }}
+            </WrappedComponent>
+          ) : null }
         </div>
       </div>
     );
@@ -162,7 +163,7 @@ const useInit = (ref, props, zoomer) => {
     subscribeChartData({
       symbol: activeSymbolChart,
       frameType: activeTimeFrame,
-      count: Math.ceil(candlesLoad * 0.5),
+      count: Math.ceil(candlesShow),
       to: getTimestamp.add(
         TIME_FRAMES_CONFIG[activeTimeFrame].to * candlesLoad,
       ),

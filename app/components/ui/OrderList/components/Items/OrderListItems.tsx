@@ -16,7 +16,7 @@ const propList = [
   { label: 'Volume',        name: 'Volume',       sortable: true  },
   { label: 'Side',          name: 'Cmd',          sortable: true  },
   { label: 'Open Price',    name: 'Price',        sortable: true  },
-  { label: 'Current Price', name: 'currentPrice', sortable: true  },
+  { label: 'Current Price', name: 'CurrentPrice', sortable: true  },
   { label: 'Stop Loss',     name: 'Sl',           sortable: true  },
   { label: 'Take Profit',   name: 'Tp',           sortable: true  },
   { label: 'Swap',          name: 'swap',         sortable: true  },
@@ -138,7 +138,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                     return (
                       <td key={prop.name}>
                         <div className={styles.inline}>
-                          {Number(value || 0).toFixed(3)}
+                          {Number(value || 0).toFixed(5)}
                           { !value ? (
                             <div className={styles.squareButton}
                               onClick={() => onOrderUpdate({id: order.id, [prop.name]: 1 })}

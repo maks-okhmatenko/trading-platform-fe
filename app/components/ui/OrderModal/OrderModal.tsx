@@ -158,7 +158,8 @@ export const OrderModal: React.FC<PropsType> = props => {
     setVolume('');
   }, [symbol]);
   // - set price by market
-  if (!priceMarket && price !== bid) { setPrice(bid); }
+  const marketPrice = _.toNumber(bid).toFixed(5);
+  if (!priceMarket && price !== marketPrice) { setPrice(marketPrice); }
 
   // Render
   return (

@@ -17,7 +17,7 @@ import {
   MouseCoordinateY,
 } from 'react-stockcharts/lib/coordinates';
 import styles from './Chart.scss';
-import { candlesLoad } from 'containers/App/constants';
+import { candlesLoad, candlesShow } from 'containers/App/constants';
 
 
 const colors = {
@@ -86,12 +86,13 @@ interface StateType {
   nodeX?: ChartCanvas;
   nodeY?: Chart;
 
+  additionalDataCount: number;
   xLimiterRight: number;
-  xLimiterLeft: number;
 }
 
 // Container
 class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
+  // Constructor
   constructor(props) {
     super(props);
 
@@ -103,39 +104,35 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
 
     this.props.children({zoom});
     this.state = {
-      xLimiterRight: candlesLoad / 2,
-      xLimiterLeft: candlesLoad / 2,
+      additionalDataCount: 0,
+      xLimiterRight: candlesShow,
     };
   }
 
+  // Handlers
   private saveXNode = (node: ChartCanvas) => {
     this.setState({ nodeX: node });
   }
 
-
   private saveYNode = (node: Chart) => {
     this.setState({ nodeY: node });
   }
-
 
   private handleReset = () => {
     const {nodeX: node} = this.state;
     if (!node) {
       return;
     }
-
     this.handleZoom(0);
     node.resetYDomain();
   }
-
 
   public handleZoom = (direction) => {
     const {nodeX: node} = this.state;
     const { xScale, plotData, xAccessor } = node.state;
     const { xAxisZoom } = node;
-    const cx = xScale(xAccessor(last(plotData)));
+    const zoomOrigin = xScale(xAccessor(last(plotData)));
     const zoomMultiplier = 1.25;
-
     const c = direction > 0 ? 1 * zoomMultiplier : 1 / zoomMultiplier;
 
     const [start, end] = xScale.domain();
@@ -143,7 +140,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
       direction === 0
         ? [0, Math.ceil(candlesLoad) + 3]
         : xScale.range()
-          .map(x => cx + (x - cx) * c)
+          .map(x => zoomOrigin + (x - zoomOrigin) * c)
           .map(xScale.invert);
 
     const left = interpolateNumber(start, newStart);
@@ -162,6 +159,20 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     }, 10);
   }
 
+  private checkLimit = () => {
+    const {nodeX: node} = this.state;
+    if (!node) { return; }
+    const { plotData, xAccessor } = node.state;
+
+    const leftEdge = Math.ceil(xAccessor(first(plotData)));
+    const rightEdge = Math.ceil(xAccessor(last(plotData)));
+    if ((rightEdge - leftEdge + 3) < candlesShow) {
+      setTimeout(() => {
+        this.handleReset();
+      }, 100);
+    }
+    console.log(rightEdge - leftEdge, candlesShow);
+  }
 
   // Render
   public render() {
@@ -191,6 +202,10 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
 
     const yGrid = showGrid ? { innerTickSize: -1 * gridWidth, tickStrokeDasharray: 'ShortDash' } : {};
     const xGrid = showGrid ? { innerTickSize: -1 * gridHeight, tickStrokeDasharray: 'ShortDash' } : {};
+    if (-leftShift !== this.state.additionalDataCount) {
+      this.setState({ additionalDataCount: -leftShift });
+    }
+    this.checkLimit();
 
     return (
       <div className={styles.chartWrapper}>

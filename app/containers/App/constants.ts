@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 export const WS_URL = 'ws://85.17.172.72:1189';
-export const WS_IO_URL = 'http://35.207.78.105:8080'; // 'http://localhost:8080';
+export const WS_IO_URL = 'http://35.207.78.105:8082'; // 'http://localhost:8080';
 export const ORDER_API_URL = 'http://test.greathead.net/order.php';
 
 export enum ActionTypes {
@@ -132,8 +132,8 @@ export const getTimestamp = {
 };
 
 export const candleWidth = 20;
-export const candlesShow = 1920 / candleWidth;
-export const candlesLoad = candlesShow * 1.2;
+export const candlesLoad = 1920 / candleWidth;
+export const candlesShow = candlesLoad / 2;
 
 export const TIME_FRAMES_CONFIG = { // object key should be the same with FRAME_TYPES values
   M1: {
