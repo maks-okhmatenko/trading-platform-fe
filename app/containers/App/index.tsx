@@ -6,7 +6,7 @@ import HeaderContainer from 'containers/Header';
 import HomePage from 'pages/HomePage/Loadable';
 import SidebarContainer from '../Sidebar';
 import classnames from 'classnames';
-import styles from './app.scss';
+import styles from './App.scss';
 import themeStyles from './theme.scss';
 import Footer from 'components/ui/Footer';
 
