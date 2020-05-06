@@ -15,6 +15,7 @@ import OrderModal from 'components/ui/OrderModal/OrderModal';
 const { useState } = React;
 
 export type CurrencyItemsProps = {
+  favoriteTickers: string[],
   list: Array<{
     Bid: string;
     Ask: string;
@@ -28,25 +29,22 @@ export type CurrencyItemsProps = {
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
-  const { list } = props;
+  const { list, favoriteTickers } = props;
 
   const dispatch = useDispatch();
   const [modalSymbol, setModalSymbol] = useState('');
 
   // Handlers
-  const handleNewOrderClick = (symbol) => {
-    setModalSymbol(symbol);
-  };
+  const handleNewOrderClick = (symbol) =>
+    () => setModalSymbol(symbol);
 
-  const handleOpenChartClick = (e, data) => {
-    dispatch(changeActiveSymbolChart(CHANGE_TYPE.ADD, data.symbol));
-  };
+  const handleOpenChartClick = (symbol) =>
+    () => dispatch(changeActiveSymbolChart(CHANGE_TYPE.ADD, symbol));
 
-  const handleSwitchIsFavorite = (symbol) => {
-    dispatch(
+  const handleSwitchIsFavorite = (symbol) =>
+    () => dispatch(
       changeFavoriteSymbolList(CHANGE_TYPE.DELETE, symbol),
     );
-  };
 
   const handleModalSubmit = (newOrder) => {
     setModalSymbol('');
@@ -84,8 +82,11 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
           </tr>
         </thead>
         <tbody>
-        {Object.keys(list).map((symbol) => {
+        {favoriteTickers.map((symbol) => {
           const ticker = list[symbol];
+          if (!ticker) {
+            return (null);
+          }
           const direction = ticker.Direction === '1';
 
           const classNames = classnames(styles.currencyItem, {
@@ -103,7 +104,7 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
               <td>
                 <ArrowIcon direction={direction}/>
               </td>
-              <td className={styles.symbol} onDoubleClick={e => handleOpenChartClick(e, { symbol })}>
+              <td className={styles.symbol} onDoubleClick={handleOpenChartClick(symbol)}>
                 {symbol.toUpperCase()}
               </td>
               <td className={styles.colorize}>
@@ -115,12 +116,12 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
               <td className={styles.colorize}>{ticker.Spread}</td>
               <td>{time}</td>
               <td>
-                <FavoriteIcon active onClick={(e) => handleSwitchIsFavorite(symbol)}/>
+                <FavoriteIcon active onClick={handleSwitchIsFavorite(symbol)}/>
                 <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
-                  <MenuItem data={{ symbol }} onClick={(e) => handleNewOrderClick(symbol)}>
+                  <MenuItem onClick={handleNewOrderClick(symbol)}>
                     New order
                   </MenuItem>
-                  <MenuItem data={{ symbol }} onClick={handleOpenChartClick}>
+                  <MenuItem onClick={handleOpenChartClick(symbol)}>
                     Open chart
                   </MenuItem>
                 </ContextMenu>

@@ -1,4 +1,4 @@
-import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE, ORDER } from './constants';
+import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE, ORDER, ORDER_TYPE } from './constants';
 import { transformChartData } from './utils';
 
 type socketIoSubscribeTimeframeProps = {
@@ -104,4 +104,32 @@ export const closeOrder = (order?: ORDER) => ({
 export const closeOrderSuccess = (id?: string) => ({
   type: ActionTypes.CLOSE_ORDER_SUCCESS,
   payload: id,
+});
+
+export const updateOrder = (order?: ORDER) => ({
+  type: ActionTypes.UPDATE_ORDER,
+  payload: order,
+});
+
+export const updateOrderSuccess = (order?: ORDER) => ({
+  type: ActionTypes.UPDATE_ORDER_SUCCESS,
+  payload: order,
+});
+
+export const loadOrders = (type: ORDER_TYPE) => ({
+  type: ActionTypes.LOAD_OPEN_ORDERS,
+  payload: type,
+});
+
+export const loadOpenOrders = () => loadOrders(ORDER_TYPE.OPENED);
+export const loadHistoryOrders = () => loadOrders(ORDER_TYPE.CLOSED);
+
+export const loadOpenOrdersSuccess = (orders?: ORDER[]) => ({
+  type: ActionTypes.LOAD_OPEN_ORDERS_SUCCESS,
+  payload: orders,
+});
+
+export const loadHistoryOrdersSuccess = (orders?: ORDER[]) => ({
+  type: ActionTypes.LOAD_HISTORY_ORDERS_SUCCESS,
+  payload: orders,
 });

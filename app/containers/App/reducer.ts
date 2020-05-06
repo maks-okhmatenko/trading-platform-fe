@@ -19,7 +19,10 @@ export const initialState: ContainerState = {
   additionalChartDataLength: 0,
 
   ordersLoading: false,
-  orders: [],
+  openOrders: [],
+  historyOrders: [],
+
+  login: '2100089166',
 };
 
 // @ts-ignore
@@ -132,10 +135,10 @@ const appReducer = produce((draft = initialState, action) => {
       draft.activeTimeFrame = action.payload.data;
       break;
 
-    case ActionTypes.OPEN_NEW_ORDER:
-    case ActionTypes.CLOSE_ORDER:
-      draft.ordersLoading = true;
-      break;
+    // case ActionTypes.OPEN_NEW_ORDER:
+    // case ActionTypes.CLOSE_ORDER:
+    //   draft.ordersLoading = true;
+    //   break;
 
     case ActionTypes.OPEN_ORDER_SUCCESS:
       const ordersStr = localStorage.getItem('orders');
@@ -154,11 +157,29 @@ const appReducer = produce((draft = initialState, action) => {
       draft.ordersLoading = false;
       if (ordersListStr !== null) {
         const orders = JSON.parse(ordersListStr);
-        console.log(orders, action.payload);
         draft.orders = orders
           .filter(order => order.id !== action.payload);
       }
       localStorage.setItem('orders', JSON.stringify(draft.orders));
+      break;
+
+    case ActionTypes.UPDATE_ORDER_SUCCESS:
+      const orderListStr = localStorage.getItem('orders');
+      draft.ordersLoading = false;
+      if (orderListStr !== null) {
+        const orders = JSON.parse(orderListStr);
+        const orderIdx = orders.findIndex(order => order.id === action.payload.id);
+        draft.orders[orderIdx] = action.payload;
+      }
+      localStorage.setItem('orders', JSON.stringify(draft.orders));
+      break;
+
+    case ActionTypes.LOAD_OPEN_ORDERS_SUCCESS:
+      draft.openOrders = action.payload;
+      break;
+
+    case ActionTypes.LOAD_HISTORY_ORDERS_SUCCESS:
+      draft.historyOrders = action.payload;
       break;
 
     default:

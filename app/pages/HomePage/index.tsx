@@ -15,21 +15,19 @@ import {
   makeSelectOpenedSymbols,
   makeSelectFavoriteTickers,
   makeSelectGlobalSymbolList,
-  makeSelectOrders,
-  makeSelectOrdersLoading,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
 import styles from './styles.scss';
 import Chart from '../../components/ui/StockChart';
-import { changeActiveSymbolChart, closeOrder } from 'containers/App/actions';
+import { changeActiveSymbolChart } from 'containers/App/actions';
 import {
   socketIoSubscribeTimeframeInitByCount,
   socketIoLoadTimeFrameByCount,
   changeActiveTimeFrame,
 } from '../../containers/App/actions';
-import { OrderList, PropsType as OrdersProps } from 'components/ui/OrderList/OrderList';
+import OrderList from 'components/ui/OrderList';
 
 const HomePageContainer = props => {
   const { loading, tickers, allTickersShow, favoriteTickers, orders, deleteOrder, ordersLoading } = props;
@@ -57,12 +55,6 @@ const HomePageContainer = props => {
     pickSymbolChart: props.pickSymbolChart,
   };
 
-  const ordersProps: OrdersProps = {
-    itemList: orders,
-    loading: ordersLoading,
-    onDelete: deleteOrder,
-  };
-
   return (
     <>
       <Helmet>
@@ -81,7 +73,7 @@ const HomePageContainer = props => {
           {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
         </div>
         <div className={styles.ordersSection}>
-          <OrderList {...ordersProps} />
+          <OrderList />
         </div>
       </div>
     </>
@@ -99,8 +91,6 @@ const mapStateToProps = createStructuredSelector({
   openedSymbols: makeSelectOpenedSymbols(),
   favoriteTickers: makeSelectFavoriteTickers(),
   globalSymbolList: makeSelectGlobalSymbolList(),
-  orders: makeSelectOrders(),
-  ordersLoading: makeSelectOrdersLoading(),
 });
 
 const mapDispatchToProps = {
@@ -108,7 +98,6 @@ const mapDispatchToProps = {
   loadMoreChartData: socketIoLoadTimeFrameByCount,
   pickTimeFrame: changeActiveTimeFrame,
   pickSymbolChart: changeActiveSymbolChart,
-  deleteOrder: closeOrder,
 };
 
 export default connect(

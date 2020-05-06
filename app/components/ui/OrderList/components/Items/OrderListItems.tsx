@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import classnames from 'classnames';
 import { ORDER, SIDE_TYPE } from 'containers/App/constants';
@@ -9,26 +8,12 @@ import styles from './OrderListItems.scss';
 
 const { Component } = React;
 
-const propList = [
-  { label: 'Id',            name: 'id',           sortable: true  },
-  { label: 'Open Time',     name: 'OpenTime',     sortable: true  },
-  { label: 'Symbol',        name: 'Symbol',       sortable: true  },
-  { label: 'Volume',        name: 'Volume',       sortable: true  },
-  { label: 'Side',          name: 'Cmd',          sortable: true  },
-  { label: 'Open Price',    name: 'Price',        sortable: true  },
-  { label: 'Current Price', name: 'CurrentPrice', sortable: true  },
-  { label: 'Stop Loss',     name: 'Sl',           sortable: true  },
-  { label: 'Take Profit',   name: 'Tp',           sortable: true  },
-  { label: 'Swap',          name: 'swap',         sortable: true  },
-  { label: 'Commission',    name: 'commission',   sortable: true  },
-  { label: 'Net profit',    name: 'netProfit',    sortable: true  },
-  { label: '',              name: 'delete',       sortable: false },
-];
-
 // PropsType
 export type PropsType = {
+  tickers: any[],
   orderList: ORDER[],
   loading: boolean,
+  propList: any[],
   onOrderDelete: (id: string) => void,
   onOrderUpdate: (props: any) => void,
   onSort: (colName: string, direction: boolean) => void,
@@ -68,7 +53,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
 
   // Render
   public render() {
-    const { orderList, onOrderDelete, onOrderUpdate, loading } = this.props;
+    const { orderList, onOrderDelete, onOrderUpdate, loading, propList, tickers } = this.props;
     const { sortBy, sortDir } = this.state;
 
     return (
@@ -99,13 +84,22 @@ export class OrderListItems extends Component<PropsType, StateType> {
           <tbody className={styles.body}>
             {loading ? <div className={styles.loading}/> : null}
             {orderList.map(order => {
+              const ticker = tickers[order.Symbol];
+              const volume = order['Volume'] ? _.toNumber(order['Volume']) : 0;
+              const openPrice = order['OpenPrice'] ? _.toNumber(order['OpenPrice']) : 0;
+              const bid = ticker ? _.toNumber(ticker.Bid) : 0;
+              const ask = ticker ? _.toNumber(ticker.Ask) : 0;
+              const currCommision = bid * volume - ask * volume;
+              const currPrice = bid;
+              const netProfit = volume * currPrice - openPrice * volume;
+
               return (
               <tr key={order.id}>
                 {propList.map(prop => {
                   const value = order[prop.name];
 
                   if (prop.name === 'OpenTime') {
-                    const openMoment = moment.unix(value);
+                    const openMoment = moment.unix(Date.parse(value));
                     return (
                       <td key={prop.name}>
                         {!value ? null : <>
@@ -125,7 +119,15 @@ export class OrderListItems extends Component<PropsType, StateType> {
                     );
                   }
 
-                  if (prop.name === 'netProfit') {
+                  if (prop.name === 'CurrentPrice') {
+                    return (
+                      <td key={prop.name}>
+                        {currPrice.toFixed(5)}
+                      </td>
+                    );
+                  }
+
+                  if (prop.name === 'Profit') {
                     const color = _.toNumber(value) > 0 ? 'green' : 'red';
                     return (
                       <td key={prop.name} className={styles[color]}>
@@ -134,12 +136,22 @@ export class OrderListItems extends Component<PropsType, StateType> {
                     );
                   }
 
+                  if (prop.name === 'CurrentProfit') {
+                    const color = _.toNumber(currPrice) > 0 ? 'green' : 'red';
+                    return (
+                      <td key={prop.name} className={styles[color]}>
+                        {netProfit.toFixed(5)}
+                      </td>
+                    );
+                  }
+
                   if (prop.name === 'Sl' || prop.name === 'Tp') {
+                    const numValue = Number(value || 0);
                     return (
                       <td key={prop.name}>
                         <div className={styles.inline}>
-                          {Number(value || 0).toFixed(5)}
-                          { !value ? (
+                          {numValue.toFixed(5)}
+                          { !numValue ? (
                             <div className={styles.squareButton}
                               onClick={() => onOrderUpdate({id: order.id, [prop.name]: 1 })}
                             >+</div>

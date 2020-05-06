@@ -19,7 +19,10 @@ interface AppState {
   activeTimeFrame: FRAME_TYPES;
 
   ordersLoading: boolean;
-  orders: [];
+  openOrders: [];
+  historyOrders: [];
+
+  login: string;
 }
 
 interface UserData {

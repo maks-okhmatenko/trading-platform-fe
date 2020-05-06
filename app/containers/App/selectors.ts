@@ -48,8 +48,14 @@ const makeSelectGlobalSymbolList = () =>
 const makeSelectOrdersLoading = () =>
   createSelector(selectGlobal, globalState => globalState.ordersLoading);
 
-const makeSelectOrders = () =>
-  createSelector(selectGlobal, globalState => globalState.orders);
+const makeSelectOpenOrders = () =>
+  createSelector(selectGlobal, globalState => globalState.openOrders);
+
+const makeSelectHistoryOrders = () =>
+  createSelector(selectGlobal, globalState => globalState.historyOrders);
+
+const makeSelectLogin = () =>
+  createSelector(selectGlobal, globalState => globalState.login);
 
 
 export {
@@ -66,6 +72,8 @@ export {
   makeSelectOpenedSymbols,
   makeSelectFavoriteTickers,
   makeSelectGlobalSymbolList,
-  makeSelectOrders,
+  makeSelectOpenOrders,
+  makeSelectHistoryOrders,
   makeSelectOrdersLoading,
+  makeSelectLogin,
 };

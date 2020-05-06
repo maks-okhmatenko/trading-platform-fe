@@ -162,16 +162,16 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
   private checkLimit = () => {
     const {nodeX: node} = this.state;
     if (!node) { return; }
-    const { plotData, xAccessor } = node.state;
+    const { plotData, xAccessor, xScale } = node.state;
 
-    const leftEdge = Math.ceil(xAccessor(first(plotData)));
-    const rightEdge = Math.ceil(xAccessor(last(plotData)));
-    if ((rightEdge - leftEdge + 3) < candlesShow) {
+    const leftEdge = Math.ceil(xScale(xAccessor(first(plotData))));
+    const rightEdge = Math.ceil(xScale(xAccessor(last(plotData))));
+    const [leftRange, rightRange] = xScale.range();
+    if (rightEdge + 40 < (rightRange - leftRange) / 2) {
       setTimeout(() => {
         this.handleReset();
       }, 100);
     }
-    console.log(rightEdge - leftEdge, candlesShow);
   }
 
   // Render
@@ -205,7 +205,8 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
     if (-leftShift !== this.state.additionalDataCount) {
       this.setState({ additionalDataCount: -leftShift });
     }
-    this.checkLimit();
+    // TODO rework (bag on zoom)
+    // this.checkLimit();
 
     return (
       <div className={styles.chartWrapper}>
