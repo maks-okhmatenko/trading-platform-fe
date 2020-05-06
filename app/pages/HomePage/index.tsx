@@ -1,39 +1,58 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import appReducer from 'containers/App/reducer';
 import {
+  makeSelectActiveTimeFrame,
   makeSelectActiveSymbolChart,
   makeSelectChartLoading,
-  makeSelectChartTimeFrame,
+  makeSelectChartData,
   makeSelectLoading,
   makeSelectTickers,
-  makeSelectTickersIo,
+  makeSelectAdditionalChartDataLength,
+  makeSelectOpenedSymbols,
+  makeSelectFavoriteTickers,
+  makeSelectGlobalSymbolList,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
-import CurrencyDetailsWidgetContainer from 'components/ui/CurrencyDetails';
 import styles from './styles.scss';
-import Chart from '../../components/ui/Chart';
-import { socketIoSubscribeTimeframe } from '../../containers/App/actions';
+import Chart from '../../components/ui/StockChart';
+import { changeActiveSymbolChart } from 'containers/App/actions';
+import {
+  socketIoSubscribeTimeframeInitByCount,
+  socketIoLoadTimeFrameByCount,
+  changeActiveTimeFrame,
+} from '../../containers/App/actions';
+import OrderList from 'components/ui/OrderList';
 
-const HomePageContainer = (props) => {
-  const { loading, tickers } = props;
+const HomePageContainer = props => {
+  const { loading, tickers, allTickersShow, favoriteTickers, orders, deleteOrder, ordersLoading } = props;
   useInjectReducer({ key: 'app', reducer: appReducer });
 
   const currencyWidgetProps = {
     loading,
     tickers,
+    allTickersShow,
+    favoriteTickers,
+    globalSymbolList: props.globalSymbolList,
   };
 
   const chartProps = {
-    chartTimeFrame: props.chartTimeFrame,
+    ticker: tickers[props.activeSymbolChart],
+    chartData: props.chartTimeFrame,
+    additionalChartDataLength: props.additionalChartDataLength,
     chartLoading: props.chartLoading,
     activeSymbolChart: props.activeSymbolChart,
-    chooseTimeframeChartData: props.chooseTimeframeChartData,
+    activeTimeFrame: props.activeTimeFrame,
+    pickTimeFrame: props.pickTimeFrame,
+    subscribeChartData: props.subscribeChartData,
+    loadMoreChartData: props.loadMoreChartData,
+    openedSymbols: props.openedSymbols,
+    pickSymbolChart: props.pickSymbolChart,
   };
 
   return (
@@ -46,14 +65,17 @@ const HomePageContainer = (props) => {
         />
       </Helmet>
 
-      <div className={styles.widgetContainer}>
-        <CurrencyWidgetContainer {...currencyWidgetProps} />
-        <CurrencyDetailsWidgetContainer />
+      <div className={styles.bodyContainer}>
+        <div className={styles.chartSection}>
+          <div className={styles.widgetContainer}>
+            <CurrencyWidgetContainer {...currencyWidgetProps} />
+          </div>
+          {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
+        </div>
+        <div className={styles.ordersSection}>
+          <OrderList />
+        </div>
       </div>
-
-      <section className={styles.chartSection}>
-        <Chart {...chartProps} />
-      </section>
     </>
   );
 };
@@ -62,14 +84,23 @@ const mapStateToProps = createStructuredSelector({
   tickers: makeSelectTickers(),
   loading: makeSelectLoading(),
   chartLoading: makeSelectChartLoading(),
-  tickersIo: makeSelectTickersIo(),
-  chartTimeFrame: makeSelectChartTimeFrame(),
+  chartTimeFrame: makeSelectChartData(),
+  additionalChartDataLength: makeSelectAdditionalChartDataLength(),
   activeSymbolChart: makeSelectActiveSymbolChart(),
+  activeTimeFrame: makeSelectActiveTimeFrame(),
+  openedSymbols: makeSelectOpenedSymbols(),
+  favoriteTickers: makeSelectFavoriteTickers(),
+  globalSymbolList: makeSelectGlobalSymbolList(),
 });
 
 const mapDispatchToProps = {
-  chooseTimeframeChartData: socketIoSubscribeTimeframe,
+  subscribeChartData: socketIoSubscribeTimeframeInitByCount,
+  loadMoreChartData: socketIoLoadTimeFrameByCount,
+  pickTimeFrame: changeActiveTimeFrame,
+  pickSymbolChart: changeActiveSymbolChart,
 };
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(HomePageContainer);

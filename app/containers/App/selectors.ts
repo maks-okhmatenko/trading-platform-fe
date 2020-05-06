@@ -24,14 +24,38 @@ const makeSelectLocation = () =>
 const makeSelectChartLoading = () =>
   createSelector(selectGlobal, globalState => globalState.chartLoading);
 
-const makeSelectTickersIo = () =>
-  createSelector(selectGlobal, globalState => globalState.tickersIo);
-
-const makeSelectChartTimeFrame = () =>
+const makeSelectChartData = () =>
   createSelector(selectGlobal, globalState => globalState.chartTimeFrame);
+
+const makeSelectAdditionalChartDataLength = () =>
+  createSelector(selectGlobal, globalState => globalState.additionalChartDataLength);
 
 const makeSelectActiveSymbolChart = () =>
   createSelector(selectGlobal, globalState => globalState.activeSymbolChart);
+
+const makeSelectActiveTimeFrame = () =>
+  createSelector(selectGlobal, globalState => globalState.activeTimeFrame);
+
+const makeSelectOpenedSymbols = () =>
+  createSelector(selectGlobal, globalState => globalState.openedSymbols);
+
+const makeSelectFavoriteTickers = () =>
+  createSelector(selectGlobal, globalState => globalState.favoriteTickers);
+
+const makeSelectGlobalSymbolList = () =>
+  createSelector(selectGlobal, globalState => globalState.globalConfig.TICKER_LIST);
+
+const makeSelectOrdersLoading = () =>
+  createSelector(selectGlobal, globalState => globalState.ordersLoading);
+
+const makeSelectOpenOrders = () =>
+  createSelector(selectGlobal, globalState => globalState.openOrders);
+
+const makeSelectHistoryOrders = () =>
+  createSelector(selectGlobal, globalState => globalState.historyOrders);
+
+const makeSelectLogin = () =>
+  createSelector(selectGlobal, globalState => globalState.login);
 
 
 export {
@@ -41,7 +65,15 @@ export {
   makeSelectError,
   makeSelectLocation,
   makeSelectChartLoading,
-  makeSelectTickersIo,
-  makeSelectChartTimeFrame,
+  makeSelectChartData,
+  makeSelectAdditionalChartDataLength,
   makeSelectActiveSymbolChart,
+  makeSelectActiveTimeFrame,
+  makeSelectOpenedSymbols,
+  makeSelectFavoriteTickers,
+  makeSelectGlobalSymbolList,
+  makeSelectOpenOrders,
+  makeSelectHistoryOrders,
+  makeSelectOrdersLoading,
+  makeSelectLogin,
 };

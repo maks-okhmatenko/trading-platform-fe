@@ -1,0 +1,123 @@
+@import '../../../containers/App/theme.scss';
+
+.flexContainer {
+  width: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+}
+
+.chartWrapper {
+  position: absolute;
+  width: initial;
+}
+
+.controller {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 70px 0px 2px;
+  background-color: $control-bg;
+  .buttonContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 0; 
+  }
+  .buttonsRow{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+  .activeTickersRow{
+    display: flex;
+    padding-right: 20px;
+    display: grid;    
+  }
+}
+
+.scrollable{
+  display: flex;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.timeFrameButton {
+  font-size: 1em;
+  width: 3em;
+  color: $control-text;
+  background-color: $control-timeframe-btn;
+  border: 1px solid $control-timeframe-btn;
+  justify-content: center;
+  text-align: center;
+  padding: 1px 0;
+  margin: 2px;
+  cursor: pointer;
+  user-select: none;
+  &.active{
+    color: $control-tab-active-light;
+    border: 1px solid $control-tab-active-light;
+  }
+  border-radius: 3px;
+}
+
+.chartZoomButton {
+  border-radius: 3px;
+  display: flex;
+  font-size: 1em;
+  flex-grow: 1;
+  color: $control-text;
+  background-color: $control-zoom-btn;
+  border: 1px solid $control-zoom-btn;
+  justify-content: center;
+  text-align: center;
+  margin: 3px;
+  cursor: pointer;
+  user-select: none;
+  &:active{
+    border: 1px solid #3654b1;
+  }
+}
+
+.tickerButton {
+  position: relative;
+  min-width: 110px;
+  border-radius: 6px;
+  color: #b4b4b4;
+  background-color: $control-tab-bg;
+  border-top: 4px solid $control-tab-light;
+  text-align: center;
+  margin: 0 2px;
+  cursor: pointer;
+  user-select: none;
+  &.active{
+    color: $control-text;
+    background-color: $control-tab-active-bg;
+    border-top: 4px solid $control-tab-active-light;
+  }
+
+  h4{
+    margin: 15px 0;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.7em;
+  width: 1.5em;
+  border-radius: 3px;
+  color: $control-tab-bg;
+  background-color: $control-bg;
+  &:hover {
+    color: white;
+    background-color: #970000;
+  }
+}

@@ -1,62 +1,68 @@
 @import "react-contextmenu";
+@import '../../../../../containers/App/theme.scss';
 
 .currencyItemsWrap {
   display: block;
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
 }
 
 .currencyList {
-  display: flex;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  flex-direction: column;
+  width: 100%;
   position: relative;
-  flex: 1;
+
+  td, th {
+    min-width: 25px;
+    text-align: end;
+    height: 30px;
+    margin: auto 10px;
+    // z-index: 5;
+  }
+  
+  th {
+    position:-webkit-sticky;
+    position: sticky;
+    top: 0;
+    background-color: $list-secondary-bg;
+    box-shadow: 0 2px 0px  #888F;
+    // z-index: 10;
+  }
 }
 
 .currencyItem {
-  display: flex;
   align-items: center;
-  flex: 1;
   font-size: 0.84em;
-  color: #c5c8cc;
+  color: $control-text;
   cursor: pointer;
   height: 34px;
   padding: 9px 7px 9px 10px;
   position: relative;
 
+  .symbol{
+    user-select: none;
+  }
+  background-color: $list-primary-bg;
   &:nth-child(even) {
-    background-color: #181f2c;
+    background-color: $list-secondary-bg
   }
 
   &:hover {
-    background-color: #262b3e;
-  }
-
-  div {
-    flex: 1;
-    &:not(:first-child) {
-      text-align: right;
-    }
+    background-color: $list-hover-bg;
   }
 }
 
 .currencyItem.up {
-  .bidMarket,
-  .askMarket,
-  .spread,
-  .time {
-    color: green;
+  .colorize {
+    color: $up-text;
   }
 }
 
 .currencyItem.down {
-  .bidMarket,
-  .askMarket,
-  .spread,
-  .time {
-    color: red;
+  .colorize {
+    color: $down-text;
   }
 }

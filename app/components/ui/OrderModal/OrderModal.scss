@@ -1,0 +1,168 @@
+@import '../../../containers/App/theme.scss';
+
+$grey: #888F;
+
+.mainWrapper {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.eventsAll {
+  pointer-events: all;
+}
+.eventsNone {
+  pointer-events: none;
+}
+
+.modalMain {
+  pointer-events: all;
+  z-index: 100;
+  width: 400px;
+  position: fixed;
+  background-color: $control-bg;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $grey;
+}
+
+.header {
+  justify-content: space-between;
+  background-color: $widget-head;
+  color: $control-text;
+  padding: 10px 20px;
+  user-select: none;
+}
+
+h1 {
+  color: $control-text;
+  font-size: 1.5em;
+  line-height: 1em;
+  margin: 0;
+  text-align: center;
+}
+
+.body {
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  .row {
+    justify-content: center;
+  }
+  h1 {
+    margin: 15px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 5px 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.footer {
+  justify-content: space-around;
+  background-color: $widget-head;
+  color: $control-text;
+  padding: 10px 20px;
+}
+
+.squareButton {
+  background-color: #0000;
+  color: $grey;
+  font-size: 1.5em;
+  line-height: 1em;
+  text-align: center;
+  height: 30px;
+  width: 30px;
+  border: 1px solid $grey;
+  border-radius: 10px;
+  user-select: none;
+  &:active {
+    border-color: $control-tab-active-light;
+    color: $control-tab-active-light;
+  }
+}
+
+.buy {
+  background-color: $up-text;
+}
+.sell {
+  background-color: $down-text;
+}
+
+.button {
+  font-size: 1.4em;
+  color: $control-text;
+  justify-content: center;
+  height: 50%;
+  display: flex;
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.digitInput {
+  margin: 5px auto;
+  h1 {
+    text-align: center;
+    margin: 5px;
+    color: $control-text;
+    font-size: 1.2em;
+  }
+  .input {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    * {
+      min-width: 30px;
+      border-radius: 0;
+      &:first-child {
+        border-bottom-left-radius: 10px;
+        border-top-left-radius: 10px;
+      }
+      &:last-child {
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+    }
+    input {
+      width: 250px;
+      margin: 0;
+      padding: 3px;
+      font-size: 1.2em;
+      text-align: center;
+      border: 1px solid $grey;
+      &:disabled {
+        width: 310px;
+        background-color: #FFF0;
+        color: $control-text;
+      }
+    }
+  }
+}
+
+.switcherLable {
+  margin: 5px auto;
+  color: $grey;
+  justify-content: center;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  user-select: none;
+  & > * {
+    margin: 5px 10px;
+  }
+}

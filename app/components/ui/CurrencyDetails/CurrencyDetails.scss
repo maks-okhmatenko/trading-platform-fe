@@ -1,6 +1,8 @@
+@import '../../../containers/App/theme.scss';
+
 .currencyDetailsWrap {
   display: block;
-  background-color: #171b29;
+  background-color: $widget-body;
 }
 
 .widgetHeader {
@@ -8,9 +10,8 @@
   height: 40px;
   min-height: 40px;
   max-height: 40px;
-  background: #262b3e;
+  background: $widget-head;
   align-items: center;
-  margin: 6px 4px;
   padding: 0 10px;
 }
 

@@ -2,18 +2,20 @@ import * as React from 'react';
 import classnames from 'classnames';
 import moment from 'moment';
 import styles from './CurrencyItems.scss';
-
 import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
 import { useDispatch } from 'react-redux';
-import {
-  DEFAULT_TIME_FRAME,
-  EVENT_NAME,
-  FRAME_TYPES, getTimestamp,
-  TIME_FRAMES_CONFIG,
-} from '../../../../../containers/App/constants';
-import { socketIoSubscribeTimeframe } from '../../../../../containers/App/actions';
+import { changeActiveSymbolChart, openNewOrder } from '../../../../../containers/App/actions';
+import { changeFavoriteSymbolList } from './../../../../../containers/App/actions';
+import { CHANGE_TYPE } from 'containers/App/constants';
+import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
+import ArrowIcon from 'components/ui/icons/Arrow_icon';
+import OrderModal from 'components/ui/OrderModal/OrderModal';
+
+
+const { useState } = React;
 
 export type CurrencyItemsProps = {
+  favoriteTickers: string[],
   list: Array<{
     Bid: string;
     Ask: string;
@@ -26,57 +28,109 @@ export type CurrencyItemsProps = {
 
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
-const CurrencyItems: React.FunctionComponent<CurrencyItemsProps> = ({ list }) => {
+const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
+  const { list, favoriteTickers } = props;
+
   const dispatch = useDispatch();
-  const handleNewOrderClick = (e) => {
-    console.log(e);
+  const [modalSymbol, setModalSymbol] = useState('');
+
+  // Handlers
+  const handleNewOrderClick = (symbol) =>
+    () => setModalSymbol(symbol);
+
+  const handleOpenChartClick = (symbol) =>
+    () => dispatch(changeActiveSymbolChart(CHANGE_TYPE.ADD, symbol));
+
+  const handleSwitchIsFavorite = (symbol) =>
+    () => dispatch(
+      changeFavoriteSymbolList(CHANGE_TYPE.DELETE, symbol),
+    );
+
+  const handleModalSubmit = (newOrder) => {
+    setModalSymbol('');
+    dispatch(openNewOrder(newOrder));
   };
 
-  const handleOpenChartClick = (e, objData) => {
-    console.log(objData.symbol);
-    dispatch(socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
-      symbol: objData.symbol,
-      frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
-      from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
-      to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
-    }));
+  // ModalProps
+  const currTicker = list[modalSymbol];
+  const liveModalProps = currTicker ? {
+    symbol: modalSymbol,
+    ask: currTicker.Ask,
+    bid: currTicker.Bid,
+  } : {};
+  const modalProps = {
+      isVisible: !!modalSymbol,
+      handleClose: () => setModalSymbol(''),
+      onSubmit: handleModalSubmit,
+      ...liveModalProps,
   };
 
+  // Render
   return (
     <div className={styles.currencyItemsWrap}>
-      <ul className={styles.currencyList}>
-        {Object.keys(list).map((item, index) => {
-          const ticker = list[item];
-          const direction = ticker.Direction;
+      <OrderModal {...modalProps} />
+      <table className={styles.currencyList}>
+        <thead className={styles.currencyItem}>
+          <tr>
+            <th><ArrowIcon /></th>
+            <th>Symbol</th>
+            <th>Bid</th>
+            <th>Ask</th>
+            <th>!</th>
+            <th>Time</th>
+            <th><FavoriteIcon active/></th>
+          </tr>
+        </thead>
+        <tbody>
+        {favoriteTickers.map((symbol) => {
+          const ticker = list[symbol];
+          if (!ticker) {
+            return (null);
+          }
+          const direction = ticker.Direction === '1';
 
           const classNames = classnames(styles.currencyItem, {
-            [styles.up]: direction === '1',
-            [styles.down]: direction === '0',
+            [styles.up]: direction,
+            [styles.down]: !direction,
           });
-
-          const time = moment.unix(ticker.Time).format('HH:mm:ss');
+          const time = moment.unix(ticker.Time / 1000).format('HH:mm:ss');
           return (
-            <ContextMenuTrigger id={`${TICKER_CTX_MENU}-${item}`} key={item}>
-              <li className={classNames}>
-                <div className={styles.currencySymbol}>{item.toUpperCase()}</div>
-                <div className={styles.bidMarket}>{ticker.Bid}</div>
-                <div className={styles.askMarket}>{ticker.Ask}</div>
-                <div className={styles.spread}>{ticker.Spread}</div>
-                <div className={styles.time}>{time}</div>
-              </li>
-
-              <ContextMenu id={`${TICKER_CTX_MENU}-${item}`}>
-                <MenuItem data={{symbol: item}} onClick={handleNewOrderClick}>
-                  New order
-                </MenuItem>
-                <MenuItem data={{symbol: item}} onClick={handleOpenChartClick}>
-                  Open chart
-                </MenuItem>
-              </ContextMenu>
+            <ContextMenuTrigger
+              attributes={{className: classNames}}
+              renderTag={'tr'}
+              id={`${TICKER_CTX_MENU}-${symbol}`}
+              key={symbol}
+            >
+              <td>
+                <ArrowIcon direction={direction}/>
+              </td>
+              <td className={styles.symbol} onDoubleClick={handleOpenChartClick(symbol)}>
+                {symbol.toUpperCase()}
+              </td>
+              <td className={styles.colorize}>
+                {Number.parseFloat(ticker.Bid).toFixed(5)}
+              </td>
+              <td className={styles.colorize}>
+                {Number.parseFloat(ticker.Ask).toFixed(5)}
+              </td>
+              <td className={styles.colorize}>{ticker.Spread}</td>
+              <td>{time}</td>
+              <td>
+                <FavoriteIcon active onClick={handleSwitchIsFavorite(symbol)}/>
+                <ContextMenu id={`${TICKER_CTX_MENU}-${symbol}`}>
+                  <MenuItem onClick={handleNewOrderClick(symbol)}>
+                    New order
+                  </MenuItem>
+                  <MenuItem onClick={handleOpenChartClick(symbol)}>
+                    Open chart
+                  </MenuItem>
+                </ContextMenu>
+              </td>
             </ContextMenuTrigger>
           );
         })}
-      </ul>
+        </tbody>
+      </table>
     </div>
   );
 };

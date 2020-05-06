@@ -11,6 +11,18 @@
   }
 }
 
+.bodyContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .chartSection {
-  flex: 1;
+  display: flex;
+  height: 65%;
+  flex-direction: row;
+}
+
+.ordersSection {
+  height: 35%;
 }

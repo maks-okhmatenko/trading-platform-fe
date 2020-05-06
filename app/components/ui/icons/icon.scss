@@ -1,0 +1,14 @@
+.arrowIcon{
+  stroke-width: 60;
+  &.up{
+    transform: rotate(180deg);
+    fill: #29C359;
+  }
+  &.down{
+    fill: #DF2323;
+  }
+}
+
+.favoriteIcon{
+  stroke-width: 50;
+}

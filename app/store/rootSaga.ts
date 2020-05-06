@@ -2,18 +2,21 @@ import _sortBy from 'lodash/sortBy';
 import _throttle from 'lodash/throttle';
 import socketIOClient from 'socket.io-client';
 import { eventChannel } from 'redux-saga';
-import { all, call, fork, put, take } from 'redux-saga/effects';
+import { all, call, fork, put, take, takeEvery, select, takeLatest } from 'redux-saga/effects';
 
-import { initWebSocket } from '../api/socket';
 import * as AppActions from '../containers/App/actions';
 import {
   ActionTypes,
-  DEFAULT_TIME_FRAME,
   EVENT_NAME,
-  FRAME_TYPES, getTimestamp,
-  TIME_FRAMES_CONFIG,
   WS_IO_URL,
+  CHANGE_TYPE,
+  ORDER_API_URL,
+  ORDER_TYPE,
 } from '../containers/App/constants';
+import {
+  makeSelectFavoriteTickers, makeSelectLogin, makeSelectGlobalSymbolList,
+} from 'containers/App/selectors';
+import moment from 'moment';
 
 function transformTickers(data) {
   return data.reduce((acc, curr) => {
@@ -22,37 +25,6 @@ function transformTickers(data) {
     return { ...acc, [Symbol]: rest };
   }, {});
 }
-
-function initSocketSaga() {
-  return eventChannel(emitter => {
-    const socketParams = {
-      onOpen: () => emitter(AppActions.socketConnect()),
-      onError: (error) => emitter(AppActions.socketError(error)),
-      onMessage: _throttle((data) => {
-        const sorted = _sortBy(data, 'Bid').reverse();
-        const tickers = transformTickers(sorted);
-        return emitter(AppActions.socketMessage(tickers));
-      }, 1000),
-    };
-
-    initWebSocket(socketParams);
-
-    return () => {
-      // do whatever to interrupt the socket communication here
-    };
-  });
-}
-
-function* watchSocket() {
-  const channel = yield call(initSocketSaga);
-
-  while (true) {
-    const action = yield take(channel);
-    yield put(action);
-  }
-}
-
-// ================================================
 
 export const socketConnect = (url: string, params?: {}) => {
   return socketIOClient(url, params);
@@ -71,15 +43,7 @@ function createSocketChannel(socket) {
 
     socket.once(EVENT_NAME.ON_GLOBAL_CONFIG, (config) => {
       emit(AppActions.socketIoGlobalConfig(config));
-
-      emit(AppActions.socketIoSubscribeTimeframe(EVENT_NAME.SUBSCRIBE_TIME_FRAME, {
-        symbol: config.TICKER_LIST[0],
-        frameType: FRAME_TYPES[DEFAULT_TIME_FRAME],
-        from: getTimestamp.subtract(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].from),
-        to: getTimestamp.add(TIME_FRAMES_CONFIG[DEFAULT_TIME_FRAME].to),
-      }));
-
-      emit(AppActions.changeActiveSymbolChart(config.TICKER_LIST[0]));
+      emit(AppActions.changeFavoriteSymbolList(CHANGE_TYPE.INIT));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TIME_FRAMES, (initialData) => {
@@ -87,18 +51,20 @@ function createSocketChannel(socket) {
     });
 
     socket.on(EVENT_NAME.ON_APPEND_TIME_FRAME, (dataItem) => {
-      emit(AppActions.socketIoAppendTimeframe(dataItem));
+      emit(AppActions.socketIoAppendTimeframeForward(dataItem));
+    });
+
+    socket.on(EVENT_NAME.ON_TIME_FRAME_BY_COUNT, (dataItem) => {
+      emit(AppActions.socketIoAppendTimeframeBack(dataItem));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TICKERS, (tickers) => {
-      const sorted = _sortBy(tickers, 'Bid').reverse();
-      const tickersSorted = transformTickers(sorted);
-      emit(AppActions.socketIoTickers(tickersSorted));
+      const tickersSorted = transformTickers(tickers);
+      emit(AppActions.initTickers(tickersSorted));
     });
 
     socket.on(EVENT_NAME.ON_UPDATE_TICKERS, (tickers) => {
-      const sorted = _sortBy(tickers, 'Bid').reverse();
-      const tickersSorted = transformTickers(sorted);
+      const tickersSorted = transformTickers(tickers);
       emit(AppActions.socketIoTickers(tickersSorted));
     });
 
@@ -117,12 +83,23 @@ function createSocketChannel(socket) {
 
 function* writeSocket(socket) {
   socket.emit(EVENT_NAME.GET_GLOBAL_CONFIG);
-  socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS);
-  while (true) {
 
-    const { payload } = yield take(ActionTypes.SOCKET_IO_SUBSCRIBE_TIME_FRAME);
-    socket.emit(payload && payload.eventName, payload && payload.data);
-  }
+  yield all([
+    takeEvery(ActionTypes.SOCKET_IO_REQUEST, socketRequest, socket),
+    takeEvery([ActionTypes.CHANGE_FAVORITE_SYMBOL_LIST], subscribeTickers, socket),
+  ]);
+}
+
+function* subscribeTickers(socket) {
+  // const tickersToSub = yield select(makeSelectFavoriteTickers());
+  const tickersToSub = yield select(makeSelectGlobalSymbolList());
+
+  socket.emit(EVENT_NAME.SUBSCRIBE_TICKERS, { list: tickersToSub });
+}
+
+function* socketRequest(socket, action) {
+  const { payload } = action;
+  socket.emit(payload && payload.eventName, payload && payload.data);
 }
 
 function* watchSocketIoChannel() {
@@ -136,11 +113,86 @@ function* watchSocketIoChannel() {
   }
 }
 
-// ================================================
+async function httpRequst(url: string, data) {
+  const formData = new FormData();
 
-export function* wsSagas() {
+  // tslint:disable-next-line: forin
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
+  return fetch(url, {
+    method: 'POST',
+    body: formData,
+  }).then(response => response.json());
+}
+
+function* openOrderSaga(action) {
+  const requestData = {
+    action: 'OrderOpen',
+    ...action.payload,
+  };
+  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  if (data) {
+    const order = {
+      id: data.message,
+      OpenTime: moment(moment.now()).unix(),
+      ...action.payload,
+    };
+    yield put(AppActions.openOrderSuccess(order));
+  }
+}
+
+function* closeOrderSaga(action) {
+  const requestData = {
+    action: 'OrderClose',
+    Orders: [action.payload],
+  };
+  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  if (data && data.message) {
+    yield put(AppActions.closeOrderSuccess(action.payload.id));
+  }
+}
+
+function* updateOrderSaga(action) {
+  const requestData = {
+    action: 'OrderUpdate',
+    ...action.payload,
+  };
+  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  if (data && data.message) {
+    yield put(AppActions.closeOrderSuccess(action.payload.id));
+  }
+}
+
+function* loadOrdersSaga(action) {
+  const { payload: type } = action;
+  const login = yield select(makeSelectLogin());
+
+  const requestData = {
+    action: type,
+    account_number: login,
+  };
+  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  if (data && data.message) {
+    console.log(data);
+    if (type === ORDER_TYPE.OPENED) {
+      yield put(AppActions.loadOpenOrdersSuccess(data.message));
+    }
+    if (type === ORDER_TYPE.CLOSED) {
+      yield put(AppActions.loadHistoryOrdersSuccess(data.message));
+    }
+  }
+}
+
+export function* rootSagas() {
+  yield put(AppActions.openOrderSuccess());
   yield all([
-    // fork(watchSocket),
     fork(watchSocketIoChannel),
+    // takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),
+    // takeEvery(ActionTypes.CLOSE_ORDER, closeOrderSaga),
+    // takeEvery(ActionTypes.UPDATE_ORDER, updateOrderSaga),
+
+    takeEvery(ActionTypes.LOAD_OPEN_ORDERS, loadOrdersSaga),
+    takeEvery(ActionTypes.LOAD_HISTORY_ORDERS, loadOrdersSaga),
   ]);
 }
