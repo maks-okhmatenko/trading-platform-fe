@@ -16,6 +16,8 @@ const { useState } = React;
 
 export type CurrencyItemsProps = {
   favoriteTickers: string[],
+  login: string,
+  isOrderLoading: boolean,
   list: Array<{
     Bid: string;
     Ask: string;
@@ -29,7 +31,7 @@ export type CurrencyItemsProps = {
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
-  const { list, favoriteTickers } = props;
+  const { list, favoriteTickers, login, isOrderLoading } = props;
 
   const dispatch = useDispatch();
   const [modalSymbol, setModalSymbol] = useState('');
@@ -47,7 +49,6 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     );
 
   const handleModalSubmit = (newOrder) => {
-    setModalSymbol('');
     dispatch(openNewOrder(newOrder));
   };
 
@@ -57,6 +58,8 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     symbol: modalSymbol,
     ask: currTicker.Ask,
     bid: currTicker.Bid,
+    login,
+    isOrderLoading,
   } : {};
   const modalProps = {
       isVisible: !!modalSymbol,

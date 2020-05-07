@@ -4,7 +4,7 @@ import CurrencyItems from './components/CurrencyItems';
 
 import styles from './CurrencyWidget.scss';
 
-const CurrencyWidget = ({ tickers, loading, globalSymbolList, favoriteTickers }) => {
+const CurrencyWidget = ({ tickers, loading, globalSymbolList, favoriteTickers, login, isOrderLoading }) => {
 
   return (
     <div className={styles.currencyWidget}>
@@ -22,6 +22,8 @@ const CurrencyWidget = ({ tickers, loading, globalSymbolList, favoriteTickers })
         <CurrencyItems
           favoriteTickers={favoriteTickers}
           list={tickers}
+          login={login}
+          isOrderLoading={isOrderLoading}
         />
       ) : null}
 
