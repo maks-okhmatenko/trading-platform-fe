@@ -15,6 +15,8 @@ import {
   makeSelectOpenedSymbols,
   makeSelectFavoriteTickers,
   makeSelectGlobalSymbolList,
+  makeSelectLogin,
+  makeSelectOrdersLoading,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
@@ -30,7 +32,7 @@ import {
 import OrderList from 'components/ui/OrderList';
 
 const HomePageContainer = props => {
-  const { loading, tickers, allTickersShow, favoriteTickers, orders, deleteOrder, ordersLoading } = props;
+  const { loading, tickers, allTickersShow, favoriteTickers, isOrderLoading, login } = props;
   useInjectReducer({ key: 'app', reducer: appReducer });
 
   const currencyWidgetProps = {
@@ -39,6 +41,8 @@ const HomePageContainer = props => {
     allTickersShow,
     favoriteTickers,
     globalSymbolList: props.globalSymbolList,
+    login,
+    isOrderLoading,
   };
 
   const chartProps = {
@@ -91,6 +95,8 @@ const mapStateToProps = createStructuredSelector({
   openedSymbols: makeSelectOpenedSymbols(),
   favoriteTickers: makeSelectFavoriteTickers(),
   globalSymbolList: makeSelectGlobalSymbolList(),
+  isOrderLoading: makeSelectOrdersLoading(),
+  login: makeSelectLogin(),
 });
 
 const mapDispatchToProps = {

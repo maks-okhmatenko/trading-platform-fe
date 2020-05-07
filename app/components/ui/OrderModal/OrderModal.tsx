@@ -3,7 +3,7 @@ import _ from 'lodash';
 import classnames from 'classnames';
 
 import styles from './OrderModal.scss';
-import { SIDE_TYPE, ORDER } from 'containers/App/constants';
+import { ORDER_CMD_TYPE, ORDER } from 'containers/App/constants';
 import CheckBox from './../CheckBox';
 
 
@@ -77,6 +77,8 @@ export type PropsType = {
   ask?: string;
   bid?: string;
   symbol?: string;
+  login?: string;
+  isOrderLoading?: boolean;
 
   isVisible?: boolean;
   handleClose?: () => void;
@@ -92,6 +94,8 @@ export const OrderModal: React.FC<PropsType> = props => {
     bid = '',
     ask = '',
     onSubmit,
+    login = '',
+    isOrderLoading = false,
   } = props;
 
   // Declarations
@@ -118,7 +122,7 @@ export const OrderModal: React.FC<PropsType> = props => {
   // Handlers
   const handleSubmit = side => {
     const newOrder: ORDER = {
-      Login: 'default',
+      Login: login,
       Symbol: symbol,
       Volume: volume,
       Price: price,
@@ -166,6 +170,7 @@ export const OrderModal: React.FC<PropsType> = props => {
     <div className={mainWrapperClasses} onMouseMove={!!point ? onDrag : undefined}>
       {!isVisible ? null : (
         <div className={styles.modalMain} style={customStyles}>
+          {isOrderLoading ? <div className={styles.loading}/> : null}
           {/* Header */}
           <div
             className={styles.header}
@@ -238,11 +243,11 @@ export const OrderModal: React.FC<PropsType> = props => {
             <div className={styles.row}>
               <button
                 className={classnames(styles.button, styles.sell)}
-                onClick={() => handleSubmit(SIDE_TYPE.SELL)}
+                onClick={() => handleSubmit(ORDER_CMD_TYPE.SELL)}
               >SELL</button>
               <button
                 className={classnames(styles.button, styles.buy)}
-                onClick={() => handleSubmit(SIDE_TYPE.BUY)}
+                onClick={() => handleSubmit(ORDER_CMD_TYPE.BUY)}
               >BUY</button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import moment from 'moment';
 import classnames from 'classnames';
-import { ORDER, SIDE_TYPE } from 'containers/App/constants';
+import { ORDER, ORDER_CMD_TYPE } from 'containers/App/constants';
 import _ from 'lodash';
 
 import styles from './OrderListItems.scss';
@@ -89,9 +89,8 @@ export class OrderListItems extends Component<PropsType, StateType> {
               const openPrice = order['OpenPrice'] ? _.toNumber(order['OpenPrice']) : 0;
               const bid = ticker ? _.toNumber(ticker.Bid) : 0;
               const ask = ticker ? _.toNumber(ticker.Ask) : 0;
-              const currCommision = bid * volume - ask * volume;
               const currPrice = bid;
-              const netProfit = volume * currPrice - openPrice * volume;
+              const netProfit = (currPrice - openPrice) * 100000 * volume;
 
               return (
               <tr key={order.id}>
@@ -99,7 +98,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   const value = order[prop.name];
 
                   if (prop.name === 'OpenTime') {
-                    const openMoment = moment.unix(Date.parse(value));
+                    const openMoment = moment.unix(Date.parse(value) / 1000);
                     return (
                       <td key={prop.name}>
                         {!value ? null : <>
@@ -111,10 +110,11 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   }
 
                   if (prop.name === 'Cmd') {
-                    const color = value === SIDE_TYPE.BUY ? 'green' : 'red';
+                    const color = value === ORDER_CMD_TYPE.BUY ? 'green' : 'red';
+                    const viewValue = value === ORDER_CMD_TYPE.BUY ? 'buy' : 'sell';
                     return (
                       <td key={prop.name} className={styles[color]}>
-                        {value}
+                        {viewValue}
                       </td>
                     );
                   }
@@ -137,7 +137,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   }
 
                   if (prop.name === 'CurrentProfit') {
-                    const color = _.toNumber(currPrice) > 0 ? 'green' : 'red';
+                    const color = _.toNumber(netProfit) > 0 ? 'green' : 'red';
                     return (
                       <td key={prop.name} className={styles[color]}>
                         {netProfit.toFixed(5)}

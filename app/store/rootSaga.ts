@@ -188,9 +188,9 @@ export function* rootSagas() {
   yield put(AppActions.openOrderSuccess());
   yield all([
     fork(watchSocketIoChannel),
-    // takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),
-    // takeEvery(ActionTypes.CLOSE_ORDER, closeOrderSaga),
-    // takeEvery(ActionTypes.UPDATE_ORDER, updateOrderSaga),
+    takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),
+    takeEvery(ActionTypes.CLOSE_ORDER, closeOrderSaga),
+    takeEvery(ActionTypes.UPDATE_ORDER, updateOrderSaga),
 
     takeEvery(ActionTypes.LOAD_OPEN_ORDERS, loadOrdersSaga),
     takeEvery(ActionTypes.LOAD_HISTORY_ORDERS, loadOrdersSaga),
