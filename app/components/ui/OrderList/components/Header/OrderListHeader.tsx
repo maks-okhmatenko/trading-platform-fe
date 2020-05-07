@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import _ from 'lodash';
 import classnames from 'classnames';
 
 import styles from './OrderListHeader.scss';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import moment from 'moment';
 import classnames from 'classnames';
 import { ORDER, ORDER_CMD_TYPE } from 'containers/App/constants';
-import _ from 'lodash';
+import _toNumber from 'lodash/toNumber';
 
 import styles from './OrderListItems.scss';
 
@@ -85,10 +85,10 @@ export class OrderListItems extends Component<PropsType, StateType> {
             {loading ? <div className={styles.loading}/> : null}
             {orderList.map(order => {
               const ticker = tickers[order.Symbol];
-              const volume = order['Volume'] ? _.toNumber(order['Volume']) : 0;
-              const openPrice = order['OpenPrice'] ? _.toNumber(order['OpenPrice']) : 0;
-              const bid = ticker ? _.toNumber(ticker.Bid) : 0;
-              const ask = ticker ? _.toNumber(ticker.Ask) : 0;
+              const volume = order['Volume'] ? _toNumber(order['Volume']) : 0;
+              const openPrice = order['OpenPrice'] ? _toNumber(order['OpenPrice']) : 0;
+              const bid = ticker ? _toNumber(ticker.Bid) : 0;
+              const ask = ticker ? _toNumber(ticker.Ask) : 0;
               const currPrice = bid;
               const netProfit = (currPrice - openPrice) * 100000 * volume;
 
@@ -128,7 +128,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   }
 
                   if (prop.name === 'Profit') {
-                    const color = _.toNumber(value) > 0 ? 'green' : 'red';
+                    const color = _toNumber(value) > 0 ? 'green' : 'red';
                     return (
                       <td key={prop.name} className={styles[color]}>
                         {value}
@@ -137,7 +137,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   }
 
                   if (prop.name === 'CurrentProfit') {
-                    const color = _.toNumber(netProfit) > 0 ? 'green' : 'red';
+                    const color = _toNumber(netProfit) > 0 ? 'green' : 'red';
                     return (
                       <td key={prop.name} className={styles[color]}>
                         {netProfit.toFixed(5)}

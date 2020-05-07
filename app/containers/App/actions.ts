@@ -1,7 +1,7 @@
 import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE, ORDER, ORDER_TYPE } from './constants';
 import { transformChartData } from './utils';
 
-type socketIoSubscribeTimeframeProps = {
+type socketIoSubscribeTimeFrameProps = {
   symbol: string;
   frameType: FRAME_TYPES;
   from: number;
@@ -26,22 +26,22 @@ export const socketIoError = (error) => ({
   payload: { error },
 });
 
-export const socketIoInitialTimeframe = (data) => ({
+export const socketIoInitialTimeFrame = (data) => ({
   type: ActionTypes.SOCKET_IO_INITIAL_TIME_FRAME,
   payload: { data: transformChartData(data) },
 });
 
-export const socketIoAppendTimeframeBack = (data) => ({
+export const socketIoAppendTimeFrameBack = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
   payload: { appendTo: APPEND_TYPE.ADDITIONAL, data: transformChartData(data) },
 });
 
-export const socketIoAppendTimeframeForward = (data) => ({
+export const socketIoAppendTimeFrameForward = (data) => ({
   type: ActionTypes.SOCKET_IO_APPEND_TIME_FRAME,
   payload: { appendTo: APPEND_TYPE.MAIN, data: transformChartData(data) },
 });
 
-export const socketIoLoadTimeFrameByCount = (data: socketIoSubscribeTimeframeProps) => ({
+export const socketIoLoadTimeFrameByCount = (data: socketIoSubscribeTimeFrameProps) => ({
   type: ActionTypes.SOCKET_IO_REQUEST,
   payload: { eventName: EVENT_NAME.GET_TIME_FRAME_BY_COUNT, data },
 });
@@ -56,12 +56,12 @@ export const socketIoTickers = (data) => ({
   payload: { data },
 });
 
-export const socketIoSubscribeTimeframe = (data: socketIoSubscribeTimeframeProps) => ({
+export const socketIoSubscribeTimeFrame = (data: socketIoSubscribeTimeFrameProps) => ({
   type: ActionTypes.SOCKET_IO_REQUEST,
   payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME_INIT_BY_RANGE, data },
 });
 
-export const socketIoSubscribeTimeframeInitByCount = (data: socketIoSubscribeTimeframeProps) => ({
+export const socketIoSubscribeTimeframeInitByCount = (data: socketIoSubscribeTimeFrameProps) => ({
   type: ActionTypes.SOCKET_IO_REQUEST,
   payload: { eventName: EVENT_NAME.SUBSCRIBE_TIME_FRAME_INIT_BY_COUNT, data },
 });

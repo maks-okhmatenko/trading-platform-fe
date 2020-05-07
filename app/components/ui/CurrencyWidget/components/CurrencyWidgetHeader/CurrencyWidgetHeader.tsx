@@ -5,7 +5,7 @@ import moment from 'moment';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 import { changeFavoriteSymbolList } from 'containers/App/actions';
 import { CHANGE_TYPE } from 'containers/App/constants';
-import _ from 'lodash';
+import _difference from 'lodash/difference';
 
 const CurrencyWidgetHeader = (props) => {
   const { symbolList = [], favoriteTickers } = props;
@@ -41,7 +41,7 @@ const CurrencyWidgetHeader = (props) => {
     );
   };
 
-  const allSymbolsIsFavorite = _.difference(symbolList, favoriteTickers).length === 0;
+  const allSymbolsIsFavorite = _difference(symbolList, favoriteTickers).length === 0;
 
   return (
     <>

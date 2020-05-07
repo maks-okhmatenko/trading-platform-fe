@@ -10,7 +10,7 @@ import {
   candlesShow,
 } from 'containers/App/constants';
 import classnames from 'classnames';
-import _ from 'lodash';
+import _debounce from 'lodash/debounce';
 
 const ChartControlPanel: React.FC<any> = props => {
   const { activeSymbolChart, activeTimeFrame, pickTimeFrame, zoom, openedSymbols, pickSymbolChart } = props;
@@ -98,7 +98,7 @@ const ChartControlWrapper = WrappedComponent => {
     const sizerRef = useRef(null);
     const [zoomer, setZoomer] = useState(null);
     const { width, height } = useInit(sizerRef, props, zoomer);
-    const loadMoreHandler = _.debounce((start, end) => {
+    const loadMoreHandler = _debounce((start, end) => {
       if (Math.ceil(start) === end) {
         return;
       }

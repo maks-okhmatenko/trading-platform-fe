@@ -8,7 +8,7 @@ import * as AppActions from '../containers/App/actions';
 import {
   ActionTypes,
   EVENT_NAME,
-  WS_IO_URL,
+  WS_WORKER_URL,
   CHANGE_TYPE,
   ORDER_API_URL,
   ORDER_TYPE,
@@ -47,15 +47,15 @@ function createSocketChannel(socket) {
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TIME_FRAMES, (initialData) => {
-      emit(AppActions.socketIoInitialTimeframe(initialData));
+      emit(AppActions.socketIoInitialTimeFrame(initialData));
     });
 
     socket.on(EVENT_NAME.ON_APPEND_TIME_FRAME, (dataItem) => {
-      emit(AppActions.socketIoAppendTimeframeForward(dataItem));
+      emit(AppActions.socketIoAppendTimeFrameForward(dataItem));
     });
 
     socket.on(EVENT_NAME.ON_TIME_FRAME_BY_COUNT, (dataItem) => {
-      emit(AppActions.socketIoAppendTimeframeBack(dataItem));
+      emit(AppActions.socketIoAppendTimeFrameBack(dataItem));
     });
 
     socket.on(EVENT_NAME.ON_INITIAL_TICKERS, (tickers) => {
@@ -77,6 +77,7 @@ function createSocketChannel(socket) {
       socket.off(EVENT_NAME.ON_APPEND_TIME_FRAME);
       socket.off(EVENT_NAME.ON_UPDATE_TICKERS);
     };
+
     return unsubscribe;
   });
 }
@@ -103,7 +104,7 @@ function* socketRequest(socket, action) {
 }
 
 function* watchSocketIoChannel() {
-  const socket = yield call(socketConnect, WS_IO_URL);
+  const socket = yield call(socketConnect, WS_WORKER_URL);
   yield fork(writeSocket, socket);
   const socketChannel = yield call(createSocketChannel, socket);
 
@@ -113,7 +114,7 @@ function* watchSocketIoChannel() {
   }
 }
 
-async function httpRequst(url: string, data) {
+async function httpRequest(url: string, data) {
   const formData = new FormData();
 
   // tslint:disable-next-line: forin
@@ -123,7 +124,15 @@ async function httpRequst(url: string, data) {
   return fetch(url, {
     method: 'POST',
     body: formData,
-  }).then(response => response.json());
+  })
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      alert('Something went wrong during order list loading...');
+      return [];
+    }
+  });
 }
 
 function* openOrderSaga(action) {
@@ -131,7 +140,7 @@ function* openOrderSaga(action) {
     action: 'OrderOpen',
     ...action.payload,
   };
-  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  const data = yield call(httpRequest, ORDER_API_URL, requestData);
   if (data) {
     const order = {
       id: data.message,
@@ -147,7 +156,7 @@ function* closeOrderSaga(action) {
     action: 'OrderClose',
     Orders: [action.payload],
   };
-  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  const data = yield call(httpRequest, ORDER_API_URL, requestData);
   if (data && data.message) {
     yield put(AppActions.closeOrderSuccess(action.payload.id));
   }
@@ -158,7 +167,7 @@ function* updateOrderSaga(action) {
     action: 'OrderUpdate',
     ...action.payload,
   };
-  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+  const data = yield call(httpRequest, ORDER_API_URL, requestData);
   if (data && data.message) {
     yield put(AppActions.closeOrderSuccess(action.payload.id));
   }
@@ -172,7 +181,9 @@ function* loadOrdersSaga(action) {
     action: type,
     account_number: login,
   };
-  const data = yield call(httpRequst, ORDER_API_URL, requestData);
+
+  const data = yield call(httpRequest, ORDER_API_URL, requestData);
+
   if (data && data.message) {
     console.log(data);
     if (type === ORDER_TYPE.OPENED) {

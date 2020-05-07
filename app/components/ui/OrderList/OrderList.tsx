@@ -23,7 +23,7 @@ const { useState } = React;
 
 const tabList = ['Orders', 'History'];
 
-const openOrderspropList = [
+const openOrdersPropList = [
   { label: 'Id',            name: 'Order',          sortable: true  },
   { label: 'Open Time',     name: 'OpenTime',       sortable: true  },
   { label: 'Symbol',        name: 'Symbol',         sortable: true  },
@@ -61,7 +61,7 @@ const OrderList: React.FC<any> = props => {
   // - state
   const [currentTab, onTabChange] = useState(tabList[0]);
   const items = currentTab === tabList[0] ?  openOrders : historyOrders;
-  const propList = currentTab === tabList[0] ? openOrderspropList : historyOrdersPropList;
+  const propList = currentTab === tabList[0] ? openOrdersPropList : historyOrdersPropList;
 
   // - props
   const headerProps: HeaderProps = {

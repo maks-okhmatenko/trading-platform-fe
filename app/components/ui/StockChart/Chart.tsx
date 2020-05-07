@@ -9,7 +9,7 @@ import { discontinuousTimeScaleProvider } from 'react-stockcharts/lib/scale';
 import chartWrapper from './ChartControlWrapper';
 import { last, first } from 'react-stockcharts/lib/utils';
 import { interpolateNumber } from 'd3-interpolate';
-import _ from 'lodash';
+import _toNumber from 'lodash/toNumber';
 import {
   PriceCoordinate,
   CrossHairCursor,
@@ -283,7 +283,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
               <PriceCoordinate
                 at="right"
                 orient="right"
-                price={_.toNumber(ticker.Bid)}
+                price={_toNumber(ticker.Bid)}
                 lineStroke={colors.lines}
                 displayFormat={numberFormat}
                 strokeDasharray="Solid"
@@ -295,7 +295,7 @@ class CandleStickStockScaleChart extends React.Component<PropsType, StateType> {
               <PriceCoordinate
                 at="right"
                 orient="right"
-                price={_.toNumber(ticker.Ask)}
+                price={_toNumber(ticker.Ask)}
                 lineStroke="red"
                 displayFormat={numberFormat}
                 strokeDasharray="Solid"

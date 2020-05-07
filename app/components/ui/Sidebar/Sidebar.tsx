@@ -4,7 +4,6 @@ import styles from './Sidebar.scss';
 import { NavLink } from 'react-router-dom';
 
 const Sidebar = (props) => {
-
   const list = [
     {name: 'item'},
     {name: 'item'},
@@ -15,18 +14,14 @@ const Sidebar = (props) => {
   return (
     <nav className={styles.sidebarWrap}>
       <ul className={styles.sidebarList}>
-        {
-          list.map((item, idx) => {
-            return (
-              <li  key={idx}>
-                <NavLink to={'#'} className={styles.sidebarItem}>
-                  <div className={styles.icon}>IC</div>
-                  <span>{item.name} {idx}</span>
-                </NavLink>
-              </li>
-            );
-          })
-        }
+        {list.map((item, idx) => (
+          <li  key={idx}>
+            <NavLink to={'#'} className={styles.sidebarItem}>
+              <div className={styles.icon}>IC</div>
+              <span>{item.name} {idx}</span>
+            </NavLink>
+          </li>
+        ))}
       </ul>
     </nav>
   );

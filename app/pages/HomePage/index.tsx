@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
-import { connect, useStore } from 'react-redux';
+import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import appReducer from 'containers/App/reducer';
@@ -21,15 +21,15 @@ import {
 import { useInjectReducer } from 'utils/injectReducer';
 
 import CurrencyWidgetContainer from 'components/ui/CurrencyWidget';
-import styles from './styles.scss';
-import Chart from '../../components/ui/StockChart';
-import { changeActiveSymbolChart } from 'containers/App/actions';
+import Chart from 'components/ui/StockChart';
+import OrderList from 'components/ui/OrderList';
 import {
+  changeActiveSymbolChart,
   socketIoSubscribeTimeframeInitByCount,
   socketIoLoadTimeFrameByCount,
   changeActiveTimeFrame,
-} from '../../containers/App/actions';
-import OrderList from 'components/ui/OrderList';
+} from 'containers/App/actions';
+import styles from './styles.scss';
 
 const HomePageContainer = props => {
   const { loading, tickers, allTickersShow, favoriteTickers, isOrderLoading, login } = props;
@@ -63,10 +63,7 @@ const HomePageContainer = props => {
     <>
       <Helmet>
         <title>Home Page</title>
-        <meta
-          name="description"
-          content="A React.js Boilerplate application homepage"
-        />
+        <meta name="description" content="A React.js Boilerplate application homepage" />
       </Helmet>
 
       <div className={styles.bodyContainer}>

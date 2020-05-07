@@ -1,15 +1,14 @@
 import * as React from 'react';
 import classnames from 'classnames';
 import moment from 'moment';
-import styles from './CurrencyItems.scss';
 import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
 import { useDispatch } from 'react-redux';
-import { changeActiveSymbolChart, openNewOrder } from '../../../../../containers/App/actions';
-import { changeFavoriteSymbolList } from './../../../../../containers/App/actions';
+import { changeActiveSymbolChart, openNewOrder, changeFavoriteSymbolList } from 'containers/App/actions';
 import { CHANGE_TYPE } from 'containers/App/constants';
 import FavoriteIcon from 'components/ui/icons/FavoriteIcon';
 import ArrowIcon from 'components/ui/icons/Arrow_icon';
 import OrderModal from 'components/ui/OrderModal/OrderModal';
+import styles from './CurrencyItems.scss';
 
 
 const { useState } = React;
@@ -88,7 +87,7 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
         {favoriteTickers.map((symbol) => {
           const ticker = list[symbol];
           if (!ticker) {
-            return (null);
+            return null;
           }
           const direction = ticker.Direction === '1';
 

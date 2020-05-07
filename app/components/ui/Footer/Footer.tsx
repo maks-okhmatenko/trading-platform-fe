@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import styles from './Footer.scss';
-import CheckBox from './../CheckBox';
+import CheckBox from './../CheckBox/Checkbox';
 
 const Footer = (props) => {
   const { onThemeChange, theme } = props;

@@ -1,10 +1,12 @@
 import * as React from 'react';
-import _ from 'lodash';
+import _set from 'lodash/set';
+import _toNumber from 'lodash/toNumber';
+import _throttle from 'lodash/throttle';
 import classnames from 'classnames';
 
 import styles from './OrderModal.scss';
 import { ORDER_CMD_TYPE, ORDER } from 'containers/App/constants';
-import CheckBox from './../CheckBox';
+import CheckBox from './../CheckBox/Checkbox';
 
 
 const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
@@ -12,7 +14,7 @@ const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
 const filter = (value, regex) => {
   const newValue = value && value.split(' ').join('');
   if (newValue && newValue.match(regex) !== null) {
-    return _.toNumber(newValue).toFixed(5);
+    return _toNumber(newValue).toFixed(5);
   } else {
     return (0).toFixed(5);
   }
@@ -128,8 +130,8 @@ export const OrderModal: React.FC<PropsType> = props => {
       Price: price,
       Cmd: side,
     };
-    if (stopLoss) { _.set(newOrder, 'Sl', stopLoss); }
-    if (takeProfit) { _.set(newOrder, 'Tp', takeProfit); }
+    if (stopLoss) { _set(newOrder, 'Sl', stopLoss); }
+    if (takeProfit) { _set(newOrder, 'Tp', takeProfit); }
     if (onSubmit) { onSubmit(newOrder); }
   };
   const handlePriceSourceSwitch = checked => setPriceMarket(checked);
@@ -142,7 +144,7 @@ export const OrderModal: React.FC<PropsType> = props => {
     setPoint(null);
   };
 
-  const onDrag = _.throttle(({ nativeEvent: e }) => {
+  const onDrag = _throttle(({ nativeEvent: e }) => {
     if (!e || !point) {
       return;
     }
@@ -162,7 +164,7 @@ export const OrderModal: React.FC<PropsType> = props => {
     setVolume('');
   }, [symbol]);
   // - set price by market
-  const marketPrice = _.toNumber(ask).toFixed(5);
+  const marketPrice = _toNumber(ask).toFixed(5);
   if (!priceMarket && price !== marketPrice) { setPrice(marketPrice); }
 
   // Render

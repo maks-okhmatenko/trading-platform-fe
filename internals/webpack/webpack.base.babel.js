@@ -4,7 +4,8 @@
 
 const path = require('path');
 const webpack = require('webpack');
-
+const Dotenv = require('dotenv-webpack');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = options => ({
@@ -133,7 +134,9 @@ module.exports = options => ({
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     }),
+    new Dotenv(),
     new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true }),
+    // new BundleAnalyzerPlugin(),
   ]),
   resolve: {
     modules: ['node_modules', 'app'],
