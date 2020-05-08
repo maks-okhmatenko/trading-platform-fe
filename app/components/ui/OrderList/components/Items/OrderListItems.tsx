@@ -82,7 +82,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
             </tr>
           </thead>
           <tbody className={styles.body}>
-            {loading ? <div className={styles.loading}/> : null}
+            {/* {loading ? <div className={styles.loading}/> : null} */}
             {orderList.map(order => {
               const ticker = tickers[order.Symbol];
               const volume = order['Volume'] ? _toNumber(order['Volume']) : 0;

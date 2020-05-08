@@ -11,7 +11,7 @@ import {
   WS_WORKER_URL,
   CHANGE_TYPE,
   ORDER_API_URL,
-  ORDER_TYPE,
+  ORDER_ACTION,
 } from '../containers/App/constants';
 import {
   makeSelectFavoriteTickers, makeSelectLogin, makeSelectGlobalSymbolList,
@@ -137,7 +137,7 @@ async function httpRequest(url: string, data) {
 
 function* openOrderSaga(action) {
   const requestData = {
-    action: 'OrderOpen',
+    action: ORDER_ACTION.OPEN,
     ...action.payload,
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
@@ -153,7 +153,7 @@ function* openOrderSaga(action) {
 
 function* closeOrderSaga(action) {
   const requestData = {
-    action: 'OrderClose',
+    action: ORDER_ACTION.CLOSE,
     Orders: [action.payload],
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
@@ -164,7 +164,7 @@ function* closeOrderSaga(action) {
 
 function* updateOrderSaga(action) {
   const requestData = {
-    action: 'OrderUpdate',
+    action: ORDER_ACTION.UPDATE,
     ...action.payload,
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
@@ -186,10 +186,10 @@ function* loadOrdersSaga(action) {
 
   if (data && data.message) {
     console.log(data);
-    if (type === ORDER_TYPE.OPENED) {
+    if (type === ORDER_ACTION.OPENED) {
       yield put(AppActions.loadOpenOrdersSuccess(data.message));
     }
-    if (type === ORDER_TYPE.CLOSED) {
+    if (type === ORDER_ACTION.CLOSED) {
       yield put(AppActions.loadHistoryOrdersSuccess(data.message));
     }
   }

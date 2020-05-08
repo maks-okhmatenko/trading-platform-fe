@@ -65,9 +65,12 @@ export enum CHANGE_TYPE {
   DELETE = 'DELETE',
 }
 
-export enum ORDER_TYPE {
-  OPENED = 'OpenPosition',
-  CLOSED = 'ClosePosition',
+export enum ORDER_ACTION {
+  OPEN    = 'OrderOpen',
+  CLOSE   = 'OrderClose',
+  UPDATE  = 'OrderUpdate',
+  OPENED  = 'OpenPosition',
+  CLOSED  = 'ClosePosition',
 }
 
 export enum ORDER_CMD_TYPE {
@@ -99,10 +102,12 @@ export type ORDER = {
   Login: string,
   Volume: string,
   Symbol: string,
-  Price: string,
+  Price?: string,
   Sl?: string,
   Tp?: string,
   Cmd: ORDER_CMD_TYPE,
+  Expiration: string,
+  Comment: string,
 };
 
 export enum FRAME_TYPES {
