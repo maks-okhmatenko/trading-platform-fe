@@ -57,6 +57,9 @@ const makeSelectHistoryOrders = () =>
 const makeSelectLogin = () =>
   createSelector(selectGlobal, globalState => globalState.login);
 
+const makeSelectOpenOrderError = () =>
+  createSelector(selectGlobal, globalState => globalState.openOrderError);
+
 
 export {
   selectGlobal,
@@ -75,5 +78,6 @@ export {
   makeSelectOpenOrders,
   makeSelectHistoryOrders,
   makeSelectOrdersLoading,
+  makeSelectOpenOrderError,
   makeSelectLogin,
 };

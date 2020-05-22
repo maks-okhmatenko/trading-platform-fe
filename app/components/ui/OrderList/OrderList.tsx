@@ -8,8 +8,6 @@ import {
   OrderListItems,
   PropsType as ItemsProps,
 } from './components/Items/OrderListItems';
-
-import styles from './OrderList.scss';
 import { createStructuredSelector } from 'reselect';
 import { closeOrder, loadOpenOrders, loadHistoryOrders } from 'containers/App/actions';
 import {
@@ -18,44 +16,62 @@ import {
   makeSelectHistoryOrders,
   makeSelectTickers,
 } from 'containers/App/selectors';
-
 const { useState } = React;
 
-const tabList = ['Orders', 'History'];
+import styles from './OrderList.scss';
+
+const tabList = ['Open orders', 'History'];
 
 const openOrdersPropList = [
-  { label: 'Id',            name: 'Order',          sortable: true  },
-  { label: 'Open Time',     name: 'OpenTime',       sortable: true  },
-  { label: 'Symbol',        name: 'Symbol',         sortable: true  },
-  { label: 'Volume',        name: 'Volume',         sortable: true  },
-  { label: 'Side',          name: 'Cmd',            sortable: true  },
-  { label: 'Open Price',    name: 'OpenPrice',      sortable: true  },
-  { label: 'Current Price', name: 'CurrentPrice',   sortable: true  },
-  { label: 'Stop Loss',     name: 'Sl',             sortable: true  },
-  { label: 'Take Profit',   name: 'Tp',             sortable: true  },
-  { label: 'Commission',    name: 'Commission',     sortable: true  },
-  { label: 'Net profit',    name: 'CurrentProfit',  sortable: true  },
-  { label: '',              name: 'delete',         sortable: false },
+  { label: 'Deal',      name: 'Order',        sortable: true , type: 'w5' },
+  { label: 'Login',     name: 'Login',        sortable: true , type: 'w7' },
+  { label: 'Time',      name: 'OpenTime',     sortable: true , type: 'w5' },
+  { label: 'Type',      name: 'Cmd',          sortable: true , type: 'w3' },
+  { label: 'Symbol',    name: 'Symbol',       sortable: true , type: 'w5' },
+  { label: 'Volume',    name: 'Volume',       sortable: true , type: 'w3' },
+  { label: 'Price',     name: 'OpenPrice',    sortable: true , type: 'w3' },
+  { label: 'S / L',     name: 'Sl',           sortable: true , type: 'w7' },
+  { label: 'T / P',     name: 'Tp',           sortable: true , type: 'w7' },
+  { label: 'Price',     name: 'ClosePrice',   sortable: true , type: 'w3', online: true },
+  { label: 'Reason',    name: 'Reason',       sortable: true , type: 'w5' },
+  { label: 'Commision', name: 'Commision',    sortable: true , type: 'w5' },
+  { label: 'Swap',      name: 'Swap',         sortable: true , type: 'w3' },
+  { label: 'USD',       name: 'Profit',       sortable: true , type: 'w3', online: true },
+  { label: 'Comment',   name: 'Comment',      sortable: true , type: 'w9' },
+  { label: '',          name: 'delete',       sortable: false, type: ''   },
 ];
 
 const historyOrdersPropList = [
-  { label: 'Id',            name: 'Order',        sortable: true  },
-  { label: 'Open Time',     name: 'OpenTime',     sortable: true  },
-  { label: 'Symbol',        name: 'Symbol',       sortable: true  },
-  { label: 'Volume',        name: 'Volume',       sortable: true  },
-  { label: 'Side',          name: 'Cmd',          sortable: true  },
-  { label: 'Open Price',    name: 'OpenPrice',    sortable: true  },
-  { label: 'Close Price',   name: 'ClosePrice',   sortable: true  },
-  { label: 'Stop Loss',     name: 'Sl',           sortable: true  },
-  { label: 'Take Profit',   name: 'Tp',           sortable: true  },
-  { label: 'Commission',    name: 'Commission',   sortable: true  },
-  { label: 'Net profit',    name: 'Profit',       sortable: true  },
-  { label: '',              name: 'delete',       sortable: false },
+  { label: 'Deal',      name: 'Order',        sortable: true , type: 'w5' },
+  { label: 'Login',     name: 'Login',        sortable: true , type: 'w7' },
+  { label: 'Time',      name: 'OpenTime',     sortable: true , type: 'w5' },
+  { label: 'Type',      name: 'Cmd',          sortable: true , type: 'w3' },
+  { label: 'Symbol',    name: 'Symbol',       sortable: true , type: 'w5' },
+  { label: 'Volume',    name: 'Volume',       sortable: true , type: 'w3' },
+  { label: 'Price',     name: 'OpenPrice',    sortable: true , type: 'w3' },
+  { label: 'S / L',     name: 'Sl',           sortable: true , type: 'w7' },
+  { label: 'T / P',     name: 'Tp',           sortable: true , type: 'w7' },
+  { label: 'Time',      name: 'CloseTime',    sortable: true , type: 'w5' },
+  { label: 'Price',     name: 'ClosePrice',   sortable: true , type: 'w3' },
+  { label: 'Reason',    name: 'Reason',       sortable: true , type: 'w5' },
+  { label: 'Commision', name: 'Commision',    sortable: true , type: 'w5' },
+  { label: 'Swap',      name: 'Swap',         sortable: true , type: 'w3' },
+  { label: 'USD',       name: 'Profit',       sortable: true , type: 'w3' },
+  { label: 'Comment',   name: 'Comment',      sortable: true , type: 'w9' },
+  { label: '',          name: 'delete',       sortable: false, type: ''   },
 ];
 
 // Component
 const OrderList: React.FC<any> = props => {
-  const { loading, openOrders, historyOrders, closeOrder, loadOpenOrders, loadHistoryOrders, tickers } = props;
+  const {
+    loading,
+    openOrders,
+    historyOrders,
+    closeOrder,
+    loadOpenOrders,
+    loadHistoryOrders,
+    tickers,
+  } = props;
 
   // Declaration
   // - state
@@ -63,19 +79,13 @@ const OrderList: React.FC<any> = props => {
   const items = currentTab === tabList[0] ?  openOrders : historyOrders;
   const propList = currentTab === tabList[0] ? openOrdersPropList : historyOrdersPropList;
 
-  // - props
-  const headerProps: HeaderProps = {
-    tabList,
-    currentTab,
-    onTabChange,
-  };
-
   // - handlers
   const handleOrderDelete = (id) => {
     const ordertoDelete = items.find(order => order.id === id);
     if (ordertoDelete) { closeOrder(ordertoDelete); }
   };
 
+  // - hoocks
   React.useEffect(() => {
     loadOpenOrders();
     loadHistoryOrders();
@@ -87,11 +97,18 @@ const OrderList: React.FC<any> = props => {
       } else {
         loadHistoryOrders();
       }
-    }, 1000);
+    }, 2000);
     return () => {
       clearInterval(interval);
     };
   }, [currentTab]);
+
+  // - props
+  const headerProps: HeaderProps = {
+    tabList,
+    currentTab,
+    onTabChange,
+  };
 
   const itemsProps: ItemsProps = {
     tickers,

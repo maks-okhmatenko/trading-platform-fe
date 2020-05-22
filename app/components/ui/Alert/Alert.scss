@@ -1,0 +1,54 @@
+.container {
+  height: 0;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.main {
+  position: absolute;
+  min-width: 100%;
+  min-height: 3rem;
+  padding: 1rem;
+  opacity: 0;
+  display: none;
+}
+
+.visible {
+  animation: reveal .3s ease-in;
+  display: block;
+  opacity: 1;
+}
+
+.error {
+  background-color: #310c0a;
+  border: 1px solid red;
+  color: #ffb3b3;
+}
+
+.success {
+  background-color: #0f250f;
+  border: 1px solid green;
+  color: #b1ffb1;
+}
+
+.alert {
+  background-color: #311e00;
+  border: 1px solid yellow;
+  color: #ffffaa;
+}
+
+.title {
+  text-transform: capitalize;
+}
+
+@keyframes reveal {
+  0% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+

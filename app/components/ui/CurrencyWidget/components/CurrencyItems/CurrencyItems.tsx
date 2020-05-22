@@ -17,6 +17,7 @@ export type CurrencyItemsProps = {
   favoriteTickers: string[],
   login: string,
   isOrderLoading: boolean,
+  openOrderError: string | null,
   list: Array<{
     Bid: string;
     Ask: string;
@@ -30,7 +31,7 @@ export type CurrencyItemsProps = {
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
-  const { list, favoriteTickers, login, isOrderLoading } = props;
+  const { list, favoriteTickers, login, isOrderLoading, openOrderError } = props;
 
   const dispatch = useDispatch();
   const [modalSymbol, setModalSymbol] = useState('');
@@ -54,10 +55,10 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     dispatch(openNewOrder(newOrder));
   };
 
-  // Hooks
-  React.useEffect(() => {
-    setModalVisible(isOrderLoading);
-  }, [isOrderLoading]);
+  // // Hooks
+  // React.useEffect(() => {
+  //   setModalVisible(isOrderLoading);
+  // }, [isOrderLoading]);
 
   // ModalProps
   const currTicker = list[modalSymbol];
@@ -67,6 +68,7 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     bid: currTicker.Bid,
     login,
     isOrderLoading,
+    openOrderError,
   } : {};
   const modalProps = {
     isVisible: isModalVisible || isOrderLoading,
@@ -109,6 +111,7 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
           const spread = ask - bid;
           return (
             <ContextMenuTrigger
+              mouseButton={0} // it's ok to have error here. TS interface is deprecated
               attributes={{className: classNames}}
               renderTag={'tr'}
               id={`${TICKER_CTX_MENU}-${symbol}`}

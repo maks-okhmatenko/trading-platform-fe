@@ -14,9 +14,6 @@ import {
   makeSelectAdditionalChartDataLength,
   makeSelectOpenedSymbols,
   makeSelectFavoriteTickers,
-  makeSelectGlobalSymbolList,
-  makeSelectLogin,
-  makeSelectOrdersLoading,
 } from 'containers/App/selectors';
 import { useInjectReducer } from 'utils/injectReducer';
 
@@ -29,34 +26,44 @@ import {
   socketIoLoadTimeFrameByCount,
   changeActiveTimeFrame,
 } from 'containers/App/actions';
+import { CHANGE_TYPE } from 'containers/App/constants';
+
 import styles from './styles.scss';
 
 const HomePageContainer = props => {
-  const { loading, tickers, allTickersShow, favoriteTickers, isOrderLoading, login } = props;
+  const {
+    tickers,
+    favoriteTickers,
+    additionalChartDataLength,
+    activeTimeFrame,
+    chartLoading,
+    activeSymbolChart,
+    chartData,
+    pickTimeFrame,
+    subscribeChartData,
+    loadMoreChartData,
+    openedSymbols,
+    pickSymbolChart,
+  } = props;
+
   useInjectReducer({ key: 'app', reducer: appReducer });
 
-  const currencyWidgetProps = {
-    loading,
-    tickers,
-    allTickersShow,
-    favoriteTickers,
-    globalSymbolList: props.globalSymbolList,
-    login,
-    isOrderLoading,
-  };
+  if (!props.activeSymbolChart && favoriteTickers.length) {
+    props.pickSymbolChart(CHANGE_TYPE.ADD, favoriteTickers[0]);
+  }
 
   const chartProps = {
-    ticker: tickers[props.activeSymbolChart],
-    chartData: props.chartTimeFrame,
-    additionalChartDataLength: props.additionalChartDataLength,
-    chartLoading: props.chartLoading,
-    activeSymbolChart: props.activeSymbolChart,
-    activeTimeFrame: props.activeTimeFrame,
-    pickTimeFrame: props.pickTimeFrame,
-    subscribeChartData: props.subscribeChartData,
-    loadMoreChartData: props.loadMoreChartData,
-    openedSymbols: props.openedSymbols,
-    pickSymbolChart: props.pickSymbolChart,
+    ticker: tickers[activeSymbolChart],
+    additionalChartDataLength,
+    activeTimeFrame,
+    chartLoading,
+    activeSymbolChart,
+    chartData,
+    pickTimeFrame,
+    subscribeChartData,
+    loadMoreChartData,
+    openedSymbols,
+    pickSymbolChart,
   };
 
   return (
@@ -69,9 +76,9 @@ const HomePageContainer = props => {
       <div className={styles.bodyContainer}>
         <div className={styles.chartSection}>
           <div className={styles.widgetContainer}>
-            <CurrencyWidgetContainer {...currencyWidgetProps} />
+            <CurrencyWidgetContainer />
           </div>
-          {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : <></>}
+          {props.activeSymbolChart ? <Chart type="svg" {...chartProps} /> : null}
         </div>
         <div className={styles.ordersSection}>
           <OrderList />
@@ -85,15 +92,12 @@ const mapStateToProps = createStructuredSelector({
   tickers: makeSelectTickers(),
   loading: makeSelectLoading(),
   chartLoading: makeSelectChartLoading(),
-  chartTimeFrame: makeSelectChartData(),
+  chartData: makeSelectChartData(),
   additionalChartDataLength: makeSelectAdditionalChartDataLength(),
   activeSymbolChart: makeSelectActiveSymbolChart(),
   activeTimeFrame: makeSelectActiveTimeFrame(),
   openedSymbols: makeSelectOpenedSymbols(),
   favoriteTickers: makeSelectFavoriteTickers(),
-  globalSymbolList: makeSelectGlobalSymbolList(),
-  isOrderLoading: makeSelectOrdersLoading(),
-  login: makeSelectLogin(),
 });
 
 const mapDispatchToProps = {

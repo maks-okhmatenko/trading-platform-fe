@@ -10,6 +10,7 @@ import SwitchableInput from './components/SwitchableInput';
 import DigitInput from './components/DigitInput';
 
 import styles from './OrderModal.scss';
+import Alert from '../Alert/Alert';
 
 
 // OrderModal PropsType
@@ -19,6 +20,7 @@ export type PropsType = {
   symbol?: string;
   login?: string;
   isOrderLoading?: boolean;
+  openOrderError?: string | null;
   isVisible?: boolean;
   handleClose?: () => void;
   onSubmit?: (order: ORDER) => void;
@@ -33,6 +35,7 @@ export const OrderModal: React.FC<PropsType> = props => {
     ask = '',
     login = '',
     isOrderLoading = false,
+    openOrderError,
     onSubmit,
     handleClose,
   } = props;
@@ -112,9 +115,11 @@ export const OrderModal: React.FC<PropsType> = props => {
     <div className={mainWrapperClasses} onMouseMove={!!point ? onDrag : undefined}>
       {!isVisible ? null : (
         <div className={styles.modalMain} style={customStyles}>
-          {isOrderLoading ? <div className={styles.loading}>
-            <div className={styles.loader}/>
-          </div> : null}
+          {!isOrderLoading ? null :
+            <div className={styles.loading}>
+              <div className={styles.loader}/>
+            </div>
+          }
           {/* Header */}
           <div
             className={styles.header}
@@ -129,11 +134,12 @@ export const OrderModal: React.FC<PropsType> = props => {
 
           {/* Body */}
           <div className={styles.body}>
+            <Alert {...openOrderError}/>
             {/* - Volume - */}
             <div className={styles.row}>
               <div className={styles.digitInput}>
                 <h1>Volume</h1>
-                <DigitInput value={volume} setValue={setVolume} autoFocus />
+                <DigitInput value={volume} setValue={setVolume} autoFocus fixed={2}/>
               </div>
             </div>
 

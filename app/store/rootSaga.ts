@@ -2,7 +2,7 @@ import _sortBy from 'lodash/sortBy';
 import _throttle from 'lodash/throttle';
 import socketIOClient from 'socket.io-client';
 import { eventChannel } from 'redux-saga';
-import { all, call, fork, put, take, takeEvery, select, takeLatest } from 'redux-saga/effects';
+import { all, call, fork, put, take, takeEvery, select, takeLatest, delay } from 'redux-saga/effects';
 
 import * as AppActions from '../containers/App/actions';
 import {
@@ -12,6 +12,7 @@ import {
   CHANGE_TYPE,
   ORDER_API_URL,
   ORDER_ACTION,
+  ALERT_TYPES,
 } from '../containers/App/constants';
 import {
   makeSelectFavoriteTickers, makeSelectLogin, makeSelectGlobalSymbolList,
@@ -141,14 +142,18 @@ function* openOrderSaga(action) {
     ...action.payload,
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
-  if (data) {
+  if (data && data.status) {
     const order = {
       id: data.message,
       OpenTime: moment(moment.now()).unix(),
       ...action.payload,
     };
-    yield put(AppActions.openOrderSuccess(order));
+    yield put(AppActions.openOrderResult(order, 'Order opened', ALERT_TYPES.SUCCESS));
+  } else {
+    yield put(AppActions.openOrderResult(null, 'Can\'t open order', ALERT_TYPES.ERROR));
   }
+  yield delay(3500);
+  yield put(AppActions.openOrderResult());
 }
 
 function* closeOrderSaga(action) {
@@ -196,7 +201,7 @@ function* loadOrdersSaga(action) {
 }
 
 export function* rootSagas() {
-  yield put(AppActions.openOrderSuccess());
+  yield put(AppActions.openOrderResult());
   yield all([
     fork(watchSocketIoChannel),
     takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),

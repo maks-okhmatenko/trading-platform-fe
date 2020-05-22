@@ -4,26 +4,32 @@ import _ from 'lodash';
 
 const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
 
-const filter = (value, regex) => {
+const filter = (value) => {
   const newValue = value && value.split(' ').join('');
-  if (newValue && newValue.match(regex) !== null) {
-    return _.toNumber(newValue).toFixed(5);
+  if (newValue && newValue.match(floatRegex) !== null) {
+    return _.toNumber(newValue);
   } else {
-    return (0).toFixed(5);
+    return 0;
   }
 };
 
 export const DigitInput: React.FC<any> = props => {
-  const { value, setValue, delta = 0.01, disabled, autoFocus } = props;
+  const { value, setValue, delta = 0.01, disabled, autoFocus, fixed = 5 } = props;
 
   const decrement = () => {
-    setValue((Number(value) - delta).toFixed(5));
+    setValue((Number(value) - delta).toFixed(fixed));
   };
   const increment = () => {
-    setValue((Number(value) + delta).toFixed(5));
+    setValue((Number(value) + delta).toFixed(fixed));
   };
   const onCommit = () => {
-    setValue(filter(value, floatRegex));
+    setValue(filter(value).toFixed(fixed));
+  };
+  const onChange = (e) => {
+    const newValue = e.target.value;
+    if (newValue && newValue.match(floatRegex) !== null) {
+      setValue(newValue);
+    }
   };
 
   return (
@@ -34,14 +40,14 @@ export const DigitInput: React.FC<any> = props => {
       <input
         type="text"
         value={value}
-        onChange={e => setValue(e.target.value)}
+        onChange={onChange}
         onBlur={onCommit}
         autoFocus={autoFocus}
         disabled={disabled}
       />
       {disabled ? null : (
         <div className={styles.squareButton} onClick={increment}>+</div>
-      )}
+        )}
     </div>
   );
 };

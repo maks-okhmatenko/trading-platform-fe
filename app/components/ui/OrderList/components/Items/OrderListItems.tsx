@@ -1,7 +1,7 @@
 import * as React from 'react';
 import moment from 'moment';
 import classnames from 'classnames';
-import { ORDER, ORDER_CMD_TYPE } from 'containers/App/constants';
+import { ORDER, CMD_VIEWS, ORDER_CMD_TYPE } from 'containers/App/constants';
 import _toNumber from 'lodash/toNumber';
 
 import styles from './OrderListItems.scss';
@@ -71,7 +71,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   : '';
 
                 return (
-                  <th className={classes}
+                  <th className={classnames(classes, styles[item.type])}
                     onClick={item.sortable ? () => this.handleSort(item.name) : undefined}
                     key={item.name}
                   >
@@ -90,18 +90,20 @@ export class OrderListItems extends Component<PropsType, StateType> {
               const bid = ticker ? _toNumber(ticker.Bid) : 0;
               const ask = ticker ? _toNumber(ticker.Ask) : 0;
               const currPrice = bid;
-              const netProfit = (currPrice - openPrice) * 100000 * volume;
+              const netProfit = _.toNumber((currPrice - openPrice) * 1000 * volume);
+              const dontshow = order.Cmd === ORDER_CMD_TYPE.BALANCE;
 
               return (
               <tr key={order.id}>
                 {propList.map(prop => {
                   const value = order[prop.name];
 
-                  if (prop.name === 'OpenTime') {
+                  if (prop.name === 'OpenTime' || prop.name === 'CloseTime') {
                     const openMoment = moment.unix(Date.parse(value) / 1000);
+                    const unviewable = prop.name === 'CloseTime' && dontshow;
                     return (
                       <td key={prop.name}>
-                        {!value ? null : <>
+                        {!value || unviewable ? null : <>
                           {openMoment.format('DD.MM.YYYY')}
                           <span> {openMoment.format('hh:mm:ss')}</span>
                         </>}
@@ -110,37 +112,40 @@ export class OrderListItems extends Component<PropsType, StateType> {
                   }
 
                   if (prop.name === 'Cmd') {
-                    const color = value === ORDER_CMD_TYPE.BUY ? 'green' : 'red';
-                    const viewValue = value === ORDER_CMD_TYPE.BUY ? 'buy' : 'sell';
+                    const view = CMD_VIEWS[value];
                     return (
-                      <td key={prop.name} className={styles[color]}>
-                        {viewValue}
+                      <td key={prop.name} className={styles[view.color]}>
+                        {view.value}
                       </td>
                     );
                   }
 
-                  if (prop.name === 'CurrentPrice') {
+                  if (prop.name === 'ClosePrice') {
                     return (
                       <td key={prop.name}>
-                        {currPrice.toFixed(5)}
+                        {dontshow
+                          ? null
+                          : prop.online
+                            ? currPrice && currPrice.toFixed(5)
+                            : value
+                        }
+                      </td>
+                    );
+                  }
+
+                  if (prop.name === 'OpenPrice' || prop.name === 'Reason') {
+                    return (
+                      <td key={prop.name}>
+                        {dontshow ? null : value}
                       </td>
                     );
                   }
 
                   if (prop.name === 'Profit') {
-                    const color = _toNumber(value) > 0 ? 'green' : 'red';
-                    return (
-                      <td key={prop.name} className={styles[color]}>
-                        {value}
-                      </td>
-                    );
-                  }
-
-                  if (prop.name === 'CurrentProfit') {
                     const color = _toNumber(netProfit) > 0 ? 'green' : 'red';
                     return (
                       <td key={prop.name} className={styles[color]}>
-                        {netProfit.toFixed(5)}
+                        {prop.online ? netProfit.toFixed(2) : value}
                       </td>
                     );
                   }
@@ -150,13 +155,23 @@ export class OrderListItems extends Component<PropsType, StateType> {
                     return (
                       <td key={prop.name}>
                         <div className={styles.inline}>
-                          {numValue.toFixed(5)}
-                          { !numValue ? (
-                            <div className={styles.squareButton}
-                              onClick={() => onOrderUpdate({id: order.id, [prop.name]: 1 })}
-                            >+</div>
-                          ) : (<></>)}
+                          {order.Cmd === ORDER_CMD_TYPE.BALANCE ? null : (
+                            numValue.toFixed(5) +
+                            !numValue ? (
+                              <div className={styles.squareButton}
+                                onClick={() => onOrderUpdate({id: order.id, [prop.name]: 1 })}
+                              >+</div>
+                            ) : (null)
+                          )}
                         </div>
+                      </td>
+                    );
+                  }
+
+                  if (prop.name === 'Volume') {
+                    return (
+                      <td key={prop.name}>
+                        {dontshow ? null : (volume / 100).toFixed(2)}
                       </td>
                     );
                   }
