@@ -1,13 +1,13 @@
 import * as React from 'react';
 import styles from '../OrderModal.scss';
-import _ from 'lodash';
+import _toNumber from 'lodash/toNumber';
 
 const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
 
 const filter = (value) => {
   const newValue = value && value.split(' ').join('');
   if (newValue && newValue.match(floatRegex) !== null) {
-    return _.toNumber(newValue);
+    return _toNumber(newValue);
   } else {
     return 0;
   }

@@ -109,9 +109,11 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
           const bid = Number.parseFloat(ticker.Bid);
           const ask = Number.parseFloat(ticker.Ask);
           const spread = ask - bid;
+
           return (
+            // @ts-ignore
             <ContextMenuTrigger
-              mouseButton={0} // it's ok to have error here. TS interface is deprecated
+              mouseButton={0}
               attributes={{className: classNames}}
               renderTag={'tr'}
               id={`${TICKER_CTX_MENU}-${symbol}`}

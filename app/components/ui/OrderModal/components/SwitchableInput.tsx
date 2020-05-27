@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from '../OrderModal.scss';
-import CheckBox from '../../CheckBox';
+import CheckBox from '../../CheckBox/Checkbox';
 import DigitInput from './DigitInput';
 
 export const SwitchableInput: React.FC<any> = props => {

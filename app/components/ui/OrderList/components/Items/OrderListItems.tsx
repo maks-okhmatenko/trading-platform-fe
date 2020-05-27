@@ -90,7 +90,7 @@ export class OrderListItems extends Component<PropsType, StateType> {
               const bid = ticker ? _toNumber(ticker.Bid) : 0;
               const ask = ticker ? _toNumber(ticker.Ask) : 0;
               const currPrice = bid;
-              const netProfit = _.toNumber((currPrice - openPrice) * 1000 * volume);
+              const netProfit = _toNumber((currPrice - openPrice) * 1000 * volume);
               const dontshow = order.Cmd === ORDER_CMD_TYPE.BALANCE;
 
               return (
