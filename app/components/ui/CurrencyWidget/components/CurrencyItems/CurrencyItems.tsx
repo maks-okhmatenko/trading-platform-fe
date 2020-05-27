@@ -10,13 +10,14 @@ import ArrowIcon from 'components/ui/icons/Arrow_icon';
 import OrderModal from 'components/ui/OrderModal/OrderModal';
 import styles from './CurrencyItems.scss';
 
-
 const { useState } = React;
+
 
 export type CurrencyItemsProps = {
   favoriteTickers: string[],
   login: string,
   isOrderLoading: boolean,
+  openOrderError: string | null,
   list: Array<{
     Bid: string;
     Ask: string;
@@ -30,14 +31,17 @@ export type CurrencyItemsProps = {
 const TICKER_CTX_MENU = 'TICKER_CTX_MENU';
 
 const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
-  const { list, favoriteTickers, login, isOrderLoading } = props;
+  const { list, favoriteTickers, login, isOrderLoading, openOrderError } = props;
 
   const dispatch = useDispatch();
   const [modalSymbol, setModalSymbol] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
 
   // Handlers
-  const handleNewOrderClick = (symbol) =>
-    () => setModalSymbol(symbol);
+  const handleNewOrderClick = (symbol) => () => {
+    setModalSymbol(symbol);
+    setModalVisible(true);
+  };
 
   const handleOpenChartClick = (symbol) =>
     () => dispatch(changeActiveSymbolChart(CHANGE_TYPE.ADD, symbol));
@@ -51,6 +55,11 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     dispatch(openNewOrder(newOrder));
   };
 
+  // // Hooks
+  // React.useEffect(() => {
+  //   setModalVisible(isOrderLoading);
+  // }, [isOrderLoading]);
+
   // ModalProps
   const currTicker = list[modalSymbol];
   const liveModalProps = currTicker ? {
@@ -59,12 +68,13 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
     bid: currTicker.Bid,
     login,
     isOrderLoading,
+    openOrderError,
   } : {};
   const modalProps = {
-      isVisible: !!modalSymbol,
-      handleClose: () => setModalSymbol(''),
-      onSubmit: handleModalSubmit,
-      ...liveModalProps,
+    isVisible: isModalVisible || isOrderLoading,
+    handleClose: () => setModalVisible(false),
+    onSubmit: handleModalSubmit,
+    ...liveModalProps,
   };
 
   // Render
@@ -96,8 +106,14 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
             [styles.down]: !direction,
           });
           const time = moment.unix(ticker.Time / 1000).format('HH:mm:ss');
+          const bid = Number.parseFloat(ticker.Bid);
+          const ask = Number.parseFloat(ticker.Ask);
+          const spread = ask - bid;
+
           return (
+            // @ts-ignore
             <ContextMenuTrigger
+              mouseButton={0}
               attributes={{className: classNames}}
               renderTag={'tr'}
               id={`${TICKER_CTX_MENU}-${symbol}`}
@@ -110,12 +126,12 @@ const CurrencyItems: React.FC<CurrencyItemsProps> = (props) => {
                 {symbol.toUpperCase()}
               </td>
               <td className={styles.colorize}>
-                {Number.parseFloat(ticker.Bid).toFixed(5)}
+                {bid.toFixed(5)}
               </td>
               <td className={styles.colorize}>
-                {Number.parseFloat(ticker.Ask).toFixed(5)}
+                {ask.toFixed(5)}
               </td>
-              <td className={styles.colorize}>{ticker.Spread}</td>
+              <td className={styles.colorize}>{spread.toFixed(5)}</td>
               <td>{time}</td>
               <td>
                 <FavoriteIcon active onClick={handleSwitchIsFavorite(symbol)}/>

@@ -1,4 +1,13 @@
-import { ActionTypes, EVENT_NAME, FRAME_TYPES, APPEND_TYPE, CHANGE_TYPE, ORDER, ORDER_TYPE } from './constants';
+import {
+  ActionTypes,
+  EVENT_NAME,
+  FRAME_TYPES,
+  APPEND_TYPE,
+  CHANGE_TYPE,
+  ORDER,
+  ORDER_ACTION,
+  ALERT_TYPES,
+} from './constants';
 import { transformChartData } from './utils';
 
 type socketIoSubscribeTimeFrameProps = {
@@ -91,9 +100,13 @@ export const openNewOrder = (order: ORDER) => ({
   payload: order,
 });
 
-export const openOrderSuccess = (order?: ORDER) => ({
-  type: ActionTypes.OPEN_ORDER_SUCCESS,
-  payload: order,
+export const openOrderResult = (
+  order?: ORDER | null,
+  title: string | null = null,
+  type: string = ALERT_TYPES.SUCCESS,
+) => ({
+  type: ActionTypes.OPEN_ORDER_RESULT,
+  payload: { order, error: { title, type }},
 });
 
 export const closeOrder = (order?: ORDER) => ({
@@ -102,7 +115,7 @@ export const closeOrder = (order?: ORDER) => ({
 });
 
 export const closeOrderSuccess = (id?: string) => ({
-  type: ActionTypes.CLOSE_ORDER_SUCCESS,
+  type: ActionTypes.CLOSE_ORDER_RESULT,
   payload: id,
 });
 
@@ -112,17 +125,17 @@ export const updateOrder = (order?: ORDER) => ({
 });
 
 export const updateOrderSuccess = (order?: ORDER) => ({
-  type: ActionTypes.UPDATE_ORDER_SUCCESS,
+  type: ActionTypes.UPDATE_ORDER_RESULT,
   payload: order,
 });
 
-export const loadOrders = (type: ORDER_TYPE) => ({
+export const loadOrders = (type: ORDER_ACTION) => ({
   type: ActionTypes.LOAD_OPEN_ORDERS,
   payload: type,
 });
 
-export const loadOpenOrders = () => loadOrders(ORDER_TYPE.OPENED);
-export const loadHistoryOrders = () => loadOrders(ORDER_TYPE.CLOSED);
+export const loadOpenOrders = () => loadOrders(ORDER_ACTION.OPENED);
+export const loadHistoryOrders = () => loadOrders(ORDER_ACTION.CLOSED);
 
 export const loadOpenOrdersSuccess = (orders?: ORDER[]) => ({
   type: ActionTypes.LOAD_OPEN_ORDERS_SUCCESS,

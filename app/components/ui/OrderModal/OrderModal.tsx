@@ -4,75 +4,14 @@ import _toNumber from 'lodash/toNumber';
 import _throttle from 'lodash/throttle';
 import classnames from 'classnames';
 
-import styles from './OrderModal.scss';
 import { ORDER_CMD_TYPE, ORDER } from 'containers/App/constants';
 import CheckBox from './../CheckBox/Checkbox';
+import SwitchableInput from './components/SwitchableInput';
+import DigitInput from './components/DigitInput';
 
+import styles from './OrderModal.scss';
+import Alert from '../Alert/Alert';
 
-const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/g;
-
-const filter = (value, regex) => {
-  const newValue = value && value.split(' ').join('');
-  if (newValue && newValue.match(regex) !== null) {
-    return _toNumber(newValue).toFixed(5);
-  } else {
-    return (0).toFixed(5);
-  }
-};
-
-// SwitchableInput Component
-const SwitchableInput: React.FC<any> = props => {
-  const { title, onChange, value } = props;
-  const [visible, setVisible] = React.useState(false);
-  return (
-    <div className={styles.digitInput}>
-      <label className={styles.switcherLable}>
-        <h1>{title}</h1>
-        <CheckBox
-          defaultValue={visible}
-          onChange={checked => setVisible(checked)}
-        />
-      </label>
-      {!visible ? null : (
-        <DigitInput value={value} setValue={onChange} autoFocus />
-      )}
-    </div>
-  );
-};
-
-// DigitalInput Component
-const DigitInput: React.FC<any> = props => {
-  const { value, setValue, delta = 0.01, disabled, autoFocus } = props;
-
-  const decrement = () => {
-    setValue((Number(value) - delta).toFixed(5));
-  };
-  const increment = () => {
-    setValue((Number(value) + delta).toFixed(5));
-  };
-  const onCommit = () => {
-    setValue(filter(value, floatRegex));
-  };
-
-  return (
-    <div className={styles.input}>
-      {disabled ? null : (
-        <div className={styles.squareButton} onClick={decrement}>-</div>
-      )}
-      <input
-        type="text"
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onBlur={onCommit}
-        autoFocus={autoFocus}
-        disabled={disabled}
-      />
-      {disabled ? null : (
-        <div className={styles.squareButton} onClick={increment}>+</div>
-      )}
-    </div>
-  );
-};
 
 // OrderModal PropsType
 export type PropsType = {
@@ -81,7 +20,7 @@ export type PropsType = {
   symbol?: string;
   login?: string;
   isOrderLoading?: boolean;
-
+  openOrderError?: string | null;
   isVisible?: boolean;
   handleClose?: () => void;
   onSubmit?: (order: ORDER) => void;
@@ -91,24 +30,25 @@ export type PropsType = {
 export const OrderModal: React.FC<PropsType> = props => {
   const {
     isVisible,
-    handleClose,
     symbol = '',
     bid = '',
     ask = '',
-    onSubmit,
     login = '',
     isOrderLoading = false,
+    openOrderError,
+    onSubmit,
+    handleClose,
   } = props;
 
   // Declarations
   const [volume, setVolume] = React.useState('');
   const [priceMarket, setPriceMarket] = React.useState(false);
   const [price, setPrice] = React.useState('');
-  const [stopLoss, setStopLoss] = React.useState('') as [string, any];
-  const [takeProfit, setTakeProfit] = React.useState('') as [string, any];
+  const [stopLoss, setStopLoss] = React.useState('') as [string, (obj: any) => void];
+  const [takeProfit, setTakeProfit] = React.useState('') as [string, (obj: any) => void];
 
   // - onDrag vars
-  const [point, setPoint] = React.useState(null) as [{ x: number; y: number } | null, any];
+  const [point, setPoint] = React.useState(null) as [{ x: number; y: number } | null, (obj: any) => void];
   const [pos, setPos] = React.useState({ x: 100, y: 100 });
 
   // - dinamic styles
@@ -122,16 +62,19 @@ export const OrderModal: React.FC<PropsType> = props => {
   });
 
   // Handlers
-  const handleSubmit = side => {
+  const handleSubmit = cmd => {
     const newOrder: ORDER = {
       Login: login,
       Symbol: symbol,
       Volume: volume,
-      Price: price,
-      Cmd: side,
+      Cmd: cmd,
+      Expiration: '',
+      Comment: '',
     };
     if (stopLoss) { _set(newOrder, 'Sl', stopLoss); }
     if (takeProfit) { _set(newOrder, 'Tp', takeProfit); }
+    if (cmd === ORDER_CMD_TYPE.BUY
+    ||  cmd === ORDER_CMD_TYPE.SELL) { _set(newOrder, 'Price', price); }
     if (onSubmit) { onSubmit(newOrder); }
   };
   const handlePriceSourceSwitch = checked => setPriceMarket(checked);
@@ -165,14 +108,18 @@ export const OrderModal: React.FC<PropsType> = props => {
   }, [symbol]);
   // - set price by market
   const marketPrice = _toNumber(ask).toFixed(5);
-  if (!priceMarket && price !== marketPrice) { setPrice(marketPrice); }
+  if (!priceMarket && price !== marketPrice && !isOrderLoading) { setPrice(marketPrice); }
 
   // Render
   return (
     <div className={mainWrapperClasses} onMouseMove={!!point ? onDrag : undefined}>
       {!isVisible ? null : (
         <div className={styles.modalMain} style={customStyles}>
-          {isOrderLoading ? <div className={styles.loading}/> : null}
+          {!isOrderLoading ? null :
+            <div className={styles.loading}>
+              <div className={styles.loader}/>
+            </div>
+          }
           {/* Header */}
           <div
             className={styles.header}
@@ -187,11 +134,12 @@ export const OrderModal: React.FC<PropsType> = props => {
 
           {/* Body */}
           <div className={styles.body}>
+            <Alert {...openOrderError}/>
             {/* - Volume - */}
             <div className={styles.row}>
               <div className={styles.digitInput}>
                 <h1>Volume</h1>
-                <DigitInput value={volume} setValue={setVolume} autoFocus />
+                <DigitInput value={volume} setValue={setVolume} autoFocus fixed={2}/>
               </div>
             </div>
 

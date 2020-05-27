@@ -22,11 +22,11 @@ export enum ActionTypes {
   CHANGE_FAVORITE_SYMBOL_LIST = 'App/CHANGE_FAVORITE_SYMBOL_LIST',
 
   OPEN_NEW_ORDER = 'App/OPEN_NEW_ORDER',
-  OPEN_ORDER_SUCCESS = 'App/OPEN_ORDER_SUCCESS',
+  OPEN_ORDER_RESULT = 'App/OPEN_ORDER_RESULT',
   CLOSE_ORDER = 'App/CLOSE_ORDER',
-  CLOSE_ORDER_SUCCESS = 'App/CLOSE_ORDER_SUCCESS',
+  CLOSE_ORDER_RESULT = 'App/CLOSE_ORDER_RESULT',
   UPDATE_ORDER = 'App/UPDATE_ORDER',
-  UPDATE_ORDER_SUCCESS = 'App/UPDATE_ORDER_SUCCESS',
+  UPDATE_ORDER_RESULT = 'App/UPDATE_ORDER_RESULT',
 
   LOAD_OPEN_ORDERS = 'App/LOAD_OPEN_ORDERS',
   LOAD_OPEN_ORDERS_SUCCESS = 'App/LOAD_OPEN_ORDERS_SUCCESS',
@@ -65,9 +65,12 @@ export enum CHANGE_TYPE {
   DELETE = 'DELETE',
 }
 
-export enum ORDER_TYPE {
-  OPENED = 'OpenPosition',
-  CLOSED = 'ClosePosition',
+export enum ORDER_ACTION {
+  OPEN    = 'OrderOpen',
+  CLOSE   = 'OrderClose',
+  UPDATE  = 'OrderUpdate',
+  OPENED  = 'OpenPosition',
+  CLOSED  = 'ClosePosition',
 }
 
 export enum ORDER_CMD_TYPE {
@@ -77,6 +80,23 @@ export enum ORDER_CMD_TYPE {
   SELL_LIMIT = '103',
   BUY_STOP = '104',
   SELL_STOP = '105',
+  BALANCE = '106',
+}
+
+export const CMD_VIEWS = {
+  100: { value: 'buy',         color: 'green'},
+  101: { value: 'sell',        color: 'red'  },
+  102: { value: 'buy limit',   color: 'green'},
+  103: { value: 'sell limit',  color: 'red'  },
+  104: { value: 'buy stop',    color: 'green'},
+  105: { value: 'sell stop',   color: 'red'  },
+  106: { value: 'balance',     color: 'maintext' },
+};
+
+export enum ALERT_TYPES {
+  ERROR = 'error',
+  SUCCESS = 'success',
+  ALERT = 'alert',
 }
 
 export type ORDER_ITEM_TYPE = {
@@ -99,10 +119,12 @@ export type ORDER = {
   Login: string,
   Volume: string,
   Symbol: string,
-  Price: string,
+  Price?: string,
   Sl?: string,
   Tp?: string,
   Cmd: ORDER_CMD_TYPE,
+  Expiration: string,
+  Comment: string,
 };
 
 export enum FRAME_TYPES {

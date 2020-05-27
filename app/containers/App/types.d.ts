@@ -19,6 +19,7 @@ interface AppState {
   activeTimeFrame: FRAME_TYPES;
 
   ordersLoading: boolean;
+  openOrderError: object | null;
   openOrders: [];
   historyOrders: [];
 

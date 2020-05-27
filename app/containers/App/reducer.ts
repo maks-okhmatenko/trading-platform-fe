@@ -19,6 +19,7 @@ export const initialState: ContainerState = {
   additionalChartDataLength: 0,
 
   ordersLoading: false,
+  openOrderError: null,
   openOrders: [],
   historyOrders: [],
 
@@ -139,38 +140,11 @@ const appReducer = produce((draft = initialState, action) => {
       draft.ordersLoading = true;
       break;
 
-    case ActionTypes.OPEN_ORDER_SUCCESS:
-      // const ordersStr = localStorage.getItem('orders');
+    case ActionTypes.OPEN_ORDER_RESULT:
+    case ActionTypes.CLOSE_ORDER_RESULT:
+    case ActionTypes.UPDATE_ORDER_RESULT:
       draft.ordersLoading = false;
-      // if (ordersStr !== null) {
-      //   draft.orders = JSON.parse(ordersStr);
-      // }
-      // if (action.payload) {
-      //   draft.orders.push(action.payload);
-      // }
-      // localStorage.setItem('orders', JSON.stringify(draft.orders));
-      break;
-
-    case ActionTypes.CLOSE_ORDER_SUCCESS:
-      // const ordersListStr = localStorage.getItem('orders');
-      draft.ordersLoading = false;
-      // if (ordersListStr !== null) {
-      //   const orders = JSON.parse(ordersListStr);
-      //   draft.orders = orders
-      //     .filter(order => order.id !== action.payload);
-      // }
-      // localStorage.setItem('orders', JSON.stringify(draft.orders));
-      break;
-
-    case ActionTypes.UPDATE_ORDER_SUCCESS:
-      // const orderListStr = localStorage.getItem('orders');
-      draft.ordersLoading = false;
-      // if (orderListStr !== null) {
-      //   const orders = JSON.parse(orderListStr);
-      //   const orderIdx = orders.findIndex(order => order.id === action.payload.id);
-      //   draft.orders[orderIdx] = action.payload;
-      // }
-      // localStorage.setItem('orders', JSON.stringify(draft.orders));
+      draft.openOrderError = action.payload.error;
       break;
 
     case ActionTypes.LOAD_OPEN_ORDERS_SUCCESS:

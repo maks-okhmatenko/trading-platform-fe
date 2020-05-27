@@ -2,7 +2,7 @@ import _sortBy from 'lodash/sortBy';
 import _throttle from 'lodash/throttle';
 import socketIOClient from 'socket.io-client';
 import { eventChannel } from 'redux-saga';
-import { all, call, fork, put, take, takeEvery, select, takeLatest } from 'redux-saga/effects';
+import { all, call, fork, put, take, takeEvery, select, takeLatest, delay } from 'redux-saga/effects';
 
 import * as AppActions from '../containers/App/actions';
 import {
@@ -11,7 +11,8 @@ import {
   WS_WORKER_URL,
   CHANGE_TYPE,
   ORDER_API_URL,
-  ORDER_TYPE,
+  ORDER_ACTION,
+  ALERT_TYPES,
 } from '../containers/App/constants';
 import {
   makeSelectFavoriteTickers, makeSelectLogin, makeSelectGlobalSymbolList,
@@ -137,23 +138,27 @@ async function httpRequest(url: string, data) {
 
 function* openOrderSaga(action) {
   const requestData = {
-    action: 'OrderOpen',
+    action: ORDER_ACTION.OPEN,
     ...action.payload,
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
-  if (data) {
+  if (data && data.status) {
     const order = {
       id: data.message,
       OpenTime: moment(moment.now()).unix(),
       ...action.payload,
     };
-    yield put(AppActions.openOrderSuccess(order));
+    yield put(AppActions.openOrderResult(order, 'Order opened', ALERT_TYPES.SUCCESS));
+  } else {
+    yield put(AppActions.openOrderResult(null, 'Can\'t open order', ALERT_TYPES.ERROR));
   }
+  yield delay(3500);
+  yield put(AppActions.openOrderResult());
 }
 
 function* closeOrderSaga(action) {
   const requestData = {
-    action: 'OrderClose',
+    action: ORDER_ACTION.CLOSE,
     Orders: [action.payload],
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
@@ -164,7 +169,7 @@ function* closeOrderSaga(action) {
 
 function* updateOrderSaga(action) {
   const requestData = {
-    action: 'OrderUpdate',
+    action: ORDER_ACTION.UPDATE,
     ...action.payload,
   };
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
@@ -186,17 +191,17 @@ function* loadOrdersSaga(action) {
 
   if (data && data.message) {
     console.log(data);
-    if (type === ORDER_TYPE.OPENED) {
+    if (type === ORDER_ACTION.OPENED) {
       yield put(AppActions.loadOpenOrdersSuccess(data.message));
     }
-    if (type === ORDER_TYPE.CLOSED) {
+    if (type === ORDER_ACTION.CLOSED) {
       yield put(AppActions.loadHistoryOrdersSuccess(data.message));
     }
   }
 }
 
 export function* rootSagas() {
-  yield put(AppActions.openOrderSuccess());
+  yield put(AppActions.openOrderResult());
   yield all([
     fork(watchSocketIoChannel),
     takeEvery(ActionTypes.OPEN_NEW_ORDER, openOrderSaga),

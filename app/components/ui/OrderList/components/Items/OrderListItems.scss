@@ -24,10 +24,11 @@ $grey: #888F;
   td, th {
     text-align: start;
     padding: 0 1rem;
-    max-width: 100px;
+    // min-width: 100px;
   }
   
   th {
+    flex-wrap: nowrap;
     height: 30px;
     user-select: none;
     position:-webkit-sticky;
@@ -95,6 +96,9 @@ $grey: #888F;
 .red {
   color: $down-text;
 }
+.maintext {
+  color: $control-text;
+}
 
 .squareButton {
   color: $grey;
@@ -129,4 +133,20 @@ $grey: #888F;
   width: 100%;
   background-color: #7773;
   z-index: 2;
+}
+
+.w3 {
+  min-width: 90px;
+}
+
+.w5 {
+  min-width: 105px;
+}
+
+.w7 {
+  min-width: 130px;
+}
+
+.w9 {
+  min-width: 160px;
 }
