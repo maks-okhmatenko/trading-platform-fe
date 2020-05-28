@@ -23,6 +23,8 @@ interface AppState {
   openOrders: [];
   historyOrders: [];
 
+  ordersDateFilter: string;
+
   login: string;
 }
 

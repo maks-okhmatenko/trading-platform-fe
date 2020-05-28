@@ -146,3 +146,8 @@ export const loadHistoryOrdersSuccess = (orders?: ORDER[]) => ({
   type: ActionTypes.LOAD_HISTORY_ORDERS_SUCCESS,
   payload: orders,
 });
+
+export const setOrdersDateFilder = (dateFrom: string) => ({
+  type: ActionTypes.SET_ORDERS_TIME_FILTER,
+  payload: dateFrom,
+});

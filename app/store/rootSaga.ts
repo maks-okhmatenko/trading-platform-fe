@@ -15,7 +15,7 @@ import {
   ALERT_TYPES,
 } from '../containers/App/constants';
 import {
-  makeSelectFavoriteTickers, makeSelectLogin, makeSelectGlobalSymbolList,
+  makeSelectFavoriteTickers, makeSelectLogin, makeSelectGlobalSymbolList, makeSelectOrderTimeFilter,
 } from 'containers/App/selectors';
 import moment from 'moment';
 
@@ -181,23 +181,27 @@ function* updateOrderSaga(action) {
 function* loadOrdersSaga(action) {
   const { payload: type } = action;
   const login = yield select(makeSelectLogin());
+  const dateFrom = yield select(makeSelectOrderTimeFilter());
 
   const requestData = {
     action: type,
     account_number: login,
+    from_time: dateFrom.toString(),
   };
-
   const data = yield call(httpRequest, ORDER_API_URL, requestData);
 
-  if (data && data.message) {
-    console.log(data);
+  if (data) {
     if (type === ORDER_ACTION.OPENED) {
-      yield put(AppActions.loadOpenOrdersSuccess(data.message));
+      yield put(AppActions.loadOpenOrdersSuccess(data.message || []));
     }
     if (type === ORDER_ACTION.CLOSED) {
-      yield put(AppActions.loadHistoryOrdersSuccess(data.message));
+      yield put(AppActions.loadHistoryOrdersSuccess(data.message || []));
     }
   }
+}
+
+function* setOrderListFilterSaga() {
+  yield put(AppActions.loadOpenOrders());
 }
 
 export function* rootSagas() {
@@ -210,5 +214,6 @@ export function* rootSagas() {
 
     takeEvery(ActionTypes.LOAD_OPEN_ORDERS, loadOrdersSaga),
     takeEvery(ActionTypes.LOAD_HISTORY_ORDERS, loadOrdersSaga),
+    takeEvery(ActionTypes.SET_ORDERS_TIME_FILTER, setOrderListFilterSaga),
   ]);
 }

@@ -9,7 +9,7 @@ import {
   PropsType as ItemsProps,
 } from './components/Items/OrderListItems';
 import { createStructuredSelector } from 'reselect';
-import { closeOrder, loadOpenOrders, loadHistoryOrders } from 'containers/App/actions';
+import { closeOrder, loadOpenOrders, loadHistoryOrders, setOrdersDateFilder } from 'containers/App/actions';
 import {
   makeSelectOrdersLoading,
   makeSelectOpenOrders,
@@ -70,6 +70,7 @@ const OrderList: React.FC<any> = props => {
     closeOrder,
     loadOpenOrders,
     loadHistoryOrders,
+    setOrdersDateFilder,
     tickers,
   } = props;
 
@@ -108,6 +109,7 @@ const OrderList: React.FC<any> = props => {
     tabList,
     currentTab,
     onTabChange,
+    setOrdersDateFilder,
   };
 
   const itemsProps: ItemsProps = {
@@ -146,6 +148,7 @@ const mapDispatchToProps = {
   closeOrder,
   loadOpenOrders,
   loadHistoryOrders,
+  setOrdersDateFilder,
 };
 
 export default connect(

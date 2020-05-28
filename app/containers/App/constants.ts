@@ -1,7 +1,8 @@
 import moment from 'moment';
 
 export const WS_WORKER_URL = process.env.WS_WORKER_URL || ':8080';
-export const ORDER_API_URL = process.env.ORDER_API_URL || '/order.php';
+// export const ORDER_API_URL = process.env.ORDER_API_URL || '/order.php';
+export const ORDER_API_URL = 'http://crypto.greathead.net/order.php';
 
 export enum ActionTypes {
   SOCKET_CONNECT = 'App/SOCKET_CONNECT_DONE',
@@ -27,6 +28,9 @@ export enum ActionTypes {
   CLOSE_ORDER_RESULT = 'App/CLOSE_ORDER_RESULT',
   UPDATE_ORDER = 'App/UPDATE_ORDER',
   UPDATE_ORDER_RESULT = 'App/UPDATE_ORDER_RESULT',
+
+  SET_ORDERS_TIME_FILTER = 'App/SET_ORDERS_TIME_FILTER',
+
 
   LOAD_OPEN_ORDERS = 'App/LOAD_OPEN_ORDERS',
   LOAD_OPEN_ORDERS_SUCCESS = 'App/LOAD_OPEN_ORDERS_SUCCESS',

@@ -23,6 +23,8 @@ export const initialState: ContainerState = {
   openOrders: [],
   historyOrders: [],
 
+  ordersDateFilter: '1970-01-01 00:00:00',
+
   login: '2100089166',
 };
 
@@ -133,6 +135,10 @@ const appReducer = produce((draft = initialState, action) => {
 
     case ActionTypes.CHANGE_ACTIVE_TIME_FRAME:
       draft.activeTimeFrame = action.payload.data;
+      break;
+
+    case ActionTypes.SET_ORDERS_TIME_FILTER:
+      draft.ordersDateFilter = action.payload;
       break;
 
     case ActionTypes.OPEN_NEW_ORDER:

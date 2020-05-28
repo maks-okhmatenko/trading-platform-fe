@@ -60,6 +60,9 @@ const makeSelectLogin = () =>
 const makeSelectOpenOrderError = () =>
   createSelector(selectGlobal, globalState => globalState.openOrderError);
 
+const makeSelectOrderTimeFilter = () =>
+  createSelector(selectGlobal, globalState => globalState.ordersDateFilter);
+
 
 export {
   selectGlobal,
@@ -80,4 +83,5 @@ export {
   makeSelectOrdersLoading,
   makeSelectOpenOrderError,
   makeSelectLogin,
+  makeSelectOrderTimeFilter,
 };
